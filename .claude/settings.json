@@ -1,0 +1,14 @@
+{
+    "extraKnownMarketplaces": {
+        "context-mode": {
+            "source": { "source": "github", "repo": "mksglu/context-mode" }
+        },
+        "ponytail": {
+            "source": { "source": "github", "repo": "DietrichGebert/ponytail" }
+        }
+    },
+    "enabledPlugins": {
+        "context-mode@context-mode": true,
+        "ponytail@ponytail": true
+    }
+}
