@@ -23,6 +23,14 @@
             extractVersionTemplate: "^v(?<version>.+)$",
         },
         {
+            // Renovate version run by the Renovate workflow
+            customType: "regex",
+            managerFilePatterns: ["/^\\.github/workflows/renovate\\.yml$/"],
+            matchStrings: ["renovate-version: (?<currentValue>\\S+)"],
+            depNameTemplate: "renovatebot/renovate",
+            datasourceTemplate: "github-releases",
+        },
+        {
             // Python tools pinned inside commands and Copier settings
             customType: "regex",
             managerFilePatterns: [
