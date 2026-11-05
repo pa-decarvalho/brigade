@@ -1,0 +1,6 @@
+# Tasks shared by every project type.
+# Each type fragment must define `lint` and `test`.
+
+[tasks.check]
+description = "Run all checks"
+depends = ["lint", "test"]

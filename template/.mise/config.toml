@@ -1,0 +1,4 @@
+min_version = "2026.8.7"
+
+[settings]
+# Fragments in .mise/conf.d/ are loaded automatically, in alphabetical order.

@@ -1,0 +1,4 @@
+# Loaded only when MISE_ENV=ci, on top of config.toml and conf.d/.
+
+[env]
+CI = "true"

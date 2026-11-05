@@ -1,0 +1,34 @@
+_min_copier_version: "9.19.0"
+_subdirectory: template
+_answers_file: .copier-answers.yml
+
+project_type:
+  type: str
+  help: Project type
+  choices:
+    Python: python
+  default: python
+
+project_name:
+  type: str
+  help: Human-readable project name
+
+project_slug:
+  type: str
+  help: Repository / distribution name
+  default: "{{ project_name | lower | replace(' ', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9-]*$')) %}
+    Use lowercase letters, digits and dashes, starting with a letter.
+    {% endif %}
+
+package_name:
+  type: str
+  help: Importable package name
+  default: "{{ project_slug | replace('-', '_') }}"
+  when: "{{ project_type == 'python' }}"
+
+project_description:
+  type: str
+  help: One-line project description
+  default: ""

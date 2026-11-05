@@ -1,0 +1,16 @@
+[tools]
+python = "3.13"
+uv = "0.13.7"
+ruff = "0.17.3"
+
+[tasks.lint]
+description = "Lint and check formatting"
+run = ["ruff check .", "ruff format --check ."]
+
+[tasks.format]
+description = "Format code and apply safe fixes"
+run = ["ruff check --fix .", "ruff format ."]
+
+[tasks.test]
+description = "Run tests"
+run = "uv run pytest"

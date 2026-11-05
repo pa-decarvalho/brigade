@@ -1,0 +1,3 @@
+# Read by mise before any other config file.
+# Opt in now to environment-suffixed conf.d fragments (default from mise 2027.8.10).
+env_conf_d = true

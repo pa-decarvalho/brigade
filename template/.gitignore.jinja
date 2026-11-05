@@ -1,0 +1,12 @@
+# mise personal overrides
+.mise/config.local.toml
+.mise/*.local.toml
+.mise/conf.d/*.local.toml
+{%- if project_type == 'python' %}
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+{%- endif %}
