@@ -18,6 +18,7 @@ The user picks a project type; the template adds the files for that type on top 
 - Pin versions (mise, tools, Copier).
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.
+- Commits follow Conventional Commits. Releases are made by merging the release-please PR, which tags `vX.Y.Z`; Copier uses these tags as template versions.
 
 ## Testing
 
