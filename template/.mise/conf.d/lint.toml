@@ -1,0 +1,8 @@
+# Lint tools shared by every project type. Tool config is given inline: no config files.
+
+[tools]
+"pipx:yamllint" = "1.38.0"
+
+[tasks."lint:yamllint"]
+description = "Check YAML files with yamllint"
+run = 'yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/], rules: {truthy: {check-keys: false}, new-lines: {type: platform}}}" .'

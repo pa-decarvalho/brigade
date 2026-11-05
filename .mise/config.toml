@@ -1,0 +1,75 @@
+min_version = "2026.11.0"
+
+[tools]
+uv = "0.11.31"
+"pipx:yamllint" = "1.38.0"
+actionlint = "1.7.12"
+taplo = "0.10.0"
+editorconfig-checker = "4.0.2"
+act = "0.2.96"
+node = "24.22.2"
+"npm:gitlab-ci-local" = "4.77.1"
+
+[env]
+# Generated projects in .ctt/ run their own mise tasks, isolated from this config.
+MISE_TRUSTED_CONFIG_PATHS = "{{ config_root }}/.ctt"
+MISE_CEILING_PATHS = "{{ config_root }}/.ctt"
+
+# Stages, same convention as the template: each runs every "<stage>:<tool>" task.
+# Tool config is given inline: no config files.
+
+[tasks.lint]
+description = "Stage: static checks"
+depends = ["lint:*"]
+
+[tasks.test]
+description = "Stage: tests"
+depends = ["test:*"]
+
+[tasks."lint:yamllint"]
+description = "Check YAML files with yamllint"
+run = 'yamllint --strict -d "{extends: default, ignore: [.ctt/, template/], rules: {truthy: {check-keys: false}}}" .'
+
+[tasks."lint:actionlint"]
+description = "Check GitHub workflows with actionlint"
+run = "actionlint"
+
+[tasks."lint:taplo"]
+description = "Check TOML formatting with taplo"
+run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml "template/**/*.toml"'
+
+[tasks."lint:editorconfig"]
+description = "Check files against .editorconfig"
+run = 'editorconfig-checker -exclude "^\.ctt/"'
+
+[tasks."test:ctt"]
+description = "Render every ctt.toml variant into .ctt/ and run its stages"
+run = [
+    # ci:* tasks leave a .git in .ctt/, which ctt refuses to clear.
+    "uv run --no-project python -c \"import shutil; shutil.rmtree('.ctt', ignore_errors=True)\"",
+    "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt",
+]
+
+# Run the generated CI files locally in Docker. ctt removes .git, simulators need one.
+
+[tasks."ci:github"]
+description = "Run the generated GitHub workflow with act (Docker)"
+depends = ["test:ctt"]
+dir = "{{ config_root }}/.ctt/python-github"
+run = [
+    "git init -q",
+    "git add -A",
+    "git -c user.name=ctt -c user.email=ctt@localhost commit -qm init",
+    "act push -P ubuntu-latest=catthehacker/ubuntu:act-24.04",
+]
+
+[tasks."ci:gitlab"]
+description = "Run the generated GitLab pipeline with gitlab-ci-local (Docker)"
+depends = ["test:ctt"]
+dir = "{{ config_root }}/.ctt/python-gitlab"
+run = [
+    "git init -q",
+    "git add -A",
+    "git -c user.name=ctt -c user.email=ctt@localhost commit -qm init",
+    "gitlab-ci-local",
+]

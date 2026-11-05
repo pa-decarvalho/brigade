@@ -1,0 +1,15 @@
+---
+project_type:
+  type: str
+  help: Project type
+  choices:
+    - python
+
+ci:
+  type: str
+  help: CI platform
+  choices:
+    - github
+    - gitlab
+    - none
+  default: github

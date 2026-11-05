@@ -1,0 +1,20 @@
+min_version = "2026.11.0"
+
+[tools]
+uv = "0.11.31"
+
+# Pipeline stages, in order. Each stage runs every "<stage>:<tool>" task;
+# common tools live in .mise/conf.d/<stage>.toml, type-specific ones in .mise/conf.d/<type>.toml.
+# Add a stage (build, release, deploy...) only when a project type needs it.
+
+[tasks.lint]
+description = "Stage: static checks"
+depends = ["lint:*"]
+
+[tasks.test]
+description = "Stage: tests"
+depends = ["test:*"]
+
+[tasks."brigade:update"]
+description = "Update brigade files from the template"
+run = "uvx copier@9.19.1 update -a .mise/copier-answers.yml"
