@@ -15,14 +15,14 @@ The user picks a project type; the template adds the files for that type on top 
 - Add a stage (build, release, deploy...) only when a project type needs it.
 - CI files only install mise and call `mise run <stage>`; each CI platform lints its own file (`lint:actionlint`, `lint:gitlab-ci`).
 - Linters and formatters are mise tools, not project dependencies.
-- Pin versions (mise, tools, Copier).
+- Pin versions (mise, tools, Copier). Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.
 - Commits follow Conventional Commits. Releases are made by merging the release-please PR, which tags `X.Y.Z`; Copier uses these tags as template versions.
 
 ## Testing
 
-`mise run lint` checks this repo (yamllint, actionlint, taplo, editorconfig-checker).
+`mise run lint` checks this repo (yamllint, actionlint, taplo, editorconfig-checker, Renovate config schema).
 `mise run test` renders each `ctt.toml` variant into `.ctt/`, creates a real project there with the ecosystem's tool, then runs its mise tasks.
 ctt only sees files tracked by git.
 `mise run ci:github` / `mise run ci:gitlab` run the generated CI files locally with act / gitlab-ci-local (Docker required; with Docker Desktop on macOS set `DOCKER_HOST=unix://$HOME/.docker/run/docker.sock`).
