@@ -60,7 +60,7 @@ run = [
     "git init -q",
     "git add -A",
     "git -c user.name=ctt -c user.email=ctt@localhost commit -qm init",
-    "act push -P ubuntu-latest=catthehacker/ubuntu:act-24.04",
+    "act pull_request -P ubuntu-latest=catthehacker/ubuntu:act-24.04",
 ]
 
 [tasks."ci:gitlab"]
