@@ -6,7 +6,7 @@ uv = "0.11.31"
 actionlint = "1.7.12"
 taplo = "0.10.0"
 editorconfig-checker = "4.0.2"
-act = "0.2.96"
+act = "0.2.97"
 node = "24.22.2"
 "npm:gitlab-ci-local" = "4.77.1"
 "pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
