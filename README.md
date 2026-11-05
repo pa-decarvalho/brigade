@@ -11,7 +11,7 @@ mise trust && mise install
 mise tasks
 ```
 
-`copier copy` uses the latest release; add `--vcs-ref vX.Y.Z` to pick a version.
+`copier copy` uses the latest release; add `--vcs-ref X.Y.Z` to pick a version.
 Update a project to the latest release with `mise run brigade:update`.
 
 Project types: `python`. CI: `github`, `gitlab` or `none`; the generated pipeline runs `mise run lint` then `mise run test`.
