@@ -9,6 +9,7 @@ editorconfig-checker = "4.0.2"
 act = "0.2.96"
 node = "24.22.2"
 "npm:gitlab-ci-local" = "4.77.1"
+"pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
 
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
@@ -37,6 +38,10 @@ run = "actionlint"
 [tasks."lint:taplo"]
 description = "Check TOML formatting with taplo"
 run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml "template/**/*.toml"'
+
+[tasks."lint:renovate"]
+description = "Check the Renovate config"
+run = "check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
 
 [tasks."lint:editorconfig"]
 description = "Check files against .editorconfig"

@@ -1,0 +1,68 @@
+{
+    $schema: "https://docs.renovatebot.com/renovate-schema.json",
+    extends: ["config:recommended"],
+    semanticCommits: "enabled",
+    // Template files have Jinja names, which the default file patterns do not match.
+    mise: {
+        managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
+    },
+    "github-actions": {
+        managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/"],
+    },
+    gitlabci: {
+        managerFilePatterns: ["/^template/.*\\.gitlab-ci\\.yml/"],
+    },
+    customManagers: [
+        {
+            // mise version installed by jdx/mise-action
+            customType: "regex",
+            managerFilePatterns: ["/(^|/)workflows/[^/]+\\.yml$/"],
+            matchStrings: ["jdx/mise-action@\\S+\\s+with:\\s+version:\\s+(?<currentValue>\\S+)"],
+            depNameTemplate: "jdx/mise",
+            datasourceTemplate: "github-releases",
+            extractVersionTemplate: "^v(?<version>.+)$",
+        },
+        {
+            // Renovate version run by the Renovate workflow
+            customType: "regex",
+            managerFilePatterns: ["/^\\.github/workflows/renovate\\.yml$/"],
+            matchStrings: ["renovate-version: (?<currentValue>\\S+)"],
+            depNameTemplate: "renovatebot/renovate",
+            datasourceTemplate: "github-releases",
+        },
+        {
+            // Python tools pinned inside commands and Copier settings
+            customType: "regex",
+            managerFilePatterns: [
+                "/^\\.mise/config\\.toml$/",
+                "/^template/\\.mise/config\\.toml$/",
+                "/^ctt\\.toml$/",
+                "/^README\\.md$/",
+            ],
+            matchStrings: ["(?<depName>copier-template-tester|copier|pytest)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+            datasourceTemplate: "pypi",
+        },
+        {
+            customType: "regex",
+            managerFilePatterns: ["/^\\.copier/settings\\.yml$/"],
+            matchStrings: ["_min_copier_version: \"(?<currentValue>[^\"]+)\""],
+            depNameTemplate: "copier",
+            datasourceTemplate: "pypi",
+        },
+    ],
+    packageRules: [
+        {
+            // Template changes reach generated projects: release them as a fix.
+            matchFileNames: ["template/**"],
+            semanticCommitType: "fix",
+        },
+        {
+            matchDepNames: ["jdx/mise", "jdxcode/mise"],
+            groupName: "mise",
+        },
+        {
+            matchDepNames: ["copier"],
+            groupName: "copier",
+        },
+    ],
+}

@@ -26,7 +26,7 @@ mise run lint
 mise run test
 ```
 
-`mise run lint` checks this repo. `mise run test` renders each variant from `ctt.toml` into `.ctt/` with [ctt](https://github.com/KyleKing/copier-template-tester), creates a real project there, then runs its mise tasks.
+`mise run lint` checks this repo. Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.github/renovate.json5`), run weekly by `.github/workflows/renovate.yml` with a `RENOVATE_TOKEN` secret (fine-grained token on this repo: contents, pull requests, issues, workflows and commit statuses read/write). `mise run test` renders each variant from `ctt.toml` into `.ctt/` with [ctt](https://github.com/KyleKing/copier-template-tester), creates a real project there, then runs its mise tasks.
 ctt only sees files tracked by git: `git add` new template files before testing.
 
 Run the generated CI files locally (requires Docker):
