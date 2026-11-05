@@ -1,0 +1,14 @@
+[tools]
+ruff = "0.17.3"
+
+[tasks."lint:ruff"]
+description = "Check code with ruff"
+run = "ruff check"
+
+[tasks."lint:ruff-format"]
+description = "Check formatting with ruff"
+run = "ruff format --check"
+
+[tasks."test:pytest"]
+description = "Run tests with pytest"
+run = "uv run pytest"

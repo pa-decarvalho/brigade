@@ -1,0 +1,6 @@
+[tools]
+"pipx:check-jsonschema" = "0.39.0"
+
+[tasks."lint:gitlab-ci"]
+description = "Check .gitlab-ci.yml against the GitLab CI schema"
+run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml"

@@ -1,0 +1,28 @@
+# Each variant creates a real git project with the ecosystem's tool, applies brigade,
+# then runs its stages.
+
+[defaults]
+
+[output.".ctt/python-github"]
+project_type = "python"
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
+    ["uv", "add", "--dev", "pytest==9.2.0"],
+    ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]
+
+[output.".ctt/python-gitlab"]
+project_type = "python"
+ci = "gitlab"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
+    ["uv", "add", "--dev", "pytest==9.2.0"],
+    ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]

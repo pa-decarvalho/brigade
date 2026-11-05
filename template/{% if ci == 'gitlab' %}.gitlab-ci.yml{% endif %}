@@ -1,0 +1,27 @@
+---
+stages:
+  - lint
+  - test
+
+variables:
+  MISE_DATA_DIR: $CI_PROJECT_DIR/.mise-data
+
+default:
+  image: jdxcode/mise:2026.11.2-debian
+  cache:
+    key: mise
+    paths:
+      - .mise-data/
+  before_script:
+    - mise trust
+    - mise install
+
+lint:
+  stage: lint
+  script:
+    - mise run lint
+
+test:
+  stage: test
+  script:
+    - mise run test
