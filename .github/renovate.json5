@@ -1,7 +1,13 @@
 {
     $schema: "https://docs.renovatebot.com/renovate-schema.json",
-    extends: ["config:recommended"],
+    // One PR with every update, no dashboard issue.
+    extends: ["config:recommended", "group:all"],
+    dependencyDashboard: false,
+    // Commits made through the GitHub API are signed (Verified).
+    platformCommit: "enabled",
     semanticCommits: "enabled",
+    // Updates reach generated projects: every Renovate PR triggers a brigade release.
+    semanticCommitType: "fix",
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
@@ -14,24 +20,7 @@
     },
     customManagers: [
         {
-            // mise version installed by jdx/mise-action
-            customType: "regex",
-            managerFilePatterns: ["/(^|/)workflows/[^/]+\\.yml$/"],
-            matchStrings: ["jdx/mise-action@\\S+\\s+with:\\s+version:\\s+(?<currentValue>\\S+)"],
-            depNameTemplate: "jdx/mise",
-            datasourceTemplate: "github-releases",
-            extractVersionTemplate: "^v(?<version>.+)$",
-        },
-        {
-            // Renovate version run by the Renovate workflow
-            customType: "regex",
-            managerFilePatterns: ["/^\\.github/workflows/renovate\\.yml$/"],
-            matchStrings: ["renovate-version: (?<currentValue>\\S+)"],
-            depNameTemplate: "renovatebot/renovate",
-            datasourceTemplate: "github-releases",
-        },
-        {
-            // Python tools pinned inside commands and Copier settings
+            // Python tools pinned inside commands
             customType: "regex",
             managerFilePatterns: [
                 "/^\\.mise/config\\.toml$/",
@@ -48,21 +37,6 @@
             matchStrings: ["_min_copier_version: \"(?<currentValue>[^\"]+)\""],
             depNameTemplate: "copier",
             datasourceTemplate: "pypi",
-        },
-    ],
-    packageRules: [
-        {
-            // Template changes reach generated projects: release them as a fix.
-            matchFileNames: ["template/**"],
-            semanticCommitType: "fix",
-        },
-        {
-            matchDepNames: ["jdx/mise", "jdxcode/mise"],
-            groupName: "mise",
-        },
-        {
-            matchDepNames: ["copier"],
-            groupName: "copier",
         },
     ],
 }
