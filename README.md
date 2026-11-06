@@ -15,7 +15,7 @@ mise tasks
 Update a project to the latest release with `mise run brigade:update`.
 Run `mise run brigade:hooks` once to lint before each commit: the git hook in `.git/hooks/` runs `mise run brigade:pre-commit`, a task defined by brigade and kept up to date by `brigade:update`.
 
-Project types: `python`, `rust`. CI: `github`, `gitlab` or `none`; the generated pipeline runs `mise run lint` then `mise run test`.
+Project types: `python`, `rust`. CI: `github`, `gitlab`, `gitea` (Gitea and Forgejo Actions) or `none`; the generated pipeline runs `mise run lint` then `mise run test`.
 
 ## Development
 
