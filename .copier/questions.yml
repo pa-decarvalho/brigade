@@ -15,3 +15,20 @@ ci:
     - gitea
     - none
   default: github
+
+# Optional mirrors (e.g. Nexus). Empty: download from the internet.
+github_mirror:
+  type: str
+  help: Mirror of https://github.com/ for tool downloads (empty for none)
+  default: ""
+
+pypi_index:
+  type: str
+  help: PyPI simple index URL for uv and Python tools (empty for none)
+  default: ""
+
+rustup_mirror:
+  type: str
+  help: Rustup mirror URL, as RUSTUP_DIST_SERVER (empty for none)
+  default: ""
+  when: "{{ project_type == 'rust' }}"
