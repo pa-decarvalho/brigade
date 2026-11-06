@@ -6,6 +6,8 @@ uv = "0.13.7"
 actionlint = "1.7.12"
 taplo = "0.10.0"
 editorconfig-checker = "4.0.2"
+gitleaks = "8.30.1"
+typos = "1.52.0"
 act = "0.2.97"
 node = "24.22.2"
 "npm:gitlab-ci-local" = "4.77.1"
@@ -38,6 +40,14 @@ run = "actionlint"
 [tasks."lint:taplo"]
 description = "Check TOML formatting with taplo"
 run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml "template/**/*.toml"'
+
+[tasks."lint:gitleaks"]
+description = "Check git history for secrets with gitleaks"
+run = "gitleaks git --redact --no-banner"
+
+[tasks."lint:typos"]
+description = "Check spelling with typos"
+run = "typos --hidden --exclude .git"
 
 [tasks."lint:renovate"]
 description = "Check the Renovate config"
