@@ -25,4 +25,5 @@ The user picks a project type; the template adds the files for that type on top 
 `mise run lint` checks this repo (yamllint, actionlint, taplo, editorconfig-checker, Renovate config schema).
 `mise run test` renders each `ctt.toml` variant into `.ctt/src/.ctt/`, creates a real project there with the ecosystem's tool, then runs its mise tasks.
 ctt only sees files tracked by git.
+`mise run test` also runs `test:update`: for each variant, create the project first, apply the template at the latest tag on top of it, update to HEAD with `mise run brigade:update`, then run the project's stages.
 `mise run ci:github` / `mise run ci:gitlab` run the generated CI files locally with act / gitlab-ci-local (Docker required; with Docker Desktop on macOS set `DOCKER_HOST=unix://$HOME/.docker/run/docker.sock`).

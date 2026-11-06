@@ -23,6 +23,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0  # tags, for test:update
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
