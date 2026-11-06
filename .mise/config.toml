@@ -55,6 +55,10 @@ run = [
     "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt --base-dir .ctt/src",
 ]
 
+[tasks."test:update"]
+description = "Update a project from the latest release to HEAD and run its stages"
+run = "uv run --no-project python .mise/scripts/test_update.py"
+
 # Run the generated CI files locally in Docker. ctt removes .git, simulators need one.
 
 [tasks."ci:github"]

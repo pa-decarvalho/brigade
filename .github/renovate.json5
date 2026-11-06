@@ -24,6 +24,7 @@
                 "/^template/\\.mise/config\\.toml$/",
                 "/^ctt\\.toml$/",
                 "/^README\\.md$/",
+                "/^\\.mise/scripts/[^/]+\\.py$/",
             ],
             matchStrings: ["(?<depName>copier-template-tester|copier|pytest)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             datasourceTemplate: "pypi",
