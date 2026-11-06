@@ -3,7 +3,8 @@
 For each ctt.toml variant, like a user with an existing project: create the project
 with the variant's post tasks (all but `mise ...`), apply the template at the latest
 tag on top of it, commit, update to HEAD (uncommitted changes included), fail on
-conflicts, then run the project's lint and test stages.
+conflicts, check the answers file is at its current path, then run the project's lint and test
+stages.
 """
 
 import os
@@ -20,6 +21,9 @@ tag = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
 # Questions of the latest release, to skip variants it cannot generate yet (e.g. a new project type).
 released_questions = subprocess.run(["git", "show", f"{tag}:.copier/questions.yml"], capture_output=True, text=True, check=True).stdout
+# The update must move the answers file to its current name (it was renamed after 0.3.0).
+settings = (repo / ".copier/settings.yml").read_text().splitlines()
+answers_file = next(line.split(":", 1)[1].strip() for line in settings if line.startswith("_answers_file:"))
 
 with tempfile.TemporaryDirectory() as tmp:
     root = Path(tmp).resolve()
@@ -51,5 +55,7 @@ with tempfile.TemporaryDirectory() as tmp:
         conflicts = [p for p in files if p.suffix == ".rej" or "<<<<<<< " in p.read_text(errors="ignore")]
         if conflicts:
             raise SystemExit(f"{name}: update conflicts in {[str(p.relative_to(project)) for p in conflicts]}")
+        if not (project / answers_file).is_file():
+            raise SystemExit(f"{name}: no {answers_file} after the update")
         run("mise", "run", "lint")
         run("mise", "run", "test")

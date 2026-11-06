@@ -13,7 +13,7 @@
         managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/"],
     },
     gitlabci: {
-        managerFilePatterns: ["/^template/.*\\.gitlab-ci\\.yml/"],
+        managerFilePatterns: ["/^template/.*\\.gitlab[^/]*/ci/[^/]+\\.yml/"],
     },
     customManagers: [
         {

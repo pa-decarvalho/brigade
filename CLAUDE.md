@@ -6,14 +6,14 @@ The user picks a project type; the template adds the files for that type on top 
 
 ## Rules
 
-- Generated projects only get `.mise/` and the CI file. No source code, no package manifests, no tool config files.
-- Tool config is given inline in the mise task (command-line options), not in config files. Copier answers live in `.mise/copier-answers.yml`.
+- Generated projects only get `.mise/` and the CI files (GitLab: a root `.gitlab-ci.yml` that includes `.gitlab/ci/*.yml`). No source code, no package manifests, no tool config files.
+- Tool config is given inline in the mise task (command-line options), not in config files. Copier answers live in `.mise/brigade-copier-answers.yml`.
 - Generated files must work on Linux, macOS and Windows.
 - No bash: tasks are TOML commands, real logic is Python run with `uv run`.
 - mise config lives in `.mise/`: `config.toml` plus one fragment per project type in `.mise/conf.d/`.
 - Pipeline stages are mise tasks in the base `config.toml` (today: `lint`, `test`). Each runs `<stage>:*`; tools are `<stage>:<tool>` tasks (e.g. `lint:ruff`), common ones in `.mise/conf.d/<stage>.toml`, type-specific ones in `.mise/conf.d/<type>.toml`. CI only calls `mise run <stage>`.
 - Add a stage (build, release, deploy...) only when a project type needs it.
-- CI files only install mise and call `mise run <stage>`; each CI platform lints its own file (`lint:actionlint`, `lint:gitlab-ci`).
+- CI files only install mise and call `mise run <stage>`; each CI platform lints its own files (`lint:actionlint`, `lint:gitlab-ci`).
 - Linters and formatters are mise tools, not project dependencies.
 - `brigade:*` tasks are brigade's own helpers (`brigade:update`, `brigade:hooks`), not pipeline stages.
 - Pin versions (mise, tools, Copier). Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
