@@ -1,0 +1,14 @@
+[tools]
+rust = "1.99.1"
+
+[tasks."lint:clippy"]
+description = "Check code with clippy"
+run = "cargo clippy --all-targets -- -D warnings"
+
+[tasks."lint:rustfmt"]
+description = "Check formatting with rustfmt"
+run = "cargo fmt --check"
+
+[tasks."test:cargo"]
+description = "Run tests with cargo"
+run = "cargo test"

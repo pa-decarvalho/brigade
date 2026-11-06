@@ -13,6 +13,11 @@ default:
     paths:
       - .mise-data/
   before_script:
+{%- if project_type == 'rust' %}
+    # Rust needs a C linker, which the mise image does not ship.
+    - apt-get update -qq
+    - apt-get install -y -qq --no-install-recommends gcc libc6-dev
+{%- endif %}
     - mise trust
     - mise install
 

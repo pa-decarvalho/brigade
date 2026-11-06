@@ -4,6 +4,7 @@ project_type:
   help: Project type
   choices:
     - python
+    - rust
 
 ci:
   type: str

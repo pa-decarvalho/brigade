@@ -34,3 +34,31 @@ _post_tasks = [
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
+
+[output.".ctt/rust-github"]
+project_type = "rust"
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["cargo", "init", "--lib", "--name", "demo"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]
+
+[output.".ctt/rust-gitlab"]
+project_type = "rust"
+ci = "gitlab"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["cargo", "init", "--lib", "--name", "demo"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]
