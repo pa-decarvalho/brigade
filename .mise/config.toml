@@ -14,7 +14,7 @@ node = "24.22.2"
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
 MISE_TRUSTED_CONFIG_PATHS = "{{ config_root }}/.ctt"
-MISE_CEILING_PATHS = "{{ config_root }}/.ctt"
+MISE_CEILING_PATHS = "{{ config_root }}/.ctt/src/.ctt"
 
 # Stages, same convention as the template: each runs every "<stage>:<tool>" task.
 # Tool config is given inline: no config files.
@@ -50,9 +50,9 @@ run = 'editorconfig-checker -exclude "^\.ctt/"'
 [tasks."test:ctt"]
 description = "Render every ctt.toml variant into .ctt/ and run its stages"
 run = [
-    # ci:* tasks leave a .git in .ctt/, which ctt refuses to clear.
-    "uv run --no-project python -c \"import shutil; shutil.rmtree('.ctt', ignore_errors=True)\"",
-    "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt",
+    # Snapshot tracked files into .ctt/src, then render from there (see the script).
+    "uv run --no-project python .mise/scripts/snapshot.py",
+    "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt --base-dir .ctt/src",
 ]
 
 # Run the generated CI files locally in Docker. ctt removes .git, simulators need one.
@@ -60,7 +60,7 @@ run = [
 [tasks."ci:github"]
 description = "Run the generated GitHub workflow with act (Docker)"
 depends = ["test:ctt"]
-dir = "{{ config_root }}/.ctt/python-github"
+dir = "{{ config_root }}/.ctt/src/.ctt/python-github"
 run = [
     "git init -q",
     "git add -A",
@@ -71,7 +71,7 @@ run = [
 [tasks."ci:gitlab"]
 description = "Run the generated GitLab pipeline with gitlab-ci-local (Docker)"
 depends = ["test:ctt"]
-dir = "{{ config_root }}/.ctt/python-gitlab"
+dir = "{{ config_root }}/.ctt/src/.ctt/python-gitlab"
 run = [
     "git init -q",
     "git add -A",
