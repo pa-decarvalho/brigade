@@ -22,7 +22,7 @@ The user picks a project type; the template adds the files for that type on top 
 
 ## Testing
 
-`mise run lint` checks this repo (yamllint, actionlint, taplo, editorconfig-checker, Renovate config schema).
+`mise run lint` checks this repo (yamllint, actionlint, taplo, editorconfig-checker, gitleaks, typos, Renovate config schema).
 `mise run test` renders each `ctt.toml` variant into `.ctt/src/.ctt/`, creates a real project there with the ecosystem's tool, then runs its mise tasks.
 ctt only sees files tracked by git.
 `mise run test` also runs `test:update`: for each variant, create the project first, apply the template at the latest tag on top of it, update to HEAD with `mise run brigade:update`, then run the project's stages.

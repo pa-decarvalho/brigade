@@ -11,6 +11,8 @@ _post_tasks = [
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
@@ -23,6 +25,8 @@ _post_tasks = [
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
