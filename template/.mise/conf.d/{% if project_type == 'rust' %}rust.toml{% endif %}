@@ -1,5 +1,6 @@
 [tools]
-rust = "1.99.1"
+# CI runners may use a minimal rustup profile, without clippy and rustfmt.
+rust = { version = "1.99.1", components = "clippy,rustfmt" }
 
 [tasks."lint:clippy"]
 description = "Check code with clippy"
