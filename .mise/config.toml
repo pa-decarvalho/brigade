@@ -42,8 +42,11 @@ description = "Check TOML formatting with taplo"
 run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml "template/**/*.toml"'
 
 [tasks."lint:gitleaks"]
-description = "Check git history for secrets with gitleaks"
-run = "gitleaks git --redact --no-banner"
+description = "Check git history and staged changes for secrets with gitleaks"
+run = [
+    "gitleaks git --redact --no-banner",
+    "gitleaks git --pre-commit --staged --redact --no-banner",
+]
 
 [tasks."lint:typos"]
 description = "Check spelling with typos"
@@ -56,6 +59,14 @@ run = "check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
 [tasks."lint:editorconfig"]
 description = "Check files against .editorconfig"
 run = 'editorconfig-checker -exclude "^\.ctt/"'
+
+[tasks.pre-commit]
+description = "Checks run by the git pre-commit hook"
+depends = ["lint"]
+
+[tasks.hooks]
+description = "Install a git pre-commit hook that runs mise run pre-commit"
+run = "mise generate git-pre-commit --task pre-commit --write"
 
 [tasks."test:ctt"]
 description = "Render every ctt.toml variant into .ctt/ and run its stages"

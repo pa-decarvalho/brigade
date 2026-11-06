@@ -18,3 +18,11 @@ depends = ["test:*"]
 [tasks."brigade:update"]
 description = "Update brigade files from the template"
 run = "uvx copier@9.19.1 update -a .mise/copier-answers.yml"
+
+[tasks."brigade:pre-commit"]
+description = "Checks run by the git pre-commit hook"
+depends = ["lint"]
+
+[tasks."brigade:hooks"]
+description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
+run = "mise generate git-pre-commit --task brigade:pre-commit --write"
