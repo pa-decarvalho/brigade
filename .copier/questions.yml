@@ -12,5 +12,6 @@ ci:
   choices:
     - github
     - gitlab
+    - gitea
     - none
   default: github
