@@ -1,0 +1,6 @@
+[tools]
+"pipx:check-jsonschema" = "0.39.0"
+
+[tasks."lint:gitlab-ci"]
+description = "Check the GitLab CI files against the GitLab CI schema"
+run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .gitlab/ci/default.yml{% if project_type == 'rust' %} .gitlab/ci/rust.yml{% endif %} .gitlab/ci/lint.yml .gitlab/ci/test.yml"

@@ -1,0 +1,5 @@
+---
+lint:
+  stage: lint
+  script:
+    - mise run lint
