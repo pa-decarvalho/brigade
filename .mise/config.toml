@@ -80,13 +80,15 @@ run = "mise generate git-pre-commit --task pre-commit --write"
 description = "Render every ctt.toml variant into .ctt/ and run its stages"
 run = [
     # Snapshot tracked files into .ctt/src, then render from there (see the script).
-    "uv run --no-project python .mise/scripts/snapshot.py",
+    "python .mise/scripts/snapshot.py",
     "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt --base-dir .ctt/src",
 ]
 
 [tasks."test:update"]
 description = "Update a project from the latest release to HEAD and run its stages"
-run = "uv run --no-project python .mise/scripts/test_update.py"
+# After test:ctt: both install the same tools, which can deadlock on Windows when run in parallel.
+depends = ["test:ctt"]
+run = "python .mise/scripts/test_update.py"
 
 # Run the generated CI files locally in Docker. ctt removes .git, simulators need one.
 
