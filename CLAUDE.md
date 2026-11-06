@@ -15,6 +15,7 @@ The user picks a project type; the template adds the files for that type on top 
 - Add a stage (build, release, deploy...) only when a project type needs it.
 - CI files only install mise and call `mise run <stage>`; each CI platform lints its own file (`lint:actionlint`, `lint:gitlab-ci`).
 - Linters and formatters are mise tools, not project dependencies.
+- `brigade:*` tasks are brigade's own helpers (`brigade:update`, `brigade:hooks`), not pipeline stages.
 - Pin versions (mise, tools, Copier). Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.

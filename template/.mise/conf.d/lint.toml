@@ -10,8 +10,11 @@ description = "Check YAML files with yamllint"
 run = 'yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/], rules: {truthy: {check-keys: false}, new-lines: disable}}" .'
 
 [tasks."lint:gitleaks"]
-description = "Check git history for secrets with gitleaks"
-run = "gitleaks git --redact --no-banner"
+description = "Check git history and staged changes for secrets with gitleaks"
+run = [
+    "gitleaks git --redact --no-banner",
+    "gitleaks git --pre-commit --staged --redact --no-banner",
+]
 
 [tasks."lint:typos"]
 description = "Check spelling with typos"

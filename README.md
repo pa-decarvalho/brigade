@@ -13,6 +13,7 @@ mise tasks
 
 `copier copy` uses the latest release; add `--vcs-ref X.Y.Z` to pick a version.
 Update a project to the latest release with `mise run brigade:update`.
+Run `mise run brigade:hooks` once to lint before each commit: the git hook in `.git/hooks/` runs `mise run brigade:pre-commit`, a task defined by brigade and kept up to date by `brigade:update`.
 
 Project types: `python`. CI: `github`, `gitlab` or `none`; the generated pipeline runs `mise run lint` then `mise run test`.
 
@@ -22,6 +23,7 @@ Requires [mise](https://mise.jdx.dev/).
 
 ```sh
 mise trust && mise install
+mise run hooks    # optional: lint before each commit
 mise run lint
 mise run test
 ```
