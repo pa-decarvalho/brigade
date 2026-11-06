@@ -18,5 +18,5 @@ run = [
 
 [tasks."lint:typos"]
 description = "Check spelling with typos"
-# Copier answers hold commit hashes, not prose.
-run = "typos --hidden --exclude .git --exclude .mise/copier-answers.yml"
+# Copier answers hold commit hashes; .mise-data is the GitLab CI tool cache.
+run = "typos --hidden --exclude .git --exclude .mise-data --exclude .mise/copier-answers.yml"

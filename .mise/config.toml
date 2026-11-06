@@ -2,6 +2,8 @@ min_version = "2026.11.0"
 
 [tools]
 uv = "0.13.7"
+# Creates the rust test projects (cargo init).
+rust = "1.99.1"
 "pipx:yamllint" = "1.38.0"
 actionlint = "1.7.12"
 taplo = "0.10.0"

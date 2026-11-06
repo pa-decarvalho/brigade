@@ -18,6 +18,8 @@ GIT = ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost"]
 repo = Path.cwd()
 tag = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True, check=True).stdout.strip()
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
+# Questions of the latest release, to skip variants it cannot generate yet (e.g. a new project type).
+released_questions = subprocess.run(["git", "show", f"{tag}:.copier/questions.yml"], capture_output=True, text=True, check=True).stdout
 
 with tempfile.TemporaryDirectory() as tmp:
     root = Path(tmp).resolve()
@@ -26,6 +28,10 @@ with tempfile.TemporaryDirectory() as tmp:
     for key, data in variants.items():
         name = Path(key).name
         project = root / name
+        new = [f"{k}={v}" for k, v in data.items() if not k.startswith("_") and f"- {v}\n" not in released_questions]
+        if new:
+            print(f"--- {name}: skipped, {', '.join(new)} not in {tag}", flush=True)
+            continue
         print(f"--- {name}: {tag} -> HEAD", flush=True)
 
         def run(*cmd: str) -> None:
