@@ -18,4 +18,5 @@ run = [
 
 [tasks."lint:typos"]
 description = "Check spelling with typos"
-run = "typos --hidden --exclude .git"
+# Copier answers hold commit hashes, not prose.
+run = "typos --hidden --exclude .git --exclude .mise/copier-answers.yml"
