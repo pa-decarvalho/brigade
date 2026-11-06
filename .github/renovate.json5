@@ -1,13 +1,10 @@
 {
     $schema: "https://docs.renovatebot.com/renovate-schema.json",
-    // One PR with every update, no dashboard issue.
-    extends: ["config:recommended", "group:all"],
+    extends: ["config:recommended"],
     dependencyDashboard: false,
     // Commits made through the GitHub API are signed (Verified).
     platformCommit: "enabled",
     semanticCommits: "enabled",
-    // Updates reach generated projects: every Renovate PR triggers a brigade release.
-    semanticCommitType: "fix",
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
@@ -37,6 +34,20 @@
             matchStrings: ["_min_copier_version: \"(?<currentValue>[^\"]+)\""],
             depNameTemplate: "copier",
             datasourceTemplate: "pypi",
+        },
+    ],
+    // Two grouped PRs: template updates reach generated projects and trigger a release (fix),
+    // updates of this repo's own tooling do not (chore).
+    packageRules: [
+        {
+            matchFileNames: ["template/**"],
+            groupName: "template",
+            semanticCommitType: "fix",
+        },
+        {
+            matchFileNames: ["!template/**"],
+            groupName: "tooling",
+            semanticCommitType: "chore",
         },
     ],
 }
