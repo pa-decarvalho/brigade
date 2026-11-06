@@ -5,6 +5,8 @@
     // Commits made through the GitHub API are signed (Verified).
     platformCommit: "enabled",
     semanticCommits: "enabled",
+    // Dependency graphs of pipx/npm tools, written by mise lock: not Renovate's to update.
+    ignorePaths: ["**/.mise/locks/**"],
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
@@ -26,7 +28,7 @@
                 "/^README\\.md$/",
                 "/^\\.mise/scripts/[^/]+\\.py$/",
             ],
-            matchStrings: ["(?<depName>copier-template-tester|copier|pytest)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+            matchStrings: ["(?<depName>copier-template-tester|check-jsonschema|copier|pytest)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             datasourceTemplate: "pypi",
         },
         {

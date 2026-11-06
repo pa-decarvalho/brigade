@@ -47,3 +47,7 @@ with tempfile.TemporaryDirectory() as tmp:
             raise SystemExit(f"{name}: update conflicts in {[str(p.relative_to(project)) for p in conflicts]}")
         run("mise", "run", "lint")
         run("mise", "run", "test")
+        # An update from a release without the lockfile does not lock yet (the old
+        # brigade:update task runs): lock explicitly, then install from the lockfile.
+        run("mise", "run", "brigade:lock")
+        run("mise", "install", "--locked")

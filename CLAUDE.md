@@ -16,7 +16,7 @@ The user picks a project type; the template adds the files for that type on top 
 - CI files only install mise and call `mise run <stage>`; each CI platform lints its own file (`lint:actionlint`, `lint:gitlab-ci`).
 - Linters and formatters are mise tools, not project dependencies.
 - `brigade:*` tasks are brigade's own helpers (`brigade:update`, `brigade:hooks`), not pipeline stages.
-- Pin versions (mise, tools, Copier). Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
+- Pin versions (mise, tools, Copier). Generated projects and this repo lock tools with `.mise/mise.lock` (all platforms, `lockfile_platforms`); pipx tools need `python` in `[tools]` and cannot use `uvx_args` when locked. Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.
 - Commits follow Conventional Commits. Releases are made by merging the release-please PR, which tags `X.Y.Z`; Copier uses these tags as template versions.

@@ -7,9 +7,11 @@ It does not create the project: do that with the ecosystem's own tool, then appl
 uv init my-project
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-project
 cd my-project
-mise trust && mise install
+mise trust && mise run brigade:lock && mise install
 mise tasks
 ```
+
+Commit `.mise/` including `.mise/mise.lock` and `.mise/locks/`: tool versions and checksums for every platform, used by CI (`--locked`). `mise run brigade:update` refreshes the lockfile; after updating from a release older than the lockfile support, run `mise run brigade:lock` once.
 
 `copier copy` uses the latest release; add `--vcs-ref X.Y.Z` to pick a version.
 Update a project to the latest release with `mise run brigade:update`.

@@ -1,7 +1,15 @@
 min_version = "2026.11.0"
 
 [tools]
+# Needed by pipx tools (yamllint...) when installing from the lockfile.
+python = "3.14.10"
 uv = "0.13.7"
+
+# Lock tool versions and checksums in .mise/mise.lock (commit it, with .mise/locks/).
+# CI installs from it (jdx/mise-action adds --locked when the file exists).
+[settings]
+lockfile = true
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-x64", "macos-arm64", "windows-x64"]
 
 # Pipeline stages, in order. Each stage runs every "<stage>:<tool>" task;
 # common tools live in .mise/conf.d/<stage>.toml, type-specific ones in .mise/conf.d/<type>.toml.
@@ -18,6 +26,11 @@ depends = ["test:*"]
 [tasks."brigade:update"]
 description = "Update brigade files from the template"
 run = "uvx copier@9.19.1 update -a .mise/copier-answers.yml"
+depends_post = ["brigade:lock"]
+
+[tasks."brigade:lock"]
+description = "Update .mise/mise.lock for every platform"
+run = "mise lock"
 
 [tasks."brigade:pre-commit"]
 description = "Checks run by the git pre-commit hook"

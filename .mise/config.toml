@@ -1,6 +1,8 @@
 min_version = "2026.11.0"
 
 [tools]
+# Needed by pipx tools (yamllint...) when installing from the lockfile.
+python = "3.14.10"
 uv = "0.13.7"
 "pipx:yamllint" = "1.38.0"
 actionlint = "1.7.12"
@@ -11,7 +13,12 @@ typos = "1.52.0"
 act = "0.2.97"
 node = "24.22.2"
 "npm:gitlab-ci-local" = "4.77.1"
-"pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
+
+# Lock tool versions and checksums in .mise/mise.lock (commit it, with .mise/locks/).
+# CI installs from it (jdx/mise-action adds --locked when the file exists).
+[settings]
+lockfile = true
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-x64", "macos-arm64", "windows-x64"]
 
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
@@ -31,7 +38,7 @@ depends = ["test:*"]
 
 [tasks."lint:yamllint"]
 description = "Check YAML files with yamllint"
-run = 'yamllint --strict -d "{extends: default, ignore: [.ctt/, template/], rules: {truthy: {check-keys: false}}}" .'
+run = 'yamllint --strict -d "{extends: default, ignore: [.ctt/, template/, .mise/locks/], rules: {truthy: {check-keys: false}}}" .'
 
 [tasks."lint:actionlint"]
 description = "Check GitHub workflows with actionlint"
@@ -54,11 +61,12 @@ run = "typos --hidden --exclude .git"
 
 [tasks."lint:renovate"]
 description = "Check the Renovate config"
-run = "check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
+# uvx, not a mise tool: json5 support needs --with, which locked pipx tools do not allow.
+run = "uvx --from check-jsonschema==0.39.0 --with json5 check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
 
 [tasks."lint:editorconfig"]
 description = "Check files against .editorconfig"
-run = 'editorconfig-checker -exclude "^\.ctt/"'
+run = 'editorconfig-checker -exclude "^(\.ctt|\.mise/locks)/"'
 
 [tasks.pre-commit]
 description = "Checks run by the git pre-commit hook"

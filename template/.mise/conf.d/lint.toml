@@ -7,7 +7,7 @@ typos = "1.52.0"
 
 [tasks."lint:yamllint"]
 description = "Check YAML files with yamllint"
-run = 'yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/], rules: {truthy: {check-keys: false}, new-lines: disable}}" .'
+run = 'yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/, .mise/locks/], rules: {truthy: {check-keys: false}, new-lines: disable}}" .'
 
 [tasks."lint:gitleaks"]
 description = "Check git history and staged changes for secrets with gitleaks"
