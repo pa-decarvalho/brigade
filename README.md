@@ -30,13 +30,5 @@ mise run test
 
 `mise run lint` checks this repo. Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.github/renovate.json5`), run every Monday by `.github/workflows/renovate.yml` as two grouped PRs (template updates as `fix:`, which triggers a release; this repo's tooling as `chore:`) with a `RENOVATE_TOKEN` secret (fine-grained token on this repo: contents, pull requests, issues, workflows and commit statuses read/write). `mise run test` renders each variant from `ctt.toml` into `.ctt/src/.ctt/` with [ctt](https://github.com/KyleKing/copier-template-tester), creates a real project there, then runs its mise tasks.
 ctt only sees files tracked by git: `git add` new template files before testing.
-It also checks that `mise run brigade:update` moves each variant from the latest release to the current commit without conflicts.
-
-Run the generated CI files locally (requires Docker):
-
-```sh
-mise run ci:github   # act
-mise run ci:gitlab   # gitlab-ci-local
-```
-
-With Docker Desktop on macOS, act needs `DOCKER_HOST=unix://$HOME/.docker/run/docker.sock`.
+It also checks that `mise run brigade:update` moves each variant from the latest release to the current commit without conflicts, and runs each variant's generated CI locally with [act](https://github.com/nektos/act) or [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local).
+That last part (`test:ci`) needs a running Docker. brigade's CI runs `test:ctt` and `test:update` on Linux, macOS and Windows, and `test:ci` on Linux.
