@@ -78,6 +78,8 @@ run = [
 
 [tasks."test:update"]
 description = "Update a project from the latest release to HEAD and run its stages"
+# After test:ctt, so both do not install the same tools at the same time.
+depends = ["test:ctt"]
 run = "uv run --no-project python .mise/scripts/test_update.py"
 
 # Run the generated CI files locally in Docker. ctt removes .git, simulators need one.
