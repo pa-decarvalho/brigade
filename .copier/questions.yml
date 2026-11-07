@@ -43,6 +43,28 @@ test:
     {{ (['pytest'] if 'python' in languages else [])
     + (['cargo'] if 'rust' in languages else []) }}
 
+build:
+  type: str
+  help: Build tools
+  multiselect: true
+  choices:
+    uv: uv
+    cargo:
+      value: cargo
+      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+  default: []
+
+release:
+  type: str
+  help: Release tools, run by the CI on X.Y.Z tags
+  multiselect: true
+  choices:
+    pypi: pypi
+    crates:
+      value: crates
+      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+  default: []
+
 ci:
   type: str
   help: CI platform
