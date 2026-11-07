@@ -4,8 +4,14 @@
 # then your .gitlab/ci/custom.yml.
 stages:
   - lint
+{%- if build %}
+  - build
+{%- endif %}
 {%- if test %}
   - test
+{%- endif %}
+{%- if release %}
+  - release
 {%- endif %}
 
 include:
@@ -14,7 +20,13 @@ include:
   - local: .gitlab/ci/rust.yml
 {%- endif %}
   - local: .gitlab/ci/lint.yml
+{%- if build %}
+  - local: .gitlab/ci/build.yml
+{%- endif %}
 {%- if test %}
   - local: .gitlab/ci/test.yml
+{%- endif %}
+{%- if release %}
+  - local: .gitlab/ci/release.yml
 {%- endif %}
   - local: .gitlab/ci/custom.yml

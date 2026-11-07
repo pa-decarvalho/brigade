@@ -3,4 +3,4 @@
 
 [tasks."lint:gitlab-ci"]
 description = "Check the GitLab CI files against the GitLab CI schema"
-run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .gitlab/ci/default.yml{% if 'rust' in languages %} .gitlab/ci/rust.yml{% endif %} .gitlab/ci/lint.yml{% if test %} .gitlab/ci/test.yml{% endif %} .gitlab/ci/custom.yml"
+run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .gitlab/ci/default.yml{% if 'rust' in languages %} .gitlab/ci/rust.yml{% endif %} .gitlab/ci/lint.yml{% if build %} .gitlab/ci/build.yml{% endif %}{% if test %} .gitlab/ci/test.yml{% endif %}{% if release %} .gitlab/ci/release.yml{% endif %} .gitlab/ci/custom.yml"

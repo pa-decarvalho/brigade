@@ -1,0 +1,5 @@
+# The rust toolchain comes from rust.toml (languages: rust).
+
+[tasks."build:cargo"]
+description = "Build the Rust project in release mode with cargo"
+run = "cargo build --release"

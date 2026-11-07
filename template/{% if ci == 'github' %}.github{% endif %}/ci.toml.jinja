@@ -1,6 +1,7 @@
 # CI jobs of each stage. Yours: brigade generates this file once and never updates it.
 # Each [[<stage>]] entry runs `mise run <task>` on each runner in `os` (default ["ubuntu-latest"]).
-# A stage without entries is skipped. fetch-depth: git history to fetch (0 = all, default 1).
+# A stage without entries is skipped; the release stage only runs on X.Y.Z tags.
+# fetch-depth: git history to fetch (0 = all, default 1).
 # Example, test on Linux and macOS:
 #   [[test]]
 #   task = "test"
@@ -9,9 +10,21 @@
 [[lint]]
 task = "lint"
 os = ["ubuntu-latest"]
+{%- if build %}
+
+[[build]]
+task = "build"
+os = ["ubuntu-latest"]
+{%- endif %}
 {%- if test %}
 
 [[test]]
 task = "test"
+os = ["ubuntu-latest"]
+{%- endif %}
+{%- if release %}
+
+[[release]]
+task = "release"
 os = ["ubuntu-latest"]
 {%- endif %}

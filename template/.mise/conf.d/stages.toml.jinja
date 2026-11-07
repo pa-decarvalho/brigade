@@ -6,11 +6,23 @@
 description = "Stage: static checks"
 depends = ["lint:*"]
 {%- endif %}
+{%- if build %}
+
+[tasks.build]
+description = "Stage: build"
+depends = ["build:*"]
+{%- endif %}
 {%- if test %}
 
 [tasks.test]
 description = "Stage: tests"
 depends = ["test:*"]
+{%- endif %}
+{%- if release %}
+
+[tasks.release]
+description = "Stage: publish (CI runs it on X.Y.Z tags)"
+depends = ["release:*"]
 {%- endif %}
 {%- if lint_stage %}
 
