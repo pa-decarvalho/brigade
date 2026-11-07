@@ -14,6 +14,7 @@ act = "0.2.97"
 node = "24.22.2"
 "npm:gitlab-ci-local" = "4.77.1"
 "pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
+"pipx:zensical" = "0.1.0"
 
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
@@ -41,7 +42,7 @@ run = "actionlint"
 
 [tasks."lint:taplo"]
 description = "Check TOML formatting with taplo"
-run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml "template/**/*.toml"'
+run = 'taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml zensical.toml "template/**/*.toml"'
 
 [tasks."lint:gitleaks"]
 description = "Check git history and staged changes for secrets with gitleaks"
@@ -88,3 +89,11 @@ run = "uv run --no-project python .mise/scripts/test_update.py"
 description = "Run the generated CI of every variant locally with act / gitlab-ci-local (Docker)"
 depends = ["test:ctt"]
 run = "uv run --no-project python .mise/scripts/test_ci.py"
+
+[tasks."test:docs"]
+description = "Build the documentation site in strict mode (fails on broken links)"
+run = "zensical build --strict --clean"
+
+[tasks."docs:serve"]
+description = "Preview the documentation site"
+run = "zensical serve --open"
