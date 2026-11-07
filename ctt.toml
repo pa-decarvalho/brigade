@@ -109,6 +109,10 @@ lint = ["yamllint", "gitleaks", "typos", "editorconfig-checker"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
+    # editorconfig-checker needs the project's own .editorconfig; root = true stops it from
+    # reading brigade's (end_of_line = lf), which fails on Windows CRLF checkouts.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')"],
+    ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "init"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
