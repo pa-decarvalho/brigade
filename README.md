@@ -17,6 +17,14 @@ Run `mise run brigade:hooks` once to lint before each commit: the git hook in `.
 
 Project types: `python`, `rust`. CI: `github`, `gitlab`, `gitea` (Gitea and Forgejo Actions) or `none`; the generated pipeline runs `mise run lint` then `mise run test`.
 
+Behind a corporate network, optional questions point downloads at internal mirrors (e.g. Nexus), written to `.mise/conf.d/mirror.toml`:
+
+- `github_mirror`: proxy of `https://github.com/` (e.g. `https://nexus.example.com/repository/github/`), for tools mise downloads from GitHub releases.
+- `pypi_index`: PyPI simple index (e.g. `https://nexus.example.com/repository/pypi/simple`), for Python tools and `uv`/`uvx`.
+- `rustup_mirror` (rust): rustup mirror (e.g. `https://nexus.example.com/repository/rustup`), as `RUSTUP_DIST_SERVER`.
+
+mise still reads release metadata from `mise-versions.jdx.dev` or `api.github.com`; allow them or see mise's [URL replacements](https://mise.jdx.dev/url-replacements.html).
+
 ## Development
 
 Requires [mise](https://mise.jdx.dev/).

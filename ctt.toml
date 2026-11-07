@@ -78,3 +78,21 @@ _post_tasks = [
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
+
+[output.".ctt/rust-mirror"]
+project_type = "rust"
+ci = "none"
+# Mirrors set to the upstream servers: checks the generated settings, not a real mirror.
+github_mirror = "https://github.com/"
+pypi_index = "https://pypi.org/simple"
+rustup_mirror = "https://static.rust-lang.org"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["cargo", "init", "--lib", "--name", "demo"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]
