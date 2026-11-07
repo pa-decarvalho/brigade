@@ -1,0 +1,18 @@
+---
+# Yours: brigade generates this file once and never updates it.
+# Jobs added here run after the stages: ci.yml calls this workflow.
+name: Custom
+
+on:
+  workflow_call:
+
+jobs:
+  # Example that never runs (a workflow needs a job):
+  # remove the "if:" line and pick the task.
+  example:
+    if: github.event_name == 'never'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/mise
+      - run: mise run lint

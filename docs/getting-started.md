@@ -42,5 +42,5 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
     <project type>.toml           # e.g. python.toml
     <ci>.toml                     # CI file linter
     mirror.toml                   # only with mirrors
-<CI files>                        # see CI platforms
+<CI files>                        # see CI platforms (some are yours to edit)
 ```

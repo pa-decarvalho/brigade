@@ -1,25 +1,65 @@
 ---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Jobs of each stage: .github/ci.toml. Extra jobs: .github/workflows/custom.yml.
 name: CI
 
 on:
   pull_request:
 
 jobs:
-  lint:
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.plan.outputs.lint }}
+      test: ${{ steps.plan.outputs.test }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: jdx/mise-action@v5.2.6
+      - uses: ./.github/actions/mise
         with:
-          version: 2026.11.2
-      - run: mise run lint
+          tools: uv
+      - id: plan
+        run: mise run brigade:ci-plan .github/ci.toml
+        env:
+          MISE_TASK_RUN_AUTO_INSTALL: "false"
+
+  lint:
+    needs: plan
+    if: needs.plan.outputs.lint != '[]'
+    name: ${{ matrix.task }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.lint) }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: ${{ matrix.fetch-depth }}
+      - uses: ./.github/actions/mise
+      - run: mise run ${{ matrix.task }}
 
   test:
-    needs: lint
-    runs-on: ubuntu-latest
+    needs: [plan, lint]
+    if: ${{ !cancelled() && !failure() && needs.plan.outputs.test != '[]' }}
+    name: ${{ matrix.task }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.test) }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: jdx/mise-action@v5.2.6
         with:
-          version: 2026.11.2
-      - run: mise run test
+          fetch-depth: ${{ matrix.fetch-depth }}
+      - uses: ./.github/actions/mise
+      - run: mise run ${{ matrix.task }}
+
+  custom:
+    needs: [lint, test]
+    if: ${{ !cancelled() && !failure() }}
+    uses: ./.github/workflows/custom.yml
+    secrets: inherit

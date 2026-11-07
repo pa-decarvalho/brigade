@@ -10,7 +10,7 @@
         managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
     },
     "github-actions": {
-        managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/"],
+        managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
     },
     gitlabci: {
         managerFilePatterns: ["/^template/.*\\.gitlab[^/]*/ci/[^/]+\\.yml/"],
@@ -30,9 +30,9 @@
             datasourceTemplate: "pypi",
         },
         {
-            // mise installed by its script (Gitea/Forgejo workflow)
+            // mise installed by its script (Gitea/Forgejo action)
             customType: "regex",
-            managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/"],
+            managerFilePatterns: ["/^template/.*/actions/[^/]+/action\\.yml$/"],
             matchStrings: ["MISE_VERSION=v(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             depNameTemplate: "jdx/mise",
             datasourceTemplate: "github-releases",
