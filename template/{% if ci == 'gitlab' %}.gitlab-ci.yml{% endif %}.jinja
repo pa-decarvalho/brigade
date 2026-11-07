@@ -1,5 +1,7 @@
 ---
-# GitLab only reads this file: it includes the jobs from .gitlab/ci/.
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# GitLab only reads this file: it includes the jobs from .gitlab/ci/,
+# then your .gitlab/ci/custom.yml.
 include:
   - local: .gitlab/ci/default.yml
 {%- if project_type == 'rust' %}
@@ -7,3 +9,4 @@ include:
 {%- endif %}
   - local: .gitlab/ci/lint.yml
   - local: .gitlab/ci/test.yml
+  - local: .gitlab/ci/custom.yml

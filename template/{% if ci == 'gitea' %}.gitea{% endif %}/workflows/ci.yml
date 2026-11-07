@@ -1,31 +1,65 @@
 ---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Jobs of each stage: .gitea/ci.toml. Extra jobs: .gitea/workflows/custom.yml.
 name: CI
 
 on:
   pull_request:
 
-# Forgejo resolves actions on data.forgejo.org, which mirrors actions/checkout
-# but not jdx/mise-action: install mise with its script.
 jobs:
-  lint:
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.plan.outputs.lint }}
+      test: ${{ steps.plan.outputs.test }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Install mise
-        run: |
-          curl -fsSL https://mise.run | MISE_VERSION=v2026.11.2 sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - run: mise trust && mise install
-      - run: mise run lint
+      - uses: ./.gitea/actions/mise
+        with:
+          tools: uv
+      - id: plan
+        run: mise run brigade:ci-plan .gitea/ci.toml
+        env:
+          MISE_TASK_RUN_AUTO_INSTALL: "false"
+
+  lint:
+    needs: plan
+    if: needs.plan.outputs.lint != '[]'
+    name: ${{ matrix.task }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.lint) }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: ${{ matrix.fetch-depth }}
+      - uses: ./.gitea/actions/mise
+      - run: mise run ${{ matrix.task }}
 
   test:
-    needs: lint
-    runs-on: ubuntu-latest
+    needs: [plan, lint]
+    if: ${{ !cancelled() && !failure() && needs.plan.outputs.test != '[]' }}
+    name: ${{ matrix.task }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.test) }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Install mise
-        run: |
-          curl -fsSL https://mise.run | MISE_VERSION=v2026.11.2 sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - run: mise trust && mise install
-      - run: mise run test
+        with:
+          fetch-depth: ${{ matrix.fetch-depth }}
+      - uses: ./.gitea/actions/mise
+      - run: mise run ${{ matrix.task }}
+
+  custom:
+    needs: [lint, test]
+    if: ${{ !cancelled() && !failure() }}
+    uses: ./.gitea/workflows/custom.yml
+    secrets: inherit

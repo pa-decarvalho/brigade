@@ -3,4 +3,8 @@ actionlint = "1.7.12"
 
 [tasks."lint:actionlint"]
 description = "Check Gitea/Forgejo workflows with actionlint"
-run = "actionlint .gitea/workflows/ci.yml"
+run = "actionlint .gitea/workflows/ci.yml .gitea/workflows/custom.yml"
+
+[tasks."brigade:ci-plan"]
+description = "Write the CI jobs of each stage from ci.toml (plan job of the CI workflow)"
+run = "uv run --no-project python .mise/scripts/ci_plan.py"

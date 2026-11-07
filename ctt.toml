@@ -9,6 +9,8 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
+    # A user-owned CI layout: lint split into two jobs, test with the full git history.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('.github/ci.toml'); p.parent.mkdir(exist_ok=True); p.write_text('[[lint]]\\ntask = \"lint:ruff\"\\n\\n[[lint]]\\ntask = \"lint:typos\"\\n\\n[[test]]\\ntask = \"test\"\\nfetch-depth = 0\\n')"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
     ["git", "add", "-A"],
@@ -40,6 +42,9 @@ project_type = "python"
 ci = "gitea"
 _post_tasks = [
     ["git", "init", "-q"],
+    # actionlint resolves ./.gitea/workflows/custom.yml from the nearest .github/workflows,
+    # which is brigade's own inside .ctt/: give this project one, like a standalone repo.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.github/workflows').mkdir(parents=True)"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
