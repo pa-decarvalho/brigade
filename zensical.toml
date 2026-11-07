@@ -1,0 +1,22 @@
+# brigade's documentation site (not generated into projects). Preview: mise run docs:serve.
+
+[project]
+site_name = "brigade"
+site_description = "Copier template that adds mise tooling and CI to a project"
+site_url = "https://pa-decarvalho.github.io/brigade/"
+repo_url = "https://github.com/pa-decarvalho/brigade"
+repo_name = "pa-decarvalho/brigade"
+nav = [
+    { "Home" = "index.md" },
+    { "Getting started" = "getting-started.md" },
+    { "Questions" = "questions.md" },
+    { "Project types" = "project-types.md" },
+    { "CI platforms" = "ci.md" },
+    { "Mirrors" = "mirrors.md" },
+    { "Updating" = "updating.md" },
+    { "Custom tasks" = "custom-tasks.md" },
+    { "Development" = "development.md" },
+]
+
+[project.theme]
+features = ["content.code.copy", "navigation.footer"]

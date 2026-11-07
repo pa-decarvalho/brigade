@@ -29,4 +29,6 @@ The user picks a project type; the template adds the files for that type on top 
 ctt only sees files tracked by git.
 `mise run test` also runs `test:update`: for each variant, create the project first, apply the template at the latest tag on top of it, update to HEAD with `mise run brigade:update`, then run the project's stages.
 `mise run test` also runs `test:ci`: each variant's generated CI, locally with act (GitHub, Gitea) or gitlab-ci-local (GitLab). It needs a running Docker (Docker Desktop's socket is found on macOS).
+`mise run test` also runs `test:docs`: builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict mode, which fails on broken links. `.github/workflows/docs.yml` deploys it to GitHub Pages on push to `main`.
+User-facing changes (questions, tasks, CI files) update the matching page in `docs/`; the README stays a short summary.
 brigade's CI runs `test:ctt` and `test:update` on Linux, macOS and Windows (developer OSes), and `test:ci` on Linux only (generated CI runs in Linux containers).
