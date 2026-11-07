@@ -2,11 +2,19 @@
 # brigade-owned: updated by mise run brigade:update, do not edit.
 # GitLab only reads this file: it includes the jobs from .gitlab/ci/,
 # then your .gitlab/ci/custom.yml.
+stages:
+  - lint
+{%- if test %}
+  - test
+{%- endif %}
+
 include:
   - local: .gitlab/ci/default.yml
-{%- if project_type == 'rust' %}
+{%- if 'rust' in languages %}
   - local: .gitlab/ci/rust.yml
 {%- endif %}
   - local: .gitlab/ci/lint.yml
+{%- if test %}
   - local: .gitlab/ci/test.yml
+{%- endif %}
   - local: .gitlab/ci/custom.yml

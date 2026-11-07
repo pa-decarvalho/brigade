@@ -1,8 +1,4 @@
 ---
-stages:
-  - lint
-  - test
-
 variables:
   MISE_DATA_DIR: $CI_PROJECT_DIR/.mise-data
 

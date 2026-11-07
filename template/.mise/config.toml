@@ -3,26 +3,8 @@ min_version = "2026.11.0"
 [tools]
 uv = "0.13.7"
 
-# Pipeline stages, in order. Each stage runs every "<stage>:<tool>" task;
-# common tools live in .mise/conf.d/<stage>.toml, type-specific ones in .mise/conf.d/<type>.toml.
-# Add a stage (build, release, deploy...) only when a project type needs it.
-
-[tasks.lint]
-description = "Stage: static checks"
-depends = ["lint:*"]
-
-[tasks.test]
-description = "Stage: tests"
-depends = ["test:*"]
+# Stages are in conf.d/stages.toml, tools in one conf.d file each.
 
 [tasks."brigade:update"]
 description = "Update brigade files from the template"
 run = "uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml"
-
-[tasks."brigade:pre-commit"]
-description = "Checks run by the git pre-commit hook"
-depends = ["lint"]
-
-[tasks."brigade:hooks"]
-description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
-run = "mise generate git-pre-commit --task brigade:pre-commit --write"

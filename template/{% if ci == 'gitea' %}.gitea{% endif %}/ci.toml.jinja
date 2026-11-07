@@ -9,7 +9,9 @@
 [[lint]]
 task = "lint"
 os = ["ubuntu-latest"]
+{%- if test %}
 
 [[test]]
 task = "test"
 os = ["ubuntu-latest"]
+{%- endif %}

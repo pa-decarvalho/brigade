@@ -25,7 +25,7 @@ USER_FILES = {
 repo = Path.cwd()
 tag = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True, check=True).stdout.strip()
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
-# Questions of the latest release, to skip variants it cannot generate yet (e.g. a new project type).
+# Questions of the latest release, to skip variants it cannot generate yet (e.g. a new question or choice).
 released_questions = subprocess.run(["git", "show", f"{tag}:.copier/questions.yml"], capture_output=True, text=True, check=True).stdout
 # The update must move the answers file to its current name (it was renamed after 0.3.0).
 settings = (repo / ".copier/settings.yml").read_text().splitlines()
