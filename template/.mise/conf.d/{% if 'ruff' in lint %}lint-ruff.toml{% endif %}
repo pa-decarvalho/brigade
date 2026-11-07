@@ -8,7 +8,3 @@ run = "ruff check"
 [tasks."lint:ruff-format"]
 description = "Check formatting with ruff"
 run = "ruff format --check"
-
-[tasks."test:pytest"]
-description = "Run tests with pytest"
-run = "uv run pytest"

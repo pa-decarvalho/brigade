@@ -1,10 +1,47 @@
 ---
-project_type:
+languages:
   type: str
-  help: Project type
+  help: Languages (pre-select their tools)
+  multiselect: true
   choices:
     - python
     - rust
+  default: []
+
+# One multi-select per stage; a stage without tools is left out.
+lint:
+  type: str
+  help: Lint tools (the CI platform adds its own linter)
+  multiselect: true
+  choices:
+    yamllint: yamllint
+    gitleaks: gitleaks
+    typos: typos
+    editorconfig-checker: editorconfig-checker
+    ruff: ruff
+    clippy:
+      value: clippy
+      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+    rustfmt:
+      value: rustfmt
+      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+  default: >-
+    {{ ['yamllint', 'gitleaks', 'typos']
+    + (['ruff'] if 'python' in languages else [])
+    + (['clippy', 'rustfmt'] if 'rust' in languages else []) }}
+
+test:
+  type: str
+  help: Test tools
+  multiselect: true
+  choices:
+    pytest: pytest
+    cargo:
+      value: cargo
+      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+  default: >-
+    {{ (['pytest'] if 'python' in languages else [])
+    + (['cargo'] if 'rust' in languages else []) }}
 
 ci:
   type: str
@@ -15,6 +52,13 @@ ci:
     - gitea
     - none
   default: github
+
+# Computed: the lint stage exists when a lint tool is selected
+# or a CI platform adds its linter.
+lint_stage:
+  type: bool
+  default: "{{ lint | length > 0 or ci != 'none' }}"
+  when: false
 
 # Optional mirrors (e.g. Nexus). Empty: download from the internet.
 github_mirror:
@@ -31,4 +75,4 @@ rustup_mirror:
   type: str
   help: Rustup mirror URL, as RUSTUP_DIST_SERVER (empty for none)
   default: ""
-  when: "{{ project_type == 'rust' }}"
+  when: "{{ 'rust' in languages }}"

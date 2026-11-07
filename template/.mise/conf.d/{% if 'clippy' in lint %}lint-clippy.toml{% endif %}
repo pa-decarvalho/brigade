@@ -1,0 +1,5 @@
+# The rust toolchain comes from rust.toml (languages: rust).
+
+[tasks."lint:clippy"]
+description = "Check code with clippy"
+run = "cargo clippy --all-targets -- -D warnings"

@@ -2,7 +2,7 @@
 
 A [Copier](https://copier.readthedocs.io/) template that adds [mise](https://mise.jdx.dev/) tooling and CI to a project.
 It does not scaffold the project itself: create it with the ecosystem's own tool (`uv init`, `cargo init`, ...), then apply brigade on top.
-The user picks a project type; the template adds the files for that type on top of a common base.
+The user picks languages (which only pre-select tools) and the tools of each stage; each tool is one mise fragment.
 
 ## Rules
 
@@ -11,9 +11,10 @@ The user picks a project type; the template adds the files for that type on top 
 - Tool config is given inline in the mise task (command-line options), not in config files. Copier answers live in `.mise/brigade-copier-answers.yml`.
 - Generated files must work on Linux, macOS and Windows.
 - No bash: tasks are TOML commands, real logic is Python run with `uv run`.
-- mise config lives in `.mise/`: `config.toml` plus one fragment per project type in `.mise/conf.d/`.
-- Pipeline stages are mise tasks in the base `config.toml` (today: `lint`, `test`). Each runs `<stage>:*`; tools are `<stage>:<tool>` tasks (e.g. `lint:ruff`), common ones in `.mise/conf.d/<stage>.toml`, type-specific ones in `.mise/conf.d/<type>.toml`. CI only calls `mise run <stage>`.
-- Add a stage (build, release, deploy...) only when a project type needs it.
+- mise config lives in `.mise/`: `config.toml` (uv, `brigade:update`), `conf.d/stages.toml` (stages, git hook tasks), one fragment per tool `conf.d/<stage>-<tool>.toml` (not `<tool>.toml`: mise reads files such as `ruff.toml` as tool config) (pin + `<stage>:<tool>` task, generated when selected), `conf.d/<language>.toml` for toolchains (rust).
+- Pipeline stages are mise tasks in `conf.d/stages.toml` (today: `lint`, `test`). Each runs `<stage>:*`; tools are `<stage>:<tool>` tasks (e.g. `lint:ruff`). A stage without selected tools is left out (stage task, `ci.toml` entry, GitLab job). CI only calls `mise run <task>`.
+- Questions: `languages` (multi-select, pre-selects tools), one multi-select per stage (`lint`, `test`), `ci`, mirrors. A tool that needs a language has a choice `validator`. Keep Jinja out of files that hold pins (Renovate parses them): conditions go in file names or in pin-free files.
+- Add a stage (build, release, deploy...) only when a tool needs it.
 - brigade-owned CI files only install mise (GitHub/Gitea: the `actions/mise` composite action) and call `mise run <task>`; each CI platform lints its own files (`lint:actionlint`, `lint:gitlab-ci`).
 - GitHub/Gitea: a `plan` job turns the user-owned `ci.toml` (jobs × runners per stage) into matrices (`.mise/scripts/ci_plan.py`); `ci.yml` then calls the user-owned `custom.yml`. GitLab: `.gitlab-ci.yml` includes the user-owned `.gitlab/ci/custom.yml` last.
 - Linters and formatters are mise tools, not project dependencies.

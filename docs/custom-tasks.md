@@ -19,4 +19,4 @@ run = "uv run pytest tests/integration"
 ```
 
 `mise run lint` and `mise run test` now include them, locally and in CI.
-Pick a file name brigade does not use (not `lint.toml`, `python.toml`, ...).
+Pick a file name brigade does not use (not `<stage>-<tool>.toml` such as `lint-ruff.toml`, nor `stages.toml`).

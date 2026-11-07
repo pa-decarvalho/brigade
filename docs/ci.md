@@ -71,9 +71,9 @@ For other triggers (tags, schedules), add your own workflow files next to them.
 
 | File | Owner | Role |
 |---|---|---|
-| `.gitlab-ci.yml` | brigade | Includes the files below, `custom.yml` last. |
-| `.gitlab/ci/default.yml` | brigade | Stages, the mise image, the tool cache and `mise install`. |
-| `.gitlab/ci/lint.yml`, `test.yml` | brigade | One job per stage. |
+| `.gitlab-ci.yml` | brigade | Stages, and includes the files below, `custom.yml` last. |
+| `.gitlab/ci/default.yml` | brigade | The mise image, the tool cache and `mise install`. |
+| `.gitlab/ci/lint.yml`, `test.yml` | brigade | One job per stage (`test.yml` only with test tools). |
 | `.gitlab/ci/rust.yml` (rust) | brigade | Adds the C toolchain the Rust linker needs. |
 | `.gitlab/ci/custom.yml` | you | Extra jobs, and overrides of brigade's jobs. |
 

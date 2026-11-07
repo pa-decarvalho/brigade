@@ -1,10 +1,10 @@
 # Each variant creates a real git project with the ecosystem's tool, applies brigade,
-# then runs its stages.
+# then runs its stages. Tools per stage default from languages.
 
 [defaults]
 
 [output.".ctt/python-github"]
-project_type = "python"
+languages = ["python"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -22,7 +22,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitlab"]
-project_type = "python"
+languages = ["python"]
 ci = "gitlab"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -38,7 +38,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitea"]
-project_type = "python"
+languages = ["python"]
 ci = "gitea"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -57,7 +57,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/rust-github"]
-project_type = "rust"
+languages = ["rust"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -71,7 +71,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/rust-gitlab"]
-project_type = "rust"
+languages = ["rust"]
 ci = "gitlab"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -85,7 +85,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/rust-mirror"]
-project_type = "rust"
+languages = ["rust"]
 ci = "none"
 # Mirrors set to the upstream servers: checks the generated settings, not a real mirror.
 github_mirror = "https://github.com/"
@@ -100,4 +100,17 @@ _post_tasks = [
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
+]
+
+[output.".ctt/none-github"]
+# No language and no test tool: the test stage is left out. Adds an optional lint tool.
+languages = []
+lint = ["yamllint", "gitleaks", "typos", "editorconfig-checker"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
 ]
