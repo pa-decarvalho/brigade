@@ -13,6 +13,9 @@ stages:
 {%- if release %}
   - release
 {%- endif %}
+{%- if deploy %}
+  - deploy
+{%- endif %}
 
 include:
   - local: .gitlab/ci/default.yml
@@ -28,5 +31,8 @@ include:
 {%- endif %}
 {%- if release %}
   - local: .gitlab/ci/release.yml
+{%- endif %}
+{%- if deploy %}
+  - local: .gitlab/ci/deploy.yml
 {%- endif %}
   - local: .gitlab/ci/custom.yml

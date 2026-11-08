@@ -1,0 +1,13 @@
+---
+deploy:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/
+    # "Run pipeline": deploy without a release, e.g. a typo in the docs.
+    - if: $CI_PIPELINE_SOURCE == "web"
+  script:
+    - mise run deploy
+{%- if 'pages' in deploy %}
+  pages:
+    publish: site
+{%- endif %}

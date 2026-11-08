@@ -12,3 +12,5 @@
 !include .copier/questions/test/*.yml
 ---
 !include .copier/questions/release/*.yml
+---
+!include .copier/questions/deploy/*.yml

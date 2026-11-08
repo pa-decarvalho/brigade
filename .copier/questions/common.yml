@@ -1,4 +1,14 @@
 ---
+ci:
+  type: str
+  help: CI platform
+  choices:
+    - github
+    - gitlab
+    - gitea
+    - none
+  default: github
+
 # One multi-select per stage; a stage without tools is left out.
 lint:
   type: str
@@ -20,6 +30,7 @@ build:
   multiselect: true
   choices:
     uv: uv
+    zensical: zensical
     cargo: cargo
   default: []
 
@@ -41,15 +52,17 @@ release:
     crates: crates
   default: []
 
-ci:
+deploy:
   type: str
-  help: CI platform
+  help: Deploy tools, run by the CI on X.Y.Z tags or on a manual run
+  multiselect: true
   choices:
-    - github
-    - gitlab
-    - gitea
-    - none
-  default: github
+    pages:
+      value: pages
+      validator: >-
+        {% if 'zensical' not in build or ci not in ['github', 'gitlab'] %}needs
+        the zensical build tool, and GitHub or GitLab{% endif %}
+  default: []
 
 # Computed: the rust toolchain is installed when a tool needs it.
 needs_rust:

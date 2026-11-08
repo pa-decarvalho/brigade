@@ -1,6 +1,8 @@
 ---
 variables:
   MISE_DATA_DIR: $CI_PROJECT_DIR/.mise-data
+  # Python tools link to uv's Python: it must be in the cache with them.
+  UV_PYTHON_INSTALL_DIR: $CI_PROJECT_DIR/.mise-data/uv-python
 
 default:
   image: jdxcode/mise:2026.11.2-debian

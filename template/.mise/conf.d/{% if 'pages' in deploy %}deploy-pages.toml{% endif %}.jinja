@@ -1,0 +1,9 @@
+{%- if ci == 'github' -%}
+[tools]
+# renovate: datasource=pypi depName=ghp-import
+"pipx:ghp-import" = "{{ deploy_pages_version | default('2.1.0', true) }}"
+
+{% endif -%}
+[tasks."deploy:pages"]
+description = "Build the documentation site for Pages"
+run = '''{{ deploy_pages_command | default('zensical build --strict && ghp-import -n -p -f site' if ci == 'github' else 'zensical build --strict', true) }}'''
