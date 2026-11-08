@@ -1,0 +1,12 @@
+---
+test_ctt_version:
+  type: str
+  help: copier-template-tester version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ctt' in test }}"
+
+test_ctt_command:
+  type: str
+  help: Command of test:ctt (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ctt' in test }}"

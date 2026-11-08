@@ -1,0 +1,12 @@
+---
+lint_taplo_version:
+  type: str
+  help: taplo version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'taplo' in lint }}"
+
+lint_taplo_command:
+  type: str
+  help: Command of lint:taplo (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'taplo' in lint }}"

@@ -9,6 +9,7 @@ Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run 
 | `build` | build tools | none | Same, for the `build` stage. |
 | `release` | release tools | none | Same, for the `release` stage, run by CI on `X.Y.Z` tags. |
 | `deploy` | deploy tools | none | Same, for the `deploy` stage, run by CI on `X.Y.Z` tags or on a manual run. |
+| `ci_local` | yes / no | no | Adds `brigade:ci-local`: see [Tools](tools.md#run-the-ci-locally). Not asked with `ci: none`. |
 | `customize_tools` | yes / no | no | Asks a version and a command for each selected tool: see [Tools](tools.md). |
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |

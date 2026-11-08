@@ -19,6 +19,8 @@ lint:
     gitleaks: gitleaks
     typos: typos
     editorconfig-checker: editorconfig-checker
+    taplo: taplo
+    renovate: renovate
     ruff: ruff
     clippy: clippy
     rustfmt: rustfmt
@@ -41,6 +43,7 @@ test:
   choices:
     pytest: pytest
     cargo: cargo
+    ctt: ctt
   default: []
 
 release:

@@ -3,6 +3,8 @@
 ---
 !include .copier/questions/common.yml
 ---
+!include .copier/questions/ci/*.yml
+---
 !include .copier/questions/toolchains/*.yml
 ---
 !include .copier/questions/lint/*.yml
