@@ -25,8 +25,33 @@ USER_FILES = {
 repo = Path.cwd()
 tag = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True, check=True).stdout.strip()
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
+
+
+def read_questions(tag: str) -> str:
+    """Every Copier question file at this tag, whatever their layout."""
+    names = subprocess.run(["git", "ls-tree", "-r", "--name-only", tag, ".copier"], capture_output=True, text=True, check=True).stdout.split("\n")
+    files = [name for name in names if name.endswith(".yml") and not name.endswith("settings.yml")]
+    return "\n".join(subprocess.run(["git", "show", f"{tag}:{name}"], capture_output=True, text=True, check=True).stdout for name in files)
+
+
 # Questions of the latest release, to skip variants it cannot generate yet (e.g. a new question or choice).
-released_questions = subprocess.run(["git", "show", f"{tag}:.copier/questions.yml"], capture_output=True, text=True, check=True).stdout
+released_questions = read_questions(tag)
+current_questions = "\n".join(path.read_text() for path in (repo / ".copier").rglob("*.yml") if path.name != "settings.yml")
+
+
+def is_choice(value: object, questions: str) -> bool:
+    """Whether a value appears as a choice: "- value" or "value: value"."""
+    return f"- {value}\n" in questions or f"  {value}: {value}\n" in questions
+
+
+def is_new(key: str, value: object) -> bool:
+    """Whether the release lacks this question, or one of its choices. Free text (e.g. a URL) is not a choice."""
+    if f"\n{key}:" not in "\n" + released_questions:
+        return True
+    values = value if isinstance(value, list) else [value]
+    return any(is_choice(v, current_questions) and not is_choice(v, released_questions) for v in values)
+
+
 # The update must move the answers file to its current name (it was renamed after 0.3.0).
 settings = (repo / ".copier/settings.yml").read_text().splitlines()
 answers_file = next(line.split(":", 1)[1].strip() for line in settings if line.startswith("_answers_file:"))
@@ -38,7 +63,7 @@ with tempfile.TemporaryDirectory() as tmp:
     for key, data in variants.items():
         name = Path(key).name
         project = root / name
-        new = [f"{k}={v}" for k, v in data.items() if not k.startswith("_") and f"- {v}\n" not in released_questions]
+        new = [f"{k}={v}" for k, v in data.items() if not k.startswith("_") and is_new(k, v)]
         if new:
             print(f"--- {name}: skipped, {', '.join(new)} not in {tag}", flush=True)
             continue

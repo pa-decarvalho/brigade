@@ -16,7 +16,7 @@ stages:
 
 include:
   - local: .gitlab/ci/default.yml
-{%- if 'rust' in languages %}
+{%- if needs_rust %}
   - local: .gitlab/ci/rust.yml
 {%- endif %}
   - local: .gitlab/ci/lint.yml

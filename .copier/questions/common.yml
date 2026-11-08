@@ -1,13 +1,4 @@
 ---
-languages:
-  type: str
-  help: Languages (pre-select their tools)
-  multiselect: true
-  choices:
-    - python
-    - rust
-  default: []
-
 # One multi-select per stage; a stage without tools is left out.
 lint:
   type: str
@@ -19,29 +10,9 @@ lint:
     typos: typos
     editorconfig-checker: editorconfig-checker
     ruff: ruff
-    clippy:
-      value: clippy
-      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
-    rustfmt:
-      value: rustfmt
-      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
-  default: >-
-    {{ ['yamllint', 'gitleaks', 'typos']
-    + (['ruff'] if 'python' in languages else [])
-    + (['clippy', 'rustfmt'] if 'rust' in languages else []) }}
-
-test:
-  type: str
-  help: Test tools
-  multiselect: true
-  choices:
-    pytest: pytest
-    cargo:
-      value: cargo
-      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
-  default: >-
-    {{ (['pytest'] if 'python' in languages else [])
-    + (['cargo'] if 'rust' in languages else []) }}
+    clippy: clippy
+    rustfmt: rustfmt
+  default: [yamllint, gitleaks, typos]
 
 build:
   type: str
@@ -49,9 +20,16 @@ build:
   multiselect: true
   choices:
     uv: uv
-    cargo:
-      value: cargo
-      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+    cargo: cargo
+  default: []
+
+test:
+  type: str
+  help: Test tools
+  multiselect: true
+  choices:
+    pytest: pytest
+    cargo: cargo
   default: []
 
 release:
@@ -60,9 +38,7 @@ release:
   multiselect: true
   choices:
     pypi: pypi
-    crates:
-      value: crates
-      validator: "{% if 'rust' not in languages %}needs rust{% endif %}"
+    crates: crates
   default: []
 
 ci:
@@ -75,12 +51,27 @@ ci:
     - none
   default: github
 
+# Computed: the rust toolchain is installed when a tool needs it.
+needs_rust:
+  type: bool
+  default: >-
+    {{ 'clippy' in lint or 'rustfmt' in lint or 'cargo' in test
+    or 'cargo' in build or 'crates' in release }}
+  when: false
+
 # Computed: the lint stage exists when a lint tool is selected
 # or a CI platform adds its linter.
 lint_stage:
   type: bool
   default: "{{ lint | length > 0 or ci != 'none' }}"
   when: false
+
+# Asks a version and a command per selected tool (questions/<stage>/).
+# An empty answer takes brigade's default, which is in the tool's Jinja file.
+customize_tools:
+  type: bool
+  help: Customize tool versions and commands?
+  default: false
 
 # Optional mirrors (e.g. Nexus). Empty: download from the internet.
 github_mirror:
@@ -97,4 +88,4 @@ rustup_mirror:
   type: str
   help: Rustup mirror URL, as RUSTUP_DIST_SERVER (empty for none)
   default: ""
-  when: "{{ 'rust' in languages }}"
+  when: "{{ needs_rust }}"

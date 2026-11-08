@@ -1,0 +1,6 @@
+# Rust toolchain, used by the clippy, rustfmt, cargo and crates tools.
+
+[tools]
+# CI runners may use a minimal rustup profile, without clippy and rustfmt.
+# renovate: datasource=github-releases depName=rust-lang/rust
+rust = { version = "{{ toolchain_rust_version | default('1.99.1', true) }}", components = "clippy,rustfmt" }

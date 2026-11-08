@@ -1,0 +1,12 @@
+---
+lint_ruff_version:
+  type: str
+  help: ruff version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ruff' in lint }}"
+
+lint_ruff_command:
+  type: str
+  help: Command of lint:ruff (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ruff' in lint }}"

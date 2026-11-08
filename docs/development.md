@@ -12,7 +12,7 @@ mise run docs:serve
 
 ## Repository
 
-- `copier.yml` includes `.copier/settings.yml` and `.copier/questions.yml`.
+- `copier.yml` includes `.copier/settings.yml` and `.copier/questions/`: `common.yml`, then one file per tool in a folder per stage.
 - `template/` holds the generated files.
 - `ctt.toml` lists the test variants.
 - `docs/` and `zensical.toml` hold this site.

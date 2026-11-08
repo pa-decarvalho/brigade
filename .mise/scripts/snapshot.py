@@ -18,3 +18,8 @@ ref = subprocess.run(["git", "stash", "create"], capture_output=True, text=True,
 archive = subprocess.run(["git", "archive", ref or "HEAD"], capture_output=True, check=True).stdout
 with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     tar.extractall(Path(".ctt/src"), filter="data")
+
+# ponytail: ctt deletes the answers file unless a file with exactly this name exists in the
+# template source. Ours is template/.mise/brigade-copier-answers.yml.jinja, and this marker is
+# outside _subdirectory, so Copier does not render it.
+(Path(".ctt/src") / "{{ _copier_conf.answers_file }}.jinja").touch()
