@@ -1,5 +1,0 @@
-# Rust toolchain, used by the clippy, rustfmt and cargo tools.
-
-[tools]
-# CI runners may use a minimal rustup profile, without clippy and rustfmt.
-rust = { version = "1.99.1", components = "clippy,rustfmt" }

@@ -1,9 +1,0 @@
-# Tool config is given inline: no config files.
-# Copier writes the answers file (lists without indentation); .mise-data is the GitLab CI tool cache.
-
-[tools]
-"pipx:yamllint" = "1.38.0"
-
-[tasks."lint:yamllint"]
-description = "Check YAML files with yamllint"
-run = 'yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/, .mise/brigade-copier-answers.yml], rules: {truthy: {check-keys: false}, new-lines: disable}}" .'

@@ -1,5 +1,0 @@
-# The rust toolchain comes from rust.toml (languages: rust).
-
-[tasks."lint:rustfmt"]
-description = "Check formatting with rustfmt"
-run = "cargo fmt --check"

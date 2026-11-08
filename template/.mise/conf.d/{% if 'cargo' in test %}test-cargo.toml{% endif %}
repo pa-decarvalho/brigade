@@ -1,5 +1,0 @@
-# The rust toolchain comes from rust.toml (languages: rust).
-
-[tasks."test:cargo"]
-description = "Run tests with cargo"
-run = "cargo test"

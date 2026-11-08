@@ -27,10 +27,12 @@ if subprocess.run(["docker", "info"], env=env, capture_output=True).returncode:
 repo = Path.cwd()
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
 for key, data in variants.items():
+    project = repo / ".ctt/src" / key
+    if not (project / ".mise/brigade-copier-answers.yml").is_file():
+        raise SystemExit(f"{key}: no Copier answers file in the generated project")
     runner = RUNNERS.get(data.get("ci"))
     if not runner:
         continue
-    project = repo / ".ctt/src" / key
     print(f"--- {Path(key).name}: {data['ci']} CI", flush=True)
     if "GITHUB_TOKEN" in env and runner[0] == "act":
         runner = [*runner, "-s", "GITHUB_TOKEN"]

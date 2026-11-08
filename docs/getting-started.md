@@ -12,7 +12,7 @@ mise trust && mise install
 mise tasks
 ```
 
-Copier asks a few [questions](questions.md): languages, tools per stage, CI platform, optional mirrors.
+Copier asks a few [questions](questions.md): tools per stage, whether to customize their versions and commands, CI platform, optional mirrors.
 `copier copy` uses the latest release; add `--vcs-ref X.Y.Z` to pick a version.
 
 ## Run the stages
@@ -40,7 +40,7 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
   conf.d/
     stages.toml                   # lint, build, test, release and the git hook tasks
     <stage>-<tool>.toml           # one per tool, e.g. lint-ruff.toml
-    rust.toml                     # rust toolchain (languages: rust)
+    rust.toml                     # rust toolchain, when a tool needs it
     <ci>.toml                     # CI file linter
     mirror.toml                   # only with mirrors
 <CI files>                        # see CI platforms (some are yours to edit)

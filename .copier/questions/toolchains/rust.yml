@@ -1,0 +1,6 @@
+---
+toolchain_rust_version:
+  type: str
+  help: rust toolchain version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and needs_rust }}"

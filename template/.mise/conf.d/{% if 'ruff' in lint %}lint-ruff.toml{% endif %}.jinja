@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=github-releases depName=astral-sh/ruff
+ruff = "{{ lint_ruff_version | default('0.17.4', true) }}"
+
+[tasks."lint:ruff"]
+description = "Check code and formatting with ruff"
+run = '''{{ lint_ruff_command | default('ruff check && ruff format --check', true) }}'''

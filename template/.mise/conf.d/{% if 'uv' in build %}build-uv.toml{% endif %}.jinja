@@ -1,3 +1,3 @@
 [tasks."build:uv"]
 description = "Build the Python package with uv (dist/)"
-run = "uv build"
+run = '''{{ build_uv_command | default('uv build', true) }}'''

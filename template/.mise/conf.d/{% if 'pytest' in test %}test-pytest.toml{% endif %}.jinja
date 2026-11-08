@@ -2,4 +2,4 @@
 
 [tasks."test:pytest"]
 description = "Run tests with pytest"
-run = "uv run pytest"
+run = '''{{ test_pytest_command | default('uv run pytest', true) }}'''

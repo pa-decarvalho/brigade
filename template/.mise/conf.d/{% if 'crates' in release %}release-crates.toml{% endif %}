@@ -1,5 +1,0 @@
-# The rust toolchain comes from rust.toml (languages: rust). Auth: the CARGO_REGISTRY_TOKEN secret.
-
-[tasks."release:crates"]
-description = "Publish the crate to crates.io with cargo"
-run = "cargo publish"

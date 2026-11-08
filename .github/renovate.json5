@@ -7,7 +7,8 @@
     semanticCommits: "enabled",
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
-        managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+$/"],
+        // Tool fragments are Jinja: a customManagers entry reads their pins.
+        managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+(?<!\\.jinja)$/"],
     },
     "github-actions": {
         managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
@@ -37,6 +38,13 @@
             depNameTemplate: "jdx/mise",
             datasourceTemplate: "github-releases",
             extractVersionTemplate: "^v(?<version>.*)$",
+        },
+        {
+            // Tool fragments: the version is brigade's default in the Jinja file.
+            customType: "regex",
+            managerFilePatterns: ["/^template/\\.mise/conf\\.d/.+\\.jinja$/"],
+            matchStrings: ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
+            extractVersionTemplate: "^v?(?<version>.*)$",
         },
         {
             customType: "regex",

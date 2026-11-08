@@ -1,7 +1,0 @@
-[tools]
-typos = "1.52.0"
-
-[tasks."lint:typos"]
-description = "Check spelling with typos"
-# Copier answers hold commit hashes; .mise-data is the GitLab CI tool cache.
-run = "typos --hidden --exclude .git --exclude .mise-data --exclude .mise/brigade-copier-answers.yml"

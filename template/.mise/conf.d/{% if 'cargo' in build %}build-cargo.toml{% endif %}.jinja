@@ -1,0 +1,5 @@
+# The rust toolchain comes from rust.toml.
+
+[tasks."build:cargo"]
+description = "Build the Rust project in release mode with cargo"
+run = '''{{ build_cargo_command | default('cargo build --release', true) }}'''

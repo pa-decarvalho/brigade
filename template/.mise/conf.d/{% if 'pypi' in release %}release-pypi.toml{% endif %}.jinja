@@ -2,4 +2,4 @@
 
 [tasks."release:pypi"]
 description = "Build and publish the Python package to PyPI with uv"
-run = ["uv build", "uv publish"]
+run = '''{{ release_pypi_command | default('uv build && uv publish', true) }}'''

@@ -1,0 +1,5 @@
+# The rust toolchain comes from rust.toml.
+
+[tasks."test:cargo"]
+description = "Run tests with cargo"
+run = '''{{ test_cargo_command | default('cargo test', true) }}'''

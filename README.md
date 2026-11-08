@@ -11,7 +11,7 @@ mise trust && mise install
 mise tasks
 ```
 
-Languages: `python`, `rust`; tools picked per stage (lint, build, test, release). CI: GitHub, GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks.
+Tools picked per stage (lint, build, test, release), with custom versions and commands. CI: GitHub, GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks.
 Update a project with `mise run brigade:update`.
 
 Documentation: https://pa-decarvalho.github.io/brigade/ (sources in `docs/`, preview with `mise run docs:serve`).
