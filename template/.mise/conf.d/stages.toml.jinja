@@ -24,6 +24,12 @@ depends = ["test:*"]
 description = "Stage: publish (CI runs it on X.Y.Z tags)"
 depends = ["release:*"]
 {%- endif %}
+{%- if deploy %}
+
+[tasks.deploy]
+description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
+depends = ["deploy:*"]
+{%- endif %}
 {%- if lint_stage %}
 
 [tasks."brigade:pre-commit"]

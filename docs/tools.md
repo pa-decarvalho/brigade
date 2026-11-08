@@ -1,6 +1,6 @@
 # Tools
 
-Stages run in this order: `lint`, `build`, `test`, `release`. Each stage runs every `<stage>:<tool>` task. Each tool is one file in `.mise/conf.d/` (`<stage>-<tool>.toml`), with its pinned version and its task.
+Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`. Each stage runs every `<stage>:<tool>` task. Each tool is one file in `.mise/conf.d/` (`<stage>-<tool>.toml`), with its pinned version and its task.
 Tools are picked per stage when applying brigade.
 A stage without tools is left out: no mise task, no CI job.
 
@@ -26,6 +26,7 @@ Nothing is selected by default.
 |---|---|---|
 | `uv` | `build:uv` | `uv build` (into `dist/`) |
 | `cargo` | `build:cargo` | `cargo build --release` |
+| `zensical` | `build:zensical` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 
 ## test
 
@@ -44,6 +45,19 @@ Nothing is selected by default. CI runs this stage only on tags `X.Y.Z` (or `vX.
 | `crates` | `release:crates` | `cargo publish` | a `CARGO_REGISTRY_TOKEN` secret |
 
 Secrets are repository secrets (GitHub, Gitea) or CI/CD variables (GitLab), under these names.
+
+## deploy
+
+Nothing is selected by default. CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`) and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
+
+| Tool | Task | Command | Needs |
+|---|---|---|---|
+| `pages` | `deploy:pages` | GitHub: `zensical build --strict && ghp-import -n -p -f site`. GitLab: `zensical build --strict` | the `zensical` build tool, and GitHub or GitLab |
+
+- **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages, choose "Deploy from a branch" and `gh-pages`.
+- **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
+
+Add `site/` and `.cache/` to your `.gitignore`.
 
 ## Toolchains
 

@@ -8,6 +8,7 @@ Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run 
 | `test` | test tools | none | Same; none leaves the `test` stage out. |
 | `build` | build tools | none | Same, for the `build` stage. |
 | `release` | release tools | none | Same, for the `release` stage, run by CI on `X.Y.Z` tags. |
+| `deploy` | deploy tools | none | Same, for the `deploy` stage, run by CI on `X.Y.Z` tags or on a manual run. |
 | `customize_tools` | yes / no | no | Asks a version and a command for each selected tool: see [Tools](tools.md). |
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |

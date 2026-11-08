@@ -38,7 +38,7 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
   config.toml                     # uv and brigade:update
   brigade-copier-answers.yml      # your answers, used by brigade:update
   conf.d/
-    stages.toml                   # lint, build, test, release and the git hook tasks
+    stages.toml                   # lint, build, test, release, deploy and the git hook tasks
     <stage>-<tool>.toml           # one per tool, e.g. lint-ruff.toml
     rust.toml                     # rust toolchain, when a tool needs it
     <ci>.toml                     # CI file linter

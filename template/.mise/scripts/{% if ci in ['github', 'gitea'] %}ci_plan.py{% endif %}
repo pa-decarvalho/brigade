@@ -9,7 +9,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-STAGES = ("lint", "build", "test", "release")
+STAGES = ("lint", "build", "test", "release", "deploy")
 KEYS = {"task", "os", "fetch-depth"}
 
 
@@ -44,6 +44,7 @@ assert expand({"test": [{"task": "t", "os": ["a", "b"], "fetch-depth": 0}]}) == 
     "lint": [],
     "build": [],
     "release": [],
+    "deploy": [],
     "test": [
         {"task": "t", "os": "a", "fetch-depth": 0},
         {"task": "t", "os": "b", "fetch-depth": 0},

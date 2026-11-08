@@ -11,7 +11,7 @@ Jobs only install mise and call `mise run <task>`, so CI and laptops run the sam
 
 | File | Owner | Role |
 |---|---|---|
-| `.github/workflows/ci.yml` | brigade | On pull requests and `X.Y.Z` tags: a `plan` job reads `.github/ci.toml`, then the `lint`, `build`, `test` and `release` jobs run (`release` on tags only), then `custom.yml`. |
+| `.github/workflows/ci.yml` | brigade | On pull requests, `X.Y.Z` tags and manual runs: a `plan` job reads `.github/ci.toml`, then the `lint`, `build`, `test`, `release` (tags only) and `deploy` (tags and manual runs) jobs run, then `custom.yml`. |
 | `.github/actions/mise/action.yml` | brigade | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 | `.github/ci.toml` | you | The jobs of each stage: which task, on which runners. |
 | `.github/workflows/custom.yml` | you | Extra jobs, run after the stages in the same workflow. |
@@ -73,7 +73,7 @@ For other triggers (tags, schedules), add your own workflow files next to them.
 |---|---|---|
 | `.gitlab-ci.yml` | brigade | Stages, and includes the files below, `custom.yml` last. |
 | `.gitlab/ci/default.yml` | brigade | The mise image, the tool cache and `mise install`. |
-| `.gitlab/ci/<stage>.yml` | brigade | One job per stage with tools; `release` runs on `X.Y.Z` tags only. |
+| `.gitlab/ci/<stage>.yml` | brigade | One job per stage with tools; `release` runs on `X.Y.Z` tags only, `deploy` also on "Run pipeline". |
 | `.gitlab/ci/rust.yml` (rust) | brigade | Adds the C toolchain the Rust linker needs. |
 | `.gitlab/ci/custom.yml` | you | Extra jobs, and overrides of brigade's jobs. |
 
@@ -87,6 +87,10 @@ test:
 ```
 
 `lint:gitlab-ci` checks these files against the GitLab CI schema.
+
+## Manual run
+
+To deploy without a release, use "Run workflow" on GitHub and Gitea, or "Run pipeline" on GitLab. The stages run, except `release`, then `deploy`.
 
 ## Gitea and Forgejo (`ci: gitea`)
 

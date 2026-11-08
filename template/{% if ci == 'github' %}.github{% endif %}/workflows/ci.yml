@@ -8,6 +8,8 @@ on:
   # Releases: the release stage only runs on these tags.
   push:
     tags: ["*.*.*"]
+  # Deploy without a release, e.g. a typo in the documentation.
+  workflow_dispatch:
 
 jobs:
   plan:
@@ -17,6 +19,7 @@ jobs:
       build: ${{ steps.plan.outputs.build }}
       test: ${{ steps.plan.outputs.test }}
       release: ${{ steps.plan.outputs.release }}
+      deploy: ${{ steps.plan.outputs.deploy }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/mise
@@ -108,8 +111,34 @@ jobs:
       - uses: ./.github/actions/mise
       - run: mise run ${{ matrix.task }}
 
+  deploy:
+    needs: [plan, lint, build, test, release]
+    if: >-
+      ${{ !cancelled() && !failure()
+      && needs.plan.outputs.deploy != '[]'
+      && (startsWith(github.ref, 'refs/tags/')
+      || github.event_name == 'workflow_dispatch') }}
+    name: ${{ matrix.task }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.deploy) }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write  # deploy:pages pushes the gh-pages branch
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      GIT_COMMITTER_NAME: ${{ github.actor }}
+      GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: ${{ matrix.fetch-depth }}
+      - uses: ./.github/actions/mise
+      - run: mise run ${{ matrix.task }}
+
   custom:
-    needs: [lint, build, test, release]
+    needs: [lint, build, test, release, deploy]
     if: ${{ !cancelled() && !failure() }}
     uses: ./.github/workflows/custom.yml
     secrets: inherit
