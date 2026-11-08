@@ -5,3 +5,7 @@ taplo = "{{ lint_taplo_version | default('0.10.0', true) }}"
 [tasks."lint:taplo"]
 description = "Check TOML formatting with taplo"
 run = '''{{ lint_taplo_command | default('taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml"', true) }}'''
+{%- if not lint_taplo_command %}
+# Windows checkouts can mix LF and CRLF, and taplo accepts only one: syntax only.
+run_windows = '''taplo lint --no-auto-config --no-schema ".mise/**/*.toml"'''
+{%- endif %}
