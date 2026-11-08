@@ -4,7 +4,7 @@
 [defaults]
 
 [output.".ctt/python-github"]
-lint = ["yamllint", "gitleaks", "typos", "ruff", "taplo", "renovate"]
+lint = ["yamllint", "gitleaks", "typos", "ruff", "renovate"]
 test = ["pytest"]
 ci = "github"
 ci_local = true

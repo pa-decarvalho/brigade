@@ -12,7 +12,7 @@ A stage without tools is left out: no mise task, no CI job.
 | `gitleaks` | yes | `lint:gitleaks` | `gitleaks git` (history and staged changes) |
 | `typos` | yes | `lint:typos` | `typos` |
 | `editorconfig-checker` | no | `lint:editorconfig` | `editorconfig-checker` (needs your `.editorconfig`) |
-| `taplo` | no | `lint:taplo` | `taplo fmt --check` on `.mise/**/*.toml` (syntax only on Windows, where line endings can be mixed) |
+| `taplo` | no | `lint:taplo` | `taplo fmt --check` on `.mise/**/*.toml` (fails on Windows checkouts with CRLF line endings) |
 | `renovate` | no | `lint:renovate` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | `ruff` | no | `lint:ruff` | `ruff check && ruff format --check` |
 | `clippy` | no | `lint:clippy` | `cargo clippy --all-targets -- -D warnings` |
