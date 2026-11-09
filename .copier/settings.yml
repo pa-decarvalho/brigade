@@ -2,10 +2,3 @@
 _min_copier_version: "9.19.1"
 _subdirectory: template
 _answers_file: .mise/brigade-copier-answers.yml
-# Files the user owns: generated once, never overwritten by brigade:update.
-_skip_if_exists:
-  - .github/ci.toml
-  - .github/workflows/custom.yml
-  - .gitea/ci.toml
-  - .gitea/workflows/custom.yml
-  - .gitlab/ci/custom.yml

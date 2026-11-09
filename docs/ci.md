@@ -1,89 +1,63 @@
 # CI platforms
 
-Each CI platform gets two kinds of files:
+brigade generates the CI files and `mise run brigade:update` keeps them up to date: do not edit them. Change the stages through your answers, or add your own files.
 
-- **brigade-owned**: install mise and run the stages. `mise run brigade:update` keeps them up to date; do not edit them.
-- **yours**: generated once, never touched again by `brigade:update`. This is where the CI is customized.
-
-Jobs only install mise and call `mise run <task>`, so CI and laptops run the same tools.
+Jobs only install mise and call `mise run <stage>`, so CI and laptops run the same tools.
 
 ## GitHub (`ci: github`)
 
-| File | Owner | Role |
-|---|---|---|
-| `.github/workflows/ci.yml` | brigade | On pull requests, `X.Y.Z` tags and manual runs: a `plan` job reads `.github/ci.toml`, then the `lint`, `build`, `test`, `release` (tags only) and `deploy` (tags and manual runs) jobs run, then `custom.yml`. |
-| `.github/actions/mise/action.yml` | brigade | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
-| `.github/ci.toml` | you | The jobs of each stage: which task, on which runners. |
-| `.github/workflows/custom.yml` | you | Extra jobs, run after the stages in the same workflow. |
+| File | Role |
+|---|---|
+| `.github/workflows/ci.yml` | On pull requests, `X.Y.Z` tags and manual runs: one job per stage. `release` runs on `X.Y.Z` tags only, `deploy` also on a manual run. |
+| `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 
 `actionlint:lint` checks the workflows.
 
-### Jobs of each stage: `ci.toml`
+### Stages
 
-Each `[[<stage>]]` entry runs `mise run <task>` on each runner in `os` (default `["ubuntu-latest"]`).
-A stage without entries is skipped. `fetch-depth` is the git history to fetch (`0` = all, default `1`).
+Each stage is one job, on Linux, running `mise run <stage>`. To remove a stage or change its commands, see [Stages](tools.md#stages).
 
-The default runs each stage once, on Linux:
+### Your own jobs
 
-```toml
-[[lint]]
-task = "lint"
-os = ["ubuntu-latest"]
-
-[[test]]
-task = "test"
-os = ["ubuntu-latest"]
-```
-
-Tests on every OS, one task split into its own jobs:
-
-```toml
-[[lint]]
-task = "lint"
-
-[[test]]
-task = "pytest:test"
-os = ["ubuntu-latest", "macos-latest", "windows-latest"]
-
-[[test]]
-task = "integration:test"   # a custom task, see Custom tasks
-fetch-depth = 0
-```
-
-### Extra jobs: `custom.yml`
-
-`ci.yml` calls `custom.yml` as a [reusable workflow](https://docs.github.com/en/actions/reference/workflows-and-actions/reusable-workflows) after the stages.
-It holds a disabled example job; each job should check out the code, use `./.github/actions/mise` and run `mise run <task>`:
+For anything else (several OSes, other triggers), add your own workflow file next to `ci.yml`: brigade never touches it.
 
 ```yaml
+# .github/workflows/tests-os.yml
+on:
+  pull_request:
+
 jobs:
-  docs:
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/mise
-      - run: mise run docs:build
+      - run: mise run test
 ```
 
-For other triggers (tags, schedules), add your own workflow files next to them.
+It runs next to the CI, so it does not hold back the `release` job of a tag.
 
 ## GitLab (`ci: gitlab`)
 
-| File | Owner | Role |
-|---|---|---|
-| `.gitlab-ci.yml` | brigade | Stages, and includes the files below, `custom.yml` last. |
-| `.gitlab/ci/default.yml` | brigade | The mise image, the tool cache and `mise install`. |
-| `.gitlab/ci/<stage>.yml` | brigade | One job per stage with tools; `release` runs on `X.Y.Z` tags only, `deploy` also on "Run pipeline". |
-| `.gitlab/ci/rust.yml` (rust) | brigade | Adds the C toolchain the Rust linker needs. |
-| `.gitlab/ci/custom.yml` | you | Extra jobs, and overrides of brigade's jobs. |
+| File | Role |
+|---|---|
+| `.gitlab-ci.yml` | Stages, and includes every `.gitlab/ci/*.yml`. |
+| `.gitlab/ci/default.yml` | The mise image and the tool cache. |
+| `.gitlab/ci/setup.yml` | `mise install`, and the C toolchain the Rust linker needs when a tool needs it. |
+| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`; `release` runs on `X.Y.Z` tags only, `deploy` also on "Run pipeline". |
 
-GitLab merges included files, so `custom.yml` can add jobs or change brigade's:
+To add jobs, create your own file in `.gitlab/ci/`, with a name brigade does not generate: it is included automatically, and GitLab merges included files.
 
 ```yaml
-test:
-  parallel:
-    matrix:
-      - PYTHON: ["3.12", "3.13"]
+# .gitlab/ci/extra.yml
+extra:
+  stage: test
+  script:
+    - mise run lint
 ```
 
 `gitlab-ci:lint` checks these files against the GitLab CI schema.
@@ -94,10 +68,9 @@ To deploy without a release, use "Run workflow" on GitHub and Gitea, or "Run pip
 
 ## Gitea and Forgejo (`ci: gitea`)
 
-Same layout as GitHub, under `.gitea/`: `workflows/ci.yml`, `actions/mise/action.yml`, `ci.toml` and `workflows/custom.yml`.
+Same layout as GitHub, under `.gitea/`: `workflows/ci.yml` and `actions/mise/action.yml`.
 
 - mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action.
-- The jobs read from `ci.toml` need a recent runner (dynamic matrices, [gitea/act #149](https://gitea.com/gitea/act/issues/149)).
 - `actionlint:lint` checks the workflows.
 
 ## None (`ci: none`)
