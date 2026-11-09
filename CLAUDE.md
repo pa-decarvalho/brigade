@@ -18,7 +18,7 @@ The user picks the tools of each stage; each tool is one mise fragment, and tool
 - brigade-owned CI files only install mise (GitHub/Gitea: the `actions/mise` composite action) and call `mise run <task>`; each CI platform lints its own files (`lint:actionlint`, `lint:gitlab-ci`).
 - GitHub/Gitea: a `plan` job turns the user-owned `ci.toml` (jobs × runners per stage) into matrices (`.mise/scripts/ci_plan.py`); `ci.yml` then calls the user-owned `custom.yml`. GitLab: `.gitlab-ci.yml` includes the user-owned `.gitlab/ci/custom.yml` last.
 - Linters and formatters are mise tools, not project dependencies.
-- `brigade:*` tasks are brigade's own helpers (`brigade:update`, `brigade:hooks`), not pipeline stages.
+- `brigade:*` tasks are brigade's own helpers (`brigade:update`, `brigade:hooks`, `brigade:ci-local`), not pipeline stages. `brigade:ci-local` (`ci_local` question) must stay out of `test:*`: run by CI, it would start the CI again. Its tools are declared on the task, so `mise install` and CI skip them.
 - Pin versions (mise, tools, Copier). Renovate keeps them up to date (`.github/renovate.json5`): a new pin outside a standard mise/CI location needs a matching `customManagers` entry. Generated projects get new versions through a brigade release and `mise run brigade:update`.
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.
@@ -31,7 +31,7 @@ The user picks the tools of each stage; each tool is one mise fragment, and tool
 `mise run test` renders each `ctt.toml` variant into `.ctt/src/.ctt/`, creates a real project there with the ecosystem's tool, then runs its mise tasks.
 ctt only sees files tracked by git.
 `mise run test` also runs `test:update`: for each variant, create the project first, apply the template at the latest tag on top of it, update to HEAD with `mise run brigade:update`, then run the project's stages; it also checks that user-owned files keep their content.
-`mise run test` also runs `test:ci`: each variant's generated CI, locally with act (GitHub, Gitea) or gitlab-ci-local (GitLab). It needs a running Docker (Docker Desktop's socket is found on macOS).
+`mise run test` also runs `test:ci`: each variant's generated CI, locally with its `brigade:ci-local` task (act on GitHub and Gitea, gitlab-ci-local on GitLab). It needs a running Docker (Docker Desktop's socket is found on macOS).
 `mise run test` also runs `test:docs`: builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict mode, which fails on broken links. `.github/workflows/docs.yml` deploys it to GitHub Pages on push to `main`.
 User-facing changes (questions, tasks, CI files) update the matching page in `docs/`; the README stays a short summary.
 brigade's CI runs `test:ctt` and `test:update` on Linux, macOS and Windows (developer OSes), and `test:ci` on Linux only (generated CI runs in Linux containers).

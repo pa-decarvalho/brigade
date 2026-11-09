@@ -1,0 +1,25 @@
+---
+# A helper task, not a pipeline stage: see .mise/conf.d/ci-local.toml.
+ci_local:
+  type: bool
+  help: Add brigade:ci-local, to run the CI locally in Docker?
+  default: false
+  when: "{{ ci != 'none' }}"
+
+ci_local_version:
+  type: str
+  help: act or gitlab-ci-local version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and ci_local }}"
+
+ci_local_node_version:
+  type: str
+  help: Node.js version for gitlab-ci-local (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and ci_local and ci == 'gitlab' }}"
+
+ci_local_command:
+  type: str
+  help: Command of brigade:ci-local (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and ci_local }}"

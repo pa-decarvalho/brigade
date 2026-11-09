@@ -10,9 +10,6 @@ taplo = "0.10.0"
 editorconfig-checker = "4.0.2"
 gitleaks = "8.30.1"
 typos = "1.52.0"
-act = "0.2.97"
-node = "24.22.2"
-"npm:gitlab-ci-local" = "4.77.1"
 "pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
 "pipx:zensical" = "0.1.0"
 

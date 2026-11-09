@@ -1,7 +1,7 @@
 """Run the generated CI of each ctt.toml variant locally, in Docker.
 
-Runs after test:ctt, on the projects it rendered into .ctt/src/.ctt/: act for GitHub and
-Gitea/Forgejo workflows, gitlab-ci-local for GitLab pipelines. Needs a running Docker.
+Runs after test:ctt, on the projects it rendered into .ctt/src/.ctt/, with each project's
+own brigade:ci-local task. Needs a running Docker.
 """
 
 import os
@@ -9,11 +9,6 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-RUNNERS = {
-    "github": ["act", "pull_request", "-P", "ubuntu-latest=catthehacker/ubuntu:act-24.04"],
-    "gitlab": ["gitlab-ci-local"],
-    "gitea": ["act", "pull_request", "-W", ".gitea/workflows", "-P", "ubuntu-latest=catthehacker/ubuntu:act-24.04"],
-}
 GIT = ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost"]
 
 env = dict(os.environ)
@@ -30,12 +25,12 @@ for key, data in variants.items():
     project = repo / ".ctt/src" / key
     if not (project / ".mise/brigade-copier-answers.yml").is_file():
         raise SystemExit(f"{key}: no Copier answers file in the generated project")
-    runner = RUNNERS.get(data.get("ci"))
-    if not runner:
+    if not data.get("ci_local"):
         continue
     print(f"--- {Path(key).name}: {data['ci']} CI", flush=True)
-    if "GITHUB_TOKEN" in env and runner[0] == "act":
-        runner = [*runner, "-s", "GITHUB_TOKEN"]
+    runner = ["mise", "run", "brigade:ci-local"]
+    if "GITHUB_TOKEN" in env and data["ci"] != "gitlab":
+        runner += ["--", "-s", "GITHUB_TOKEN"]
     # ctt removes .git; both runners need a repository.
     for cmd in (["git", "init", "-q"], ["git", "add", "-A"], [*GIT, "commit", "-q", "--allow-empty", "-m", "ci"], runner):
         subprocess.run(cmd, cwd=project, env=env, check=True)

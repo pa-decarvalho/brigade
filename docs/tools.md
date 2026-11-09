@@ -12,6 +12,8 @@ A stage without tools is left out: no mise task, no CI job.
 | `gitleaks` | yes | `lint:gitleaks` | `gitleaks git` (history and staged changes) |
 | `typos` | yes | `lint:typos` | `typos` |
 | `editorconfig-checker` | no | `lint:editorconfig` | `editorconfig-checker` (needs your `.editorconfig`) |
+| `taplo` | no | `lint:taplo` | `taplo fmt --check` on `.mise/**/*.toml` (fails on Windows checkouts with CRLF line endings) |
+| `renovate` | no | `lint:renovate` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | `ruff` | no | `lint:ruff` | `ruff check && ruff format --check` |
 | `clippy` | no | `lint:clippy` | `cargo clippy --all-targets -- -D warnings` |
 | `rustfmt` | no | `lint:rustfmt` | `cargo fmt --check` |
@@ -34,6 +36,7 @@ Nothing is selected by default.
 |---|---|---|---|
 | `pytest` | no | `test:pytest` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `cargo` | no | `test:cargo` | `cargo test` |
+| `ctt` | no | `test:ctt` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
 
 ## release
 
@@ -66,6 +69,11 @@ Add `site/` and `.cache/` to your `.gitignore`.
 | Python | `uv init` | `uv` is always installed; it picks Python from `.python-version` and `requires-python` |
 | Rust | `cargo init` | `.mise/conf.d/rust.toml`, as soon as `clippy`, `rustfmt`, `cargo` or `crates` is selected, with `clippy` and `rustfmt` |
 
+## Run the CI locally
+
+Answer yes to `ci_local` to get `mise run brigade:ci-local`, which runs the project's CI in Docker: [act](https://github.com/nektos/act) on GitHub and Gitea, [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) on GitLab.
+It is a helper, not a stage, and its tools are installed the first time you run it: CI does not download them.
+
 ## Customize a version or a command
 
 Each tool has one file with its version and one command.
@@ -80,7 +88,7 @@ Command of lint:ruff (empty for brigade's): ruff check src
 - An answer replaces brigade's value, and stays on `brigade:update` until you change it.
 - An empty answer takes brigade's value, and keeps following it on `brigade:update`. Clear an answer to go back to it.
 
-Answers are named `<stage>_<tool>_version` and `<stage>_<tool>_command`, e.g. `lint_ruff_version`.
+Answers are named `<stage>_<tool>_version` and `<stage>_<tool>_command`, e.g. `lint_ruff_version`; `brigade:ci-local` uses `ci_local_version` and `ci_local_command`.
 To change them later, see [Questions](questions.md).
 
 Missing a tool? Add your own task: see [Custom tasks](custom-tasks.md).

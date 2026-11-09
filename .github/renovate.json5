@@ -23,6 +23,7 @@
             managerFilePatterns: [
                 "/^\\.mise/config\\.toml$/",
                 "/^template/\\.mise/config\\.toml$/",
+                "/^template/\\.mise/conf\\.d/.*test-ctt.*\\.jinja$/",
                 "/^ctt\\.toml$/",
                 "/^README\\.md$/",
                 "/^\\.mise/scripts/[^/]+\\.py$/",
