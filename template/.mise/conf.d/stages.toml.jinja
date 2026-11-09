@@ -1,36 +1,24 @@
-# Pipeline stages, in order. Each stage runs every "<tool>:<stage>" task; tools have one file
-# each in .mise/conf.d/. A stage without tools is left out.
-{%- if lint_stage %}
+# Pipeline stages, in order. Each stage runs its commands if it has some, otherwise every
+# "<tool>:<stage>" task; tools have one file each in .mise/conf.d/.
+{%- for stage, description, enabled, commands in [
+  ('lint', 'static checks', lint_enabled, lint_commands),
+  ('build', 'build', build_enabled, build_commands),
+  ('test', 'tests', test_enabled, test_commands),
+  ('release', 'publish (CI runs it on X.Y.Z tags)', release_enabled, release_commands),
+  ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands),
+] %}
+{%- if enabled %}
 
-[tasks.lint]
-description = "Stage: static checks"
-depends = ["*:lint"]
+[tasks.{{ stage }}]
+description = "Stage: {{ description }}"
+{%- if commands %}
+run = {{ commands | tojson }}
+{%- else %}
+depends = [{ task = "*:{{ stage }}", optional = true }]
 {%- endif %}
-{%- if build %}
-
-[tasks.build]
-description = "Stage: build"
-depends = ["*:build"]
 {%- endif %}
-{%- if test %}
-
-[tasks.test]
-description = "Stage: tests"
-depends = ["*:test"]
-{%- endif %}
-{%- if release %}
-
-[tasks.release]
-description = "Stage: publish (CI runs it on X.Y.Z tags)"
-depends = ["*:release"]
-{%- endif %}
-{%- if deploy %}
-
-[tasks.deploy]
-description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
-depends = ["*:deploy"]
-{%- endif %}
-{%- if lint_stage %}
+{%- endfor %}
+{%- if lint_enabled %}
 
 [tasks."brigade:pre-commit"]
 description = "Checks run by the git pre-commit hook"

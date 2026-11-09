@@ -3,7 +3,18 @@
 Pick your tools in one list when applying brigade. A tool brings its version and all its tasks, in one file: `.mise/conf.d/tool-<tool>.toml`.
 
 Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`, and each runs every `<tool>:<stage>` task. Any other action, such as `zensical:serve`, stays out of the pipeline.
-A stage without tools is left out: no mise task, no CI job.
+
+## Stages
+
+For each stage, Copier asks whether to keep it, then its commands.
+
+- Answer no to remove the stage: no mise task, no CI job.
+- Leave the commands empty to run all the stage's tools. A stage without tools does nothing.
+- Give commands to run them instead, in order, locally and in CI:
+
+```yaml
+lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
+```
 
 ## Catalog
 

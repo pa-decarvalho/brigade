@@ -1,38 +1,13 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# GitLab only reads this file: it includes the jobs from .gitlab/ci/,
-# then your .gitlab/ci/custom.yml.
+# GitLab only reads this file. Every .gitlab/ci/*.yml is included:
+# add your own jobs there, in a file brigade does not generate.
 stages:
-  - lint
-{%- if build %}
-  - build
+{%- for stage, enabled in [('lint', lint_enabled), ('build', build_enabled), ('test', test_enabled), ('release', release_enabled), ('deploy', deploy_enabled)] %}
+{%- if enabled %}
+  - {{ stage }}
 {%- endif %}
-{%- if test %}
-  - test
-{%- endif %}
-{%- if release %}
-  - release
-{%- endif %}
-{%- if deploy %}
-  - deploy
-{%- endif %}
+{%- endfor %}
 
 include:
-  - local: .gitlab/ci/default.yml
-{%- if needs_rust %}
-  - local: .gitlab/ci/rust.yml
-{%- endif %}
-  - local: .gitlab/ci/lint.yml
-{%- if build %}
-  - local: .gitlab/ci/build.yml
-{%- endif %}
-{%- if test %}
-  - local: .gitlab/ci/test.yml
-{%- endif %}
-{%- if release %}
-  - local: .gitlab/ci/release.yml
-{%- endif %}
-{%- if deploy %}
-  - local: .gitlab/ci/deploy.yml
-{%- endif %}
-  - local: .gitlab/ci/custom.yml
+  - local: .gitlab/ci/*.yml

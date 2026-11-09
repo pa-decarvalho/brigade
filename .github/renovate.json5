@@ -8,10 +8,10 @@
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         // Tool fragments are Jinja: a customManagers entry reads their pins.
-        managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]+(?<!\\.jinja)$/"],
+        managerFilePatterns: ["/(^|/)\\.mise/conf\\.d/[^/]*(\\.toml|\\{% endif %\\})$/"],
     },
     "github-actions": {
-        managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
+        managerFilePatterns: ["/^template/.*/workflows/[^/]+\\.yml(\\.jinja)?$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
     },
     gitlabci: {
         managerFilePatterns: ["/^template/.*\\.gitlab[^/]*/ci/[^/]+\\.yml/"],
