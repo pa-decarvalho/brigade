@@ -1,0 +1,18 @@
+---
+zensical_version:
+  type: str
+  help: zensical version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'zensical' in tools }}"
+
+zensical_build_command:
+  type: str
+  help: Command of zensical:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'zensical' in tools }}"
+
+zensical_serve_command:
+  type: str
+  help: Command of zensical:serve (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'zensical' in tools }}"

@@ -1,0 +1,12 @@
+---
+editorconfig_checker_version:
+  type: str
+  help: editorconfig-checker version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'editorconfig-checker' in tools }}"
+
+editorconfig_checker_lint_command:
+  type: str
+  help: Command of editorconfig-checker:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'editorconfig-checker' in tools }}"

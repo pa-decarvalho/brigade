@@ -1,0 +1,12 @@
+---
+typos_version:
+  type: str
+  help: typos version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'typos' in tools }}"
+
+typos_lint_command:
+  type: str
+  help: Command of typos:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'typos' in tools }}"

@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=pypi depName=check-jsonschema
+"pipx:check-jsonschema" = { version = "{{ renovate_version | default('0.39.0', true) }}", uvx_args = "--with json5" }
+
+[tasks."renovate:lint"]
+description = "Check the Renovate config"
+run = '''{{ renovate_lint_command | default('check-jsonschema --builtin-schema vendor.renovate renovate.json', true) }}'''

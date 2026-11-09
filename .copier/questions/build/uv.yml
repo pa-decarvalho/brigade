@@ -1,6 +1,0 @@
----
-build_uv_command:
-  type: str
-  help: Command of build:uv (empty for brigade's)
-  default: ""
-  when: "{{ customize_tools and 'uv' in build }}"

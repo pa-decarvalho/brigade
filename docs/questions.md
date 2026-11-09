@@ -4,12 +4,7 @@ Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run 
 
 | Question | Values | Default | Effect |
 |---|---|---|---|
-| `lint` | lint tools | `yamllint`, `gitleaks`, `typos` | One `.mise/conf.d/lint-<tool>.toml` each. See [Tools](tools.md). |
-| `test` | test tools | none | Same; none leaves the `test` stage out. |
-| `build` | build tools | none | Same, for the `build` stage. |
-| `release` | release tools | none | Same, for the `release` stage, run by CI on `X.Y.Z` tags. |
-| `deploy` | deploy tools | none | Same, for the `deploy` stage, run by CI on `X.Y.Z` tags or on a manual run. |
-| `ci_local` | yes / no | no | Adds `brigade:ci-local`: see [Tools](tools.md#run-the-ci-locally). Not asked with `ci: none`. |
+| `tools` | tools of the [catalog](tools.md) | `yamllint`, `gitleaks`, `typos` | One `.mise/conf.d/tool-<tool>.toml` each, with its tasks. Stages follow from the tools. |
 | `customize_tools` | yes / no | no | Asks a version and a command for each selected tool: see [Tools](tools.md). |
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |
@@ -20,6 +15,6 @@ To change an answer later:
 
 ```sh
 uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data ci=gitlab
-uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data "lint=[yamllint, ruff]"
-uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data customize_tools=true --data lint_ruff_version=0.16.0
+uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data "tools=[yamllint, ruff]"
+uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data customize_tools=true --data ruff_version=0.16.0
 ```

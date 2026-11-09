@@ -1,0 +1,12 @@
+---
+cargo_build_command:
+  type: str
+  help: Command of cargo:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cargo' in tools }}"
+
+cargo_test_command:
+  type: str
+  help: Command of cargo:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cargo' in tools }}"

@@ -1,0 +1,12 @@
+---
+gitleaks_version:
+  type: str
+  help: gitleaks version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'gitleaks' in tools }}"
+
+gitleaks_lint_command:
+  type: str
+  help: Command of gitleaks:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'gitleaks' in tools }}"

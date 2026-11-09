@@ -1,0 +1,12 @@
+---
+pages_version:
+  type: str
+  help: ghp-import version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'pages' in tools and ci == 'github' }}"
+
+pages_deploy_command:
+  type: str
+  help: Command of pages:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'pages' in tools }}"

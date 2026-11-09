@@ -1,6 +1,0 @@
----
-lint_clippy_command:
-  type: str
-  help: Command of lint:clippy (empty for brigade's)
-  default: ""
-  when: "{{ customize_tools and 'clippy' in lint }}"

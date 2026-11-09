@@ -1,5 +1,0 @@
-# pytest is a project dependency: uv add --dev pytest.
-
-[tasks."test:pytest"]
-description = "Run tests with pytest"
-run = '''{{ test_pytest_command | default('uv run pytest', true) }}'''

@@ -1,0 +1,12 @@
+---
+yamllint_version:
+  type: str
+  help: yamllint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'yamllint' in tools }}"
+
+yamllint_lint_command:
+  type: str
+  help: Command of yamllint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'yamllint' in tools }}"

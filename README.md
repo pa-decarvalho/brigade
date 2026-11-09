@@ -11,7 +11,7 @@ mise trust && mise install
 mise tasks
 ```
 
-Tools picked per stage (lint, build, test, release, deploy), with custom versions and commands. CI: GitHub, GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks.
+Pick your tools in one list: each brings its tasks for the lint, build, test, release and deploy stages, with custom versions and commands. CI: GitHub, GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks.
 Update a project with `mise run brigade:update`.
 
 Documentation: https://pa-decarvalho.github.io/brigade/ (sources in `docs/`, preview with `mise run docs:serve`).

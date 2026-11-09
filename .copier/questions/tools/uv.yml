@@ -1,0 +1,6 @@
+---
+uv_build_command:
+  type: str
+  help: Command of uv:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'uv' in tools }}"

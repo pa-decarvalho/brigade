@@ -4,18 +4,13 @@
 [defaults]
 
 [output.".ctt/python-github"]
-lint = ["yamllint", "gitleaks", "typos", "ruff", "renovate"]
-test = ["pytest"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "ci-local", "uv", "zensical", "pages", "pypi"]
 ci = "github"
-ci_local = true
-build = ["uv", "zensical"]
-deploy = ["pages"]
-release = ["pypi"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     # A user-owned CI layout: lint split into two jobs, test with the full git history.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('.github/ci.toml'); p.parent.mkdir(exist_ok=True); p.write_text('[[lint]]\\ntask = \"lint:ruff\"\\n\\n[[lint]]\\ntask = \"lint:typos\"\\n\\n[[test]]\\ntask = \"test\"\\nfetch-depth = 0\\n\\n[[build]]\\ntask = \"build\"\\n\\n[[release]]\\ntask = \"release\"\\n\\n[[deploy]]\\ntask = \"deploy\"\\n')"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('.github/ci.toml'); p.parent.mkdir(exist_ok=True); p.write_text('[[lint]]\\ntask = \"ruff:lint\"\\n\\n[[lint]]\\ntask = \"typos:lint\"\\n\\n[[test]]\\ntask = \"test\"\\nfetch-depth = 0\\n\\n[[build]]\\ntask = \"build\"\\n\\n[[release]]\\ntask = \"release\"\\n\\n[[deploy]]\\ntask = \"deploy\"\\n')"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('renovate.json').write_text('{}\\n')"],
@@ -31,14 +26,12 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitlab"]
-lint = ["yamllint", "gitleaks", "typos", "ruff"]
-test = ["pytest"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "ci-local"]
 ci = "gitlab"
-ci_local = true
 # Custom version and command for a tool.
 customize_tools = true
-lint_typos_version = "1.51.1"
-lint_ruff_command = "ruff check ."
+typos_version = "1.51.1"
+ruff_lint_command = "ruff check ."
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
@@ -47,7 +40,7 @@ _post_tasks = [
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     # After the render: starts with mise so that test:update, which runs other tasks first, skips it.
-    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.mise/conf.d'); assert '1.51.1' in (d / 'lint-typos.toml').read_text(); assert 'ruff check .' in (d / 'lint-ruff.toml').read_text()"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.mise/conf.d'); assert '1.51.1' in (d / 'tool-typos.toml').read_text(); assert 'ruff check .' in (d / 'tool-ruff.toml').read_text()"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
@@ -55,11 +48,8 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitea"]
-lint = ["yamllint", "gitleaks", "typos", "ruff"]
-test = ["pytest"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "ci-local", "uv"]
 ci = "gitea"
-ci_local = true
-build = ["uv"]
 _post_tasks = [
     ["git", "init", "-q"],
     # actionlint resolves ./.gitea/workflows/custom.yml from the nearest .github/workflows,
@@ -78,10 +68,8 @@ _post_tasks = [
 ]
 
 [output.".ctt/rust-github"]
-lint = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt"]
-test = ["cargo"]
+tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo", "ci-local"]
 ci = "github"
-ci_local = true
 _post_tasks = [
     ["git", "init", "-q"],
     ["cargo", "init", "--lib", "--name", "demo"],
@@ -90,17 +78,13 @@ _post_tasks = [
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
+    ["mise", "run", "build"],
     ["mise", "run", "test"],
 ]
 
 [output.".ctt/rust-gitlab"]
-lint = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt"]
-test = ["cargo"]
+tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo", "ci-local", "zensical", "pages", "crates"]
 ci = "gitlab"
-ci_local = true
-build = ["cargo", "zensical"]
-deploy = ["pages"]
-release = ["crates"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["cargo", "init", "--lib", "--name", "demo"],
@@ -116,8 +100,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/rust-mirror"]
-lint = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt"]
-test = ["cargo"]
+tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo"]
 ci = "none"
 # Mirrors set to the upstream servers: checks the generated settings, not a real mirror.
 github_mirror = "https://github.com/"
@@ -131,14 +114,14 @@ _post_tasks = [
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
+    ["mise", "run", "build"],
     ["mise", "run", "test"],
 ]
 
 [output.".ctt/none-github"]
 # No test tool: the test stage is left out. Adds an optional lint tool.
-lint = ["yamllint", "gitleaks", "typos", "editorconfig-checker"]
+tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "ci-local"]
 ci = "github"
-ci_local = true
 _post_tasks = [
     ["git", "init", "-q"],
     # editorconfig-checker needs the project's own .editorconfig; root = true stops it from
@@ -153,13 +136,11 @@ _post_tasks = [
 
 [output.".ctt/template-github"]
 # A Copier template project.
-lint = ["yamllint", "gitleaks", "typos"]
-test = ["ctt"]
+tools = ["yamllint", "gitleaks", "typos", "ctt", "ci-local"]
 ci = "github"
-ci_local = true
 customize_tools = true
 # ponytail: --list avoids ctt 3.0.0's git snapshot, which fails on Windows. Back to the default when fixed.
-test_ctt_command = "ctt --list"
+ctt_test_command = "ctt --list"
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\n')"],

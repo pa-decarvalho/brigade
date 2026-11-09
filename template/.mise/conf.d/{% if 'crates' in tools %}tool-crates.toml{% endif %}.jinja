@@ -1,0 +1,5 @@
+# The rust toolchain comes from rust.toml. Auth: the CARGO_REGISTRY_TOKEN secret.
+
+[tasks."crates:release"]
+description = "Publish the crate to crates.io with cargo"
+run = '''{{ crates_release_command | default('cargo publish', true) }}'''
