@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=editorconfig-checker/editorconfig-checker
+editorconfig-checker = "{{ editorconfig_checker_version | default('4.0.2', true) }}"
+
+[tasks."editorconfig-checker:lint"]
+description = "Check files against .editorconfig with editorconfig-checker"
+# .mise-data is the GitLab CI tool cache.
+run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -exclude "^[.]mise-data/"', true) }}'''

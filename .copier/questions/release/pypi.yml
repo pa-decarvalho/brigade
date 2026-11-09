@@ -1,6 +1,0 @@
----
-release_pypi_command:
-  type: str
-  help: Command of release:pypi (empty for brigade's)
-  default: ""
-  when: "{{ customize_tools and 'pypi' in release }}"

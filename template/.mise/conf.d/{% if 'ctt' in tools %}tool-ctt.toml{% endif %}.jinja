@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=pypi depName=copier-template-tester
+"pipx:copier-template-tester" = { version = "{{ ctt_version | default('3.0.0', true) }}", uvx_args = "--with copier==9.19.1" }
+
+[tasks."ctt:test"]
+description = "Render every ctt.toml variant of this Copier template"
+run = '''{{ ctt_test_command | default('ctt', true) }}'''

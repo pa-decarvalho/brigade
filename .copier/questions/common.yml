@@ -9,80 +9,84 @@ ci:
     - none
   default: github
 
-# One multi-select per stage; a stage without tools is left out.
-lint:
+tools:
   type: str
-  help: Lint tools (the CI platform adds its own linter)
+  help: Tools
   multiselect: true
   choices:
-    yamllint: yamllint
-    gitleaks: gitleaks
-    typos: typos
-    editorconfig-checker: editorconfig-checker
-    taplo: taplo
-    renovate: renovate
-    ruff: ruff
-    clippy: clippy
-    rustfmt: rustfmt
-  default: [yamllint, gitleaks, typos]
-
-build:
-  type: str
-  help: Build tools
-  multiselect: true
-  choices:
-    uv: uv
-    zensical: zensical
-    cargo: cargo
-  default: []
-
-test:
-  type: str
-  help: Test tools
-  multiselect: true
-  choices:
-    pytest: pytest
-    cargo: cargo
-    ctt: ctt
-  default: []
-
-release:
-  type: str
-  help: Release tools, run by the CI on X.Y.Z tags
-  multiselect: true
-  choices:
-    pypi: pypi
-    crates: crates
-  default: []
-
-deploy:
-  type: str
-  help: Deploy tools, run by the CI on X.Y.Z tags or on a manual run
-  multiselect: true
-  choices:
-    pages:
+    yamllint (lint): yamllint
+    gitleaks (lint): gitleaks
+    typos (lint): typos
+    editorconfig-checker (lint): editorconfig-checker
+    taplo (lint): taplo
+    renovate (lint): renovate
+    ruff (lint): ruff
+    clippy (lint): clippy
+    rustfmt (lint): rustfmt
+    uv (build): uv
+    zensical (build, serve): zensical
+    cargo (build, test): cargo
+    pytest (test): pytest
+    ctt (test): ctt
+    pypi (release): pypi
+    crates (release): crates
+    pages (deploy):
       value: pages
       validator: >-
-        {% if 'zensical' not in build or ci not in ['github', 'gitlab'] %}needs
-        the zensical build tool, and GitHub or GitLab{% endif %}
-  default: []
+        {% if ci not in ['github', 'gitlab'] %}needs GitHub
+        or GitLab{% endif %}
+    ci-local (run the CI locally):
+      value: ci-local
+      validator: "{% if ci == 'none' %}needs a CI platform{% endif %}"
+  default: [yamllint, gitleaks, typos]
+  # Checked once tools are picked: a choice's own validator runs before that.
+  validator: >-
+    {% if 'pages' in tools and 'zensical' not in tools %}pages needs
+    zensical{% endif %}
+
+# Computed: a stage exists when a selected tool has a task in it.
+build:
+  type: bool
+  default: >-
+    {{ tools | select('in', ['uv', 'zensical', 'cargo'])
+    | list | length > 0 }}
+  when: false
+
+test:
+  type: bool
+  default: >-
+    {{ tools | select('in', ['pytest', 'ctt', 'cargo']) | list | length > 0 }}
+  when: false
+
+release:
+  type: bool
+  default: "{{ tools | select('in', ['pypi', 'crates']) | list | length > 0 }}"
+  when: false
+
+deploy:
+  type: bool
+  default: "{{ tools | select('in', ['pages']) | list | length > 0 }}"
+  when: false
 
 # Computed: the rust toolchain is installed when a tool needs it.
 needs_rust:
   type: bool
   default: >-
-    {{ 'clippy' in lint or 'rustfmt' in lint or 'cargo' in test
-    or 'cargo' in build or 'crates' in release }}
+    {{ tools | select('in', ['clippy', 'rustfmt', 'cargo', 'crates'])
+    | list | length > 0 }}
   when: false
 
 # Computed: the lint stage exists when a lint tool is selected
 # or a CI platform adds its linter.
 lint_stage:
   type: bool
-  default: "{{ lint | length > 0 or ci != 'none' }}"
+  default: >-
+    {{ ci != 'none' or tools | select('in', ['yamllint', 'gitleaks', 'typos',
+    'editorconfig-checker', 'taplo', 'renovate', 'ruff', 'clippy', 'rustfmt'])
+    | list | length > 0 }}
   when: false
 
-# Asks a version and a command per selected tool (questions/<stage>/).
+# Asks a version and a command per selected tool (questions/tools/).
 # An empty answer takes brigade's default, which is in the tool's Jinja file.
 customize_tools:
   type: bool

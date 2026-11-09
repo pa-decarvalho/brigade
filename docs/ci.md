@@ -16,7 +16,7 @@ Jobs only install mise and call `mise run <task>`, so CI and laptops run the sam
 | `.github/ci.toml` | you | The jobs of each stage: which task, on which runners. |
 | `.github/workflows/custom.yml` | you | Extra jobs, run after the stages in the same workflow. |
 
-`lint:actionlint` checks the workflows.
+`actionlint:lint` checks the workflows.
 
 ### Jobs of each stage: `ci.toml`
 
@@ -42,11 +42,11 @@ Tests on every OS, one task split into its own jobs:
 task = "lint"
 
 [[test]]
-task = "test:pytest"
+task = "pytest:test"
 os = ["ubuntu-latest", "macos-latest", "windows-latest"]
 
 [[test]]
-task = "test:integration"   # a custom task, see Custom tasks
+task = "integration:test"   # a custom task, see Custom tasks
 fetch-depth = 0
 ```
 
@@ -86,7 +86,7 @@ test:
       - PYTHON: ["3.12", "3.13"]
 ```
 
-`lint:gitlab-ci` checks these files against the GitLab CI schema.
+`gitlab-ci:lint` checks these files against the GitLab CI schema.
 
 ## Manual run
 
@@ -98,7 +98,7 @@ Same layout as GitHub, under `.gitea/`: `workflows/ci.yml`, `actions/mise/action
 
 - mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action.
 - The jobs read from `ci.toml` need a recent runner (dynamic matrices, [gitea/act #149](https://gitea.com/gitea/act/issues/149)).
-- `lint:actionlint` checks the workflows.
+- `actionlint:lint` checks the workflows.
 
 ## None (`ci: none`)
 

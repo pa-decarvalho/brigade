@@ -1,0 +1,5 @@
+# Auth: trusted publishing on GitHub Actions, otherwise the UV_PUBLISH_TOKEN secret.
+
+[tasks."pypi:release"]
+description = "Build and publish the Python package to PyPI with uv"
+run = '''{{ pypi_release_command | default('uv build && uv publish', true) }}'''

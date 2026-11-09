@@ -25,7 +25,7 @@ for key, data in variants.items():
     project = repo / ".ctt/src" / key
     if not (project / ".mise/brigade-copier-answers.yml").is_file():
         raise SystemExit(f"{key}: no Copier answers file in the generated project")
-    if not data.get("ci_local"):
+    if "ci-local" not in data.get("tools", []):
         continue
     print(f"--- {Path(key).name}: {data['ci']} CI", flush=True)
     runner = ["mise", "run", "brigade:ci-local"]

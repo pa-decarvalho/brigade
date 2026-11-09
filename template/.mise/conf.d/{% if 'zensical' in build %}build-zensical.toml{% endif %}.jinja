@@ -1,7 +1,0 @@
-[tools]
-# renovate: datasource=pypi depName=zensical
-"pipx:zensical" = "{{ build_zensical_version | default('0.1.0', true) }}"
-
-[tasks."build:zensical"]
-description = "Build the documentation site with Zensical (needs zensical.toml)"
-run = '''{{ build_zensical_command | default('zensical build --strict', true) }}'''

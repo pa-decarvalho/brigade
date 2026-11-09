@@ -40,8 +40,8 @@ current_questions = "\n".join(path.read_text() for path in (repo / ".copier").rg
 
 
 def is_choice(value: object, questions: str) -> bool:
-    """Whether a value appears as a choice: "- value" or "value: value"."""
-    return f"- {value}\n" in questions or f"  {value}: {value}\n" in questions
+    """Whether a value appears as a choice: "- value", "label: value" or "value: value" under a label."""
+    return f"- {value}\n" in questions or f": {value}\n" in questions
 
 
 def is_new(key: str, value: object) -> bool:

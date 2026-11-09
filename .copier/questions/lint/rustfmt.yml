@@ -1,6 +1,0 @@
----
-lint_rustfmt_command:
-  type: str
-  help: Command of lint:rustfmt (empty for brigade's)
-  default: ""
-  when: "{{ customize_tools and 'rustfmt' in lint }}"

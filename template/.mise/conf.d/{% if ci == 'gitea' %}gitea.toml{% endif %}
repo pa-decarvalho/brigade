@@ -1,7 +1,7 @@
 [tools]
 actionlint = "1.7.12"
 
-[tasks."lint:actionlint"]
+[tasks."actionlint:lint"]
 description = "Check Gitea/Forgejo workflows with actionlint"
 run = "actionlint .gitea/workflows/ci.yml .gitea/workflows/custom.yml"
 

@@ -1,0 +1,6 @@
+---
+crates_release_command:
+  type: str
+  help: Command of crates:release (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'crates' in tools }}"

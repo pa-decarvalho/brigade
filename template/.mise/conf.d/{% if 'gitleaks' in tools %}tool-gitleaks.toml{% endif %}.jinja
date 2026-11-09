@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=github-releases depName=gitleaks/gitleaks
+gitleaks = "{{ gitleaks_version | default('8.30.1', true) }}"
+
+[tasks."gitleaks:lint"]
+description = "Check git history and staged changes for secrets with gitleaks"
+run = '''{{ gitleaks_lint_command | default('gitleaks git --redact --no-banner && gitleaks git --pre-commit --staged --redact --no-banner', true) }}'''

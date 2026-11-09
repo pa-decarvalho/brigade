@@ -1,6 +1,0 @@
----
-test_cargo_command:
-  type: str
-  help: Command of test:cargo (empty for brigade's)
-  default: ""
-  when: "{{ customize_tools and 'cargo' in test }}"

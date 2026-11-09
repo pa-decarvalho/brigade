@@ -1,34 +1,34 @@
-# Pipeline stages, in order. Each stage runs every "<stage>:<tool>" task, one per file in
-# .mise/conf.d/. A stage without tools is left out.
+# Pipeline stages, in order. Each stage runs every "<tool>:<stage>" task; tools have one file
+# each in .mise/conf.d/. A stage without tools is left out.
 {%- if lint_stage %}
 
 [tasks.lint]
 description = "Stage: static checks"
-depends = ["lint:*"]
+depends = ["*:lint"]
 {%- endif %}
 {%- if build %}
 
 [tasks.build]
 description = "Stage: build"
-depends = ["build:*"]
+depends = ["*:build"]
 {%- endif %}
 {%- if test %}
 
 [tasks.test]
 description = "Stage: tests"
-depends = ["test:*"]
+depends = ["*:test"]
 {%- endif %}
 {%- if release %}
 
 [tasks.release]
 description = "Stage: publish (CI runs it on X.Y.Z tags)"
-depends = ["release:*"]
+depends = ["*:release"]
 {%- endif %}
 {%- if deploy %}
 
 [tasks.deploy]
 description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
-depends = ["deploy:*"]
+depends = ["*:deploy"]
 {%- endif %}
 {%- if lint_stage %}
 

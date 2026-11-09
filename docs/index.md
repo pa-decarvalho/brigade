@@ -5,7 +5,7 @@ brigade is a [Copier](https://copier.readthedocs.io/) template that adds [mise](
 ## What it does
 
 - Pins the project's tools (linters, formatters, test runners) in `.mise/`, as mise tools rather than project dependencies.
-- Defines the pipeline stages as mise tasks (`mise run lint`, `mise run test`), with the tools you pick for each stage.
+- Defines the pipeline stages as mise tasks (`mise run lint`, `mise run test`), with the tools you pick.
 - Generates a CI that installs mise and runs those stages, for GitHub, GitLab or Gitea/Forgejo.
 - Keeps all of it up to date: `mise run brigade:update` applies the latest brigade release.
 
