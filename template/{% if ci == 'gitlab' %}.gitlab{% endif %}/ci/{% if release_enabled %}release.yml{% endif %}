@@ -1,9 +1,14 @@
 ---
-# Publishing tokens (UV_PUBLISH_TOKEN, CARGO_REGISTRY_TOKEN):
-# GitLab CI/CD variables.
+# Releasaurus needs a RELEASAURUS_GITLAB_TOKEN CI/CD variable
+# (api, write_repository).
 release:
   stage: release
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/
+    - if: >-
+        $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        && $CI_PIPELINE_SOURCE == "push"
+  variables:
+    RELEASAURUS_FORGE: gitlab
+    RELEASAURUS_REPO: $CI_PROJECT_URL
   script:
     - mise run release

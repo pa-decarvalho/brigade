@@ -10,3 +10,6 @@ default:
     key: mise
     paths:
       - .mise-data/
+  before_script:
+    - mise trust
+    - mise install

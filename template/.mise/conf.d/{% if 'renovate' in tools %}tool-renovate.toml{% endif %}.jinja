@@ -5,3 +5,14 @@
 [tasks."renovate:lint"]
 description = "Check the Renovate config"
 run = '''{{ renovate_lint_command | default('check-jsonschema --builtin-schema vendor.renovate renovate.json', true) }}'''
+
+# Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES). Its tools are on the task, so CI skips them.
+[tasks."renovate:operate"]
+description = "Run Renovate"
+run = '''{{ renovate_operate_command | default('renovate', true) }}'''
+
+[tasks."renovate:operate".tools]
+# renovate: datasource=node-version depName=node
+node = "{{ renovate_node_version | default('24.22.2', true) }}"
+# renovate: datasource=npm depName=renovate
+"npm:renovate" = "{{ renovate_cli_version | default('44.221.4', true) }}"

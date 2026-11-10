@@ -2,8 +2,6 @@ min_version = "2026.11.0"
 
 [tools]
 uv = "0.13.7"
-# Creates the rust test projects (cargo init).
-rust = "1.99.1"
 "pipx:yamllint" = "1.38.0"
 actionlint = "1.7.12"
 taplo = "0.10.0"
@@ -12,11 +10,12 @@ gitleaks = "8.30.1"
 typos = "1.52.0"
 "pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
 "pipx:zensical" = "0.1.0"
+"pipx:copier-template-tester" = { version = "3.0.0", uvx_args = "--with copier==9.19.1" }
 
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
 MISE_TRUSTED_CONFIG_PATHS = "{{ config_root }}/.ctt"
-MISE_CEILING_PATHS = "{{ config_root }}/.ctt/src/.ctt"
+MISE_CEILING_PATHS = "{{ config_root }}/.ctt"
 
 # Stages, same convention as the template: each runs every "<stage>:<tool>" task.
 # Tool config is given inline: no config files.
@@ -27,7 +26,7 @@ depends = ["lint:*"]
 
 [tasks.test]
 description = "Stage: tests"
-depends = ["test:*"]
+depends = ["*:test"]
 
 [tasks."lint:yamllint"]
 description = "Check YAML files with yamllint"
@@ -68,26 +67,26 @@ depends = ["lint"]
 description = "Install a git pre-commit hook that runs mise run pre-commit"
 run = "mise generate git-pre-commit --task pre-commit --write"
 
-[tasks."test:ctt"]
+[tasks."ctt:test"]
 description = "Render every ctt.toml variant into .ctt/ and run its stages"
 run = [
-    # Snapshot tracked files into .ctt/src, then render from there (see the script).
-    "uv run --no-project python .mise/scripts/snapshot.py",
-    "uvx --from copier-template-tester==3.0.0 --with copier==9.19.1 ctt --base-dir .ctt/src",
+    # ctt refuses to overwrite an output that holds a git repository (left by ci:test).
+    "uv run --no-project python -c \"import shutil; shutil.rmtree('.ctt', ignore_errors=True)\"",
+    "ctt",
 ]
 
-[tasks."test:update"]
+[tasks."update:test"]
 description = "Update a project from the latest release to HEAD and run its stages"
-# After test:ctt when both run, so they do not install the same tools at the same time.
-wait_for = ["test:ctt"]
+# After ctt:test when both run, so they do not install the same tools at the same time.
+wait_for = ["ctt:test"]
 run = "uv run --no-project python .mise/scripts/test_update.py"
 
-[tasks."test:ci"]
+[tasks."ci:test"]
 description = "Run the generated CI of every variant locally with act / gitlab-ci-local (Docker)"
-depends = ["test:ctt"]
+depends = ["ctt:test"]
 run = "uv run --no-project python .mise/scripts/test_ci.py"
 
-[tasks."test:docs"]
+[tasks."docs:test"]
 description = "Build the documentation site in strict mode (fails on broken links)"
 run = "zensical build --strict --clean"
 

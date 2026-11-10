@@ -1,6 +1,6 @@
 # Development
 
-Working on brigade itself. Requires [mise](https://mise.jdx.dev/) and, for `test:ci`, a running Docker.
+Working on brigade itself. Requires [mise](https://mise.jdx.dev/) and, for `ci:test`, a running Docker.
 
 ```sh
 mise trust && mise install
@@ -25,12 +25,12 @@ mise run docs:serve
 
 `mise run test` runs:
 
-- `test:ctt`: renders each `ctt.toml` variant into `.ctt/src/.ctt/` with [ctt](https://github.com/KyleKing/copier-template-tester), creates a real project there with the ecosystem's tool, then runs its stages. ctt only sees files tracked by git: `git add` new template files before testing.
-- `test:update`: for each variant, applies the latest release, updates to the current commit with `mise run brigade:update`, then runs the stages.
-- `test:ci`: runs each variant's generated CI locally with its `brigade:ci-local` task: [act](https://github.com/nektos/act) (GitHub, Gitea) or [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab). It needs Docker; Docker Desktop's socket is found on macOS.
-- `test:docs`: builds this site in strict mode, which fails on broken links.
+- `ctt:test`: renders each `ctt.toml` variant into `.ctt/` with [ctt](https://github.com/KyleKing/copier-template-tester), creates a real project there with the ecosystem's tool, then runs its stages. ctt only sees files tracked by git: `git add` new template files before testing.
+- `update:test`: for each variant, applies the latest release, updates to the current commit with `mise run brigade:update`, then runs the stages.
+- `ci:test`: runs each variant's generated CI locally with its `brigade:ci-local` task: [act](https://github.com/nektos/act) (GitHub, Gitea) or [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab). It needs Docker; Docker Desktop's socket is found on macOS.
+- `docs:test`: builds this site in strict mode, which fails on broken links.
 
-brigade's CI runs `test:ctt` and `test:update` on Linux, macOS and Windows (developer OSes), and `test:ci` on Linux (generated CI runs in Linux containers).
+brigade's CI runs these tests on Linux only.
 The site is deployed to GitHub Pages on each push to `main`.
 
 ## Versions and releases

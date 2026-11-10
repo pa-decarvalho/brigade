@@ -18,8 +18,9 @@ name: CI
 
 on:
   pull_request:
-  # Releases: the release stage only runs on these tags.
   push:
+    # release runs on main (the default branch), deploy on X.Y.Z tags.
+    branches: [main]
     tags: ["*.*.*"]
   # Deploy without a release, e.g. a typo in the documentation.
   workflow_dispatch:
@@ -59,13 +60,14 @@ jobs:
   release:{{ needs() }}
     if: >-
       {% raw %}${{ !cancelled() && !failure()
-      && startsWith(github.ref, 'refs/tags/') }}{% endraw %}
+      && github.event_name == 'push' && github.ref_type == 'branch' }}{% endraw %}
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: {% raw %}${{ github.token }}{% endraw %}
-      # Publishing tokens, from the repository secrets.
-      UV_PUBLISH_TOKEN: {% raw %}${{ secrets.UV_PUBLISH_TOKEN }}{% endraw %}
-      CARGO_REGISTRY_TOKEN: {% raw %}${{ secrets.CARGO_REGISTRY_TOKEN }}{% endraw %}
+      RELEASAURUS_FORGE: gitea
+      RELEASAURUS_REPO: {% raw %}${{ github.server_url }}/${{ github.repository }}{% endraw %}
+      # A bot token: tags pushed with the workflow token start no CI.
+      RELEASAURUS_GITEA_TOKEN: {% raw %}${{ secrets.RELEASAURUS_GITEA_TOKEN }}{% endraw %}
 {{- steps('release') }}
 {%- set _ = done.append('release') %}
 {%- endif %}

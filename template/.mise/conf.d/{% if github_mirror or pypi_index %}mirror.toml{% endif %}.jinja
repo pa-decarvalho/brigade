@@ -1,4 +1,4 @@
-# Downloads go through internal mirrors (Copier answers: github_mirror, pypi_index, rustup_mirror).
+# Downloads go through internal mirrors (Copier answers: github_mirror, pypi_index).
 {%- if github_mirror %}
 
 [settings.url_replacements]
@@ -10,15 +10,9 @@
 # Index of the tools mise installs with uv (pipx backend).
 registry_url = "{{ pypi_index.rstrip('/') }}/{}"
 {%- endif %}
-{%- if pypi_index or rustup_mirror %}
+{%- if pypi_index %}
 
 [env]
-{%- if pypi_index %}
 # Index of uv and uvx run by tasks.
 UV_DEFAULT_INDEX = "{{ pypi_index.rstrip('/') }}"
-{%- endif %}
-{%- if rustup_mirror %}
-RUSTUP_DIST_SERVER = "{{ rustup_mirror.rstrip('/') }}"
-RUSTUP_UPDATE_ROOT = "{{ rustup_mirror.rstrip('/') }}/rustup"
-{%- endif %}
 {%- endif %}

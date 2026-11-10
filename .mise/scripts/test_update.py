@@ -16,7 +16,10 @@ COPIER = ["uvx", "copier@9.19.1"]
 GIT = ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost"]
 
 repo = Path.cwd()
-tag = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True, check=True).stdout.strip()
+described = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True)
+if described.returncode:
+    raise SystemExit(print("--- no release tag yet: nothing to update from") or 0)
+tag = described.stdout.strip()
 variants = tomllib.loads((repo / "ctt.toml").read_text())["output"]
 
 
