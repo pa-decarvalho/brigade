@@ -1,5 +1,9 @@
 ---
+# Runs in merge request pipelines, next to the other stages.
 test:
   stage: test
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - mise run test

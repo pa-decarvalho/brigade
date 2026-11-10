@@ -1,0 +1,24 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Runs on pushes to main (the default branch): mise run release.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      RELEASAURUS_FORGE: gitea
+      RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
+      # Optional bot token: the release PR and tag made with the workflow token
+      # start no CI (merge the PR with a bypass, run deploy by hand).
+      RELEASAURUS_GITEA_TOKEN: >-
+        ${{ secrets.RELEASAURUS_GITEA_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.gitea/actions/mise
+      - run: mise run release

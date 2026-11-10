@@ -1,5 +1,9 @@
 ---
+# Runs in merge request pipelines, next to the other stages.
 lint:
   stage: lint
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - mise run lint
