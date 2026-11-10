@@ -36,7 +36,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
-| `pages` | `pages:deploy` | GitHub: `zensical build --strict && ghp-import -n -p -f site`. GitLab: `zensical build --strict` |
+| `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ci-local` | `brigade:ci-local` | Runs the CI locally: see below |
 
 The CI platform adds its own linter (`actionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
@@ -59,7 +59,7 @@ On GitHub and Gitea, it works with the CI's own token, but the release pull requ
 
 CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
 
-`pages` needs the `zensical` tool, and GitHub or GitLab.
+`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes `site/`: `zensical`, or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
 
 - **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages, choose "Deploy from a branch" and `gh-pages`.
 - **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
