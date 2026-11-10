@@ -13,6 +13,6 @@ run = '''{{ renovate_operate_command | default('renovate', true) }}'''
 
 [tasks."renovate:operate".tools]
 # renovate: datasource=node-version depName=node
-node = "{{ renovate_node_version | default('24.22.2', true) }}"
+node = "{{ renovate_node_version | default('26.13.0', true) }}"
 # renovate: datasource=npm depName=renovate
 "npm:renovate" = "{{ renovate_cli_version | default('44.221.4', true) }}"
