@@ -1,0 +1,24 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Runs on X.Y.Z tags: mise run deploy.
+name: Deploy
+
+on:
+  push:
+    tags: ["*.*.*"]
+  # Deploy without a release, e.g. a typo in the documentation.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # pages:deploy pushes the gh-pages branch
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      GIT_COMMITTER_NAME: ${{ github.actor }}
+      GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/mise
+      - run: mise run deploy
