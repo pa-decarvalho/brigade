@@ -47,9 +47,9 @@ CI runs this stage on pushes to the default branch (`main`), after the other sta
 
 With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the Conventional Commits since the last tag and opens or updates a release pull request, with the next version and a `CHANGELOG.md`. Once you merge it, the next run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on GitHub, GitLab, Gitea and Forgejo.
 
-It needs a bot token, not the CI's own token: the tag it pushes must start the CI, which runs `deploy`.
+On GitHub and Gitea, it works with the CI's own token, but the release pull request and the tag it makes start no CI: merge the release pull request with a bypass of the required checks, and run `deploy` by hand. With a bot token, both start the CI as usual. GitLab needs the token.
 
-| CI | Secret or CI/CD variable | Scopes |
+| CI | Secret or CI/CD variable (bot token) | Scopes |
 |---|---|---|
 | GitHub | `RELEASAURUS_GITHUB_TOKEN` | Contents, Issues and Pull requests: read and write |
 | GitLab | `RELEASAURUS_GITLAB_TOKEN` | `api`, `write_repository` |

@@ -66,8 +66,10 @@ jobs:
       GITHUB_TOKEN: {% raw %}${{ github.token }}{% endraw %}
       RELEASAURUS_FORGE: gitea
       RELEASAURUS_REPO: {% raw %}${{ github.server_url }}/${{ github.repository }}{% endraw %}
-      # A bot token: tags pushed with the workflow token start no CI.
-      RELEASAURUS_GITEA_TOKEN: {% raw %}${{ secrets.RELEASAURUS_GITEA_TOKEN }}{% endraw %}
+      # Optional bot token: the release PR and tag made with the workflow token
+      # start no CI (merge the PR with a bypass, run deploy by hand).
+      RELEASAURUS_GITEA_TOKEN: >-
+        {% raw %}${{ secrets.RELEASAURUS_GITEA_TOKEN || github.token }}{% endraw %}
 {{- steps('release') }}
 {%- set _ = done.append('release') %}
 {%- endif %}
