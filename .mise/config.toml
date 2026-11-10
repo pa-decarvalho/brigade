@@ -11,6 +11,7 @@ typos = "1.52.0"
 "pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
 "pipx:zensical" = "0.1.0"
 "pipx:copier-template-tester" = { version = "3.0.0", uvx_args = "--with copier==9.19.1" }
+"aqua:robgonnella/releasaurus" = "1.3.0"
 
 [env]
 # Generated projects in .ctt/ run their own mise tasks, isolated from this config.
@@ -27,6 +28,10 @@ depends = ["lint:*"]
 [tasks.test]
 description = "Stage: tests"
 depends = ["*:test"]
+
+[tasks.release]
+description = "Stage: open the release PR, then tag X.Y.Z (no \"v\") once it is merged"
+run = "releasaurus release-pr --tag-prefix '' && releasaurus release"
 
 [tasks."lint:yamllint"]
 description = "Check YAML files with yamllint"
