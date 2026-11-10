@@ -22,7 +22,7 @@ description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
 depends = [{ task = "*:deploy", optional = true }]
 
 [tasks.operate]
-description = "Stage: operate (not run by CI yet)"
+description = "Stage: operate (CI runs it on manual runs, or GitLab schedules)"
 depends = [{ task = "*:operate", optional = true }]
 
 [tasks."brigade:pre-commit"]
