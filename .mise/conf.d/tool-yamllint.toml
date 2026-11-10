@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=pypi depName=yamllint
+"pipx:yamllint" = "1.38.0"
+
+[tasks."yamllint:lint"]
+description = "Check YAML files with yamllint"
+# Copier writes the answers file (lists without indentation); .mise-data is the GitLab CI tool cache.
+run = '''yamllint --strict -d "{extends: default, ignore: [.ctt/, template/, .mise-data/, .mise/brigade-copier-answers.yml], rules: {truthy: {check-keys: false}, new-lines: disable}}" .'''

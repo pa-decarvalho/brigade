@@ -1,0 +1,10 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+name: mise
+description: Install brigade's pinned mise and the project's tools
+runs:
+  using: composite
+  steps:
+    - uses: jdx/mise-action@v5.2.6
+      with:
+        version: 2026.11.2

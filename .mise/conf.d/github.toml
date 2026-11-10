@@ -1,0 +1,6 @@
+[tools]
+actionlint = "1.7.12"
+
+[tasks."actionlint:lint"]
+description = "Check GitHub workflows with actionlint"
+run = "actionlint"

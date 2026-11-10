@@ -1,0 +1,34 @@
+# Pipeline stages, in order. Each stage runs its commands if it has some, otherwise every
+# "<tool>:<stage>" task; tools have one file each in .mise/conf.d/.
+
+[tasks.lint]
+description = "Stage: static checks"
+depends = [{ task = "*:lint", optional = true }]
+
+[tasks.build]
+description = "Stage: build"
+depends = [{ task = "*:build", optional = true }]
+
+[tasks.test]
+description = "Stage: tests"
+depends = [{ task = "*:test", optional = true }]
+
+[tasks.release]
+description = "Stage: release (CI runs it on pushes to the default branch)"
+depends = [{ task = "*:release", optional = true }]
+
+[tasks.deploy]
+description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
+depends = [{ task = "*:deploy", optional = true }]
+
+[tasks.operate]
+description = "Stage: operate (not run by CI yet)"
+depends = [{ task = "*:operate", optional = true }]
+
+[tasks."brigade:pre-commit"]
+description = "Checks run by the git pre-commit hook"
+depends = ["lint"]
+
+[tasks."brigade:hooks"]
+description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
+run = "mise generate git-pre-commit --task brigade:pre-commit --write"

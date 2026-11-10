@@ -24,6 +24,7 @@
                 "/^\\.mise/config\\.toml$/",
                 "/^template/\\.mise/config\\.toml$/",
                 "/^template/\\.mise/conf\\.d/.*tool-ctt.*\\.jinja$/",
+                "/^\\.mise/conf\\.d/tool-ctt\\.toml$/",
                 "/^ctt\\.toml$/",
                 "/^README\\.md$/",
                 "/^\\.mise/scripts/[^/]+\\.py$/",

@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=pypi depName=ghp-import
+"pipx:ghp-import" = "2.1.0"
+
+[tasks."pages:deploy"]
+description = "Build the documentation site for Pages"
+run = '''zensical build --strict && ghp-import -n -p -f site'''

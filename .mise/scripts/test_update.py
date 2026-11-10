@@ -16,6 +16,9 @@ COPIER = ["uvx", "copier@9.19.1"]
 GIT = ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost"]
 
 repo = Path.cwd()
+# CI checks out one commit: fetch the history and tags to find the latest release.
+if subprocess.run(["git", "rev-parse", "--is-shallow-repository"], capture_output=True, text=True).stdout.strip() == "true":
+    subprocess.run(["git", "fetch", "--quiet", "--unshallow", "--tags"], check=True)
 described = subprocess.run(["git", "describe", "--tags", "--abbrev=0"], capture_output=True, text=True)
 if described.returncode:
     raise SystemExit(print("--- no release tag yet: nothing to update from") or 0)
