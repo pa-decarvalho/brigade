@@ -35,10 +35,6 @@ tools:
       value: ci-local
       validator: "{% if ci == 'none' %}needs a CI platform{% endif %}"
   default: [yamllint, gitleaks, typos]
-  # Checked once tools are picked: a choice's own validator runs before that.
-  validator: >-
-    {% if 'pages' in tools and 'zensical' not in tools %}pages needs
-    zensical{% endif %}
 
 # Stages: keep one or not, and its commands (empty: all its tools).
 lint_enabled:

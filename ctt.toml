@@ -49,6 +49,9 @@ _post_tasks = [
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
+    # No build stage: pages:deploy still builds site/ through zensical:build.
+    ["mise", "run", "deploy"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; assert pathlib.Path('site/index.html').is_file()"],
 ]
 
 [output.".ctt/python-gitea"]
