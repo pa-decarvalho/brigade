@@ -47,6 +47,21 @@ CI runs this stage on its own, on pushes to the default branch (`main`): `lint`,
 
 With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the Conventional Commits since the last tag and opens or updates a release pull request, with the next version and a `CHANGELOG.md`. Once you merge it, the next run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on GitHub, GitLab, Gitea and Forgejo.
 
+By default, every Conventional Commit (`ci:`, `docs:`, `chore:`...) makes a release. To release on `feat` and `fix` only, add a `releasaurus.toml` that skips the other groups, which also leaves them out of `CHANGELOG.md`:
+
+```toml
+[defaults.versioning.named_parsers]
+refactor.skip = true
+documentation.skip = true
+style.skip = true
+test.skip = true
+chore.skip = true
+ci.skip = true
+miscellaneous.skip = true
+```
+
+See [Releasaurus commit groups](https://releasaurus.rgon.io/changelog.html).
+
 On GitHub and Gitea, it works with the CI's own token, but the release pull request and the tag it makes start no CI: merge the release pull request with a bypass of the required checks, and run `deploy` by hand. With a bot token, both start the CI as usual. GitLab needs the token.
 
 | CI | Secret or CI/CD variable (bot token) | Scopes |

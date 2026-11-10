@@ -45,6 +45,6 @@ Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.gith
 
 It needs a `RENOVATE_TOKEN` secret: a fine-grained token on this repo with contents, pull requests, issues, workflows and commit statuses read/write.
 
-Commits and PR titles follow Conventional Commits. On each push to `main`, the CI's `release` job runs [Releasaurus](https://github.com/robgonnella/releasaurus) (`mise run release`): it opens or updates the release PR, and once merged tags `X.Y.Z` and updates `CHANGELOG.md`; Copier uses these tags as template versions.
+Commits and PR titles follow Conventional Commits. On each push to `main`, the CI's `release` job runs [Releasaurus](https://github.com/robgonnella/releasaurus) (`mise run release`): it opens or updates the release PR, and once merged tags `X.Y.Z` and updates `CHANGELOG.md`; Copier uses these tags as template versions. `releasaurus.toml` makes a release on `feat`, `fix`, `perf`, `revert` and breaking changes only: other commits do not change the template.
 
 It uses the workflow token: the release PR and the tag start no CI, so the release PR is merged with a bypass of the required checks, and the site is deployed by a manual run of the CI workflow.

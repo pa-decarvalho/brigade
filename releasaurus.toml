@@ -1,0 +1,10 @@
+# Release on feat, fix, perf, revert and breaking changes only, as release-please did:
+# other commits do not change the template. They are left out of CHANGELOG.md too.
+[defaults.versioning.named_parsers]
+refactor.skip = true
+documentation.skip = true
+style.skip = true
+test.skip = true
+chore.skip = true
+ci.skip = true
+miscellaneous.skip = true
