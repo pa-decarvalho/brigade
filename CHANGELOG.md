@@ -1,3 +1,9 @@
+# [0.1.1](https://github.com/pa-decarvalho/brigade/compare/0.1.0...0.1.1) - 2026-11-10
+
+### 🐛 Bug Fixes
+
+- run releasaurus release before release-pr (#69) [_(9cb9487)_](https://github.com/pa-decarvalho/brigade/commit/9cb9487d234974b99b9b5173343b16db42d6a5c4)
+
 # [0.1.0](https://github.com/pa-decarvalho/brigade/releases/tag/0.1.0) - 2026-11-10
 
 ### 🚀 Features
