@@ -43,7 +43,7 @@ The CI platform adds its own linter (`actionlint:lint`, `gitlab-ci:lint`): see [
 
 ## release
 
-CI runs this stage on pushes to the default branch (`main`), after the other stages.
+CI runs this stage on its own, on pushes to the default branch (`main`): `lint`, `build` and `test` already ran on the pull request.
 
 With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the Conventional Commits since the last tag and opens or updates a release pull request, with the next version and a `CHANGELOG.md`. Once you merge it, the next run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on GitHub, GitLab, Gitea and Forgejo.
 
@@ -57,7 +57,7 @@ On GitHub and Gitea, it works with the CI's own token, but the release pull requ
 
 ## deploy
 
-CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
+CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
 
 `pages` needs the `zensical` tool, and GitHub or GitLab.
 

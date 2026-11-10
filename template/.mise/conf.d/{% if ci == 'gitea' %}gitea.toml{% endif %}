@@ -3,4 +3,5 @@ actionlint = "1.7.12"
 
 [tasks."actionlint:lint"]
 description = "Check Gitea/Forgejo workflows with actionlint"
-run = "actionlint .gitea/workflows/ci.yml"
+# actionlint only finds .github/workflows by itself; Python globs on every OS.
+run = '''uv run --no-project python -c "import glob, subprocess, sys; sys.exit(subprocess.call(['actionlint', *glob.glob('.gitea/workflows/*.yml')]))"'''

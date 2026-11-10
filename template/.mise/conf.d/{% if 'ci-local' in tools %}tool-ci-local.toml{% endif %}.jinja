@@ -2,7 +2,7 @@
 [tasks."brigade:ci-local"]
 description = "Run this project's CI locally, in Docker"
 {%- if ci == 'gitlab' %}
-run = '''{{ ci_local_command | default('gitlab-ci-local', true) }}'''
+run = '''{{ ci_local_command | default('gitlab-ci-local --variable CI_PIPELINE_SOURCE=merge_request_event', true) }}'''
 
 [tasks."brigade:ci-local".tools]
 # renovate: datasource=node-version depName=node

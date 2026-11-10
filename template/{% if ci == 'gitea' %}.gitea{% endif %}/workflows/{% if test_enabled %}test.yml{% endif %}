@@ -1,0 +1,17 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Runs on pull requests: mise run test (.mise/conf.d/stages.toml).
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.gitea/actions/mise
+      - run: mise run test
