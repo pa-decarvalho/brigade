@@ -1,3 +1,9 @@
+# [0.2.1](https://github.com/pa-decarvalho/brigade/compare/0.2.0...0.2.1) - 2026-11-10
+
+### ⏩ CI/CD
+
+- update brigade to 0.2.0 (#77) [_(791fb3a)_](https://github.com/pa-decarvalho/brigade/commit/791fb3a7d79ada465a4dc2d8595d0541dfcf6bb0)
+
 # [0.2.0](https://github.com/pa-decarvalho/brigade/compare/0.1.2...0.2.0) - 2026-11-10
 
 ### 🚀 Features
