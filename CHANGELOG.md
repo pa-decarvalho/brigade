@@ -1,3 +1,17 @@
+# [0.2.0](https://github.com/pa-decarvalho/brigade/compare/0.1.2...0.2.0) - 2026-11-10
+
+### 🚀 Features
+
+- one CI workflow per stage, lint/build/test on pull requests only (#75) [_(ab136ae)_](https://github.com/pa-decarvalho/brigade/commit/ab136ae72d18545a2aa31d7813983df687cd18e8)
+
+### 🐛 Bug Fixes
+
+- pages publishes site/, whatever tool builds it (#76) [_(d9b7cb1)_](https://github.com/pa-decarvalho/brigade/commit/d9b7cb1eb8edfd57dcfec99d7d92ce18618ad866)
+
+### ⏩ CI/CD
+
+- generate brigade with brigade (#73) [_(9fb660a)_](https://github.com/pa-decarvalho/brigade/commit/9fb660a98c6683832029369eda4c186ea9397e9a)
+
 # [0.1.2](https://github.com/pa-decarvalho/brigade/compare/0.1.1...0.1.2) - 2026-11-10
 
 ### 🐛 Bug Fixes
