@@ -10,3 +10,21 @@ renovate_lint_command:
   help: Command of renovate:lint (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'renovate' in tools }}"
+
+renovate_operate_command:
+  type: str
+  help: Command of renovate:operate (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'renovate' in tools }}"
+
+renovate_cli_version:
+  type: str
+  help: Renovate version for renovate:operate (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'renovate' in tools }}"
+
+renovate_node_version:
+  type: str
+  help: Node.js version for renovate:operate (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'renovate' in tools }}"

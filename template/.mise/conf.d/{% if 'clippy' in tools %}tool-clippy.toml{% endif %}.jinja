@@ -1,5 +1,0 @@
-# The rust toolchain comes from rust.toml.
-
-[tasks."clippy:lint"]
-description = "Check code with clippy"
-run = '''{{ clippy_lint_command | default('cargo clippy --all-targets -- -D warnings', true) }}'''

@@ -4,7 +4,7 @@
 [defaults]
 
 [output.".ctt/python-github"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "ci-local", "uv", "zensical", "pages", "pypi"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "ci-local", "uv", "zensical", "pages", "releasaurus"]
 ci = "github"
 # The lint stage runs these commands, in order.
 lint_commands = ["mise run ruff:lint", "mise run typos:lint"]
@@ -26,8 +26,10 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitlab"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "ci-local"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "ci-local", "zensical", "pages"]
 ci = "gitlab"
+# No build stage: the other CI jobs must not depend on it.
+build_enabled = false
 # Custom version and command for a tool.
 customize_tools = true
 typos_version = "1.51.1"
@@ -37,9 +39,11 @@ _post_tasks = [
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
+    # The documentation source: brigade only adds the build and deploy tools.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \"demo\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
-    # After the render: starts with mise so that test:update, which runs other tasks first, skips it.
+    # After the render: starts with mise so that update:test, which runs other tasks first, skips it.
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.mise/conf.d'); assert '1.51.1' in (d / 'tool-typos.toml').read_text(); assert 'ruff check .' in (d / 'tool-ruff.toml').read_text()"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
@@ -65,49 +69,17 @@ _post_tasks = [
     ["mise", "run", "test"],
 ]
 
-[output.".ctt/rust-github"]
-tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo", "ci-local"]
-ci = "github"
-_post_tasks = [
-    ["git", "init", "-q"],
-    ["cargo", "init", "--lib", "--name", "demo"],
-    ["git", "add", "-A"],
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
-    ["mise", "run", "brigade:hooks"],
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
-    ["mise", "run", "lint"],
-    ["mise", "run", "build"],
-    ["mise", "run", "test"],
-]
-
-[output.".ctt/rust-gitlab"]
-tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo", "ci-local", "zensical", "pages", "crates"]
-ci = "gitlab"
-# No build stage: the other CI jobs must not depend on it.
-build_enabled = false
-_post_tasks = [
-    ["git", "init", "-q"],
-    ["cargo", "init", "--lib", "--name", "demo"],
-    # The documentation source: brigade only adds the build and deploy tools.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \"demo\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n')"],
-    ["git", "add", "-A"],
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
-    ["mise", "run", "brigade:hooks"],
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
-    ["mise", "run", "lint"],
-    ["mise", "run", "test"],
-]
-
-[output.".ctt/rust-mirror"]
-tools = ["yamllint", "gitleaks", "typos", "clippy", "rustfmt", "cargo"]
+[output.".ctt/python-mirror"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv"]
 ci = "none"
 # Mirrors set to the upstream servers: checks the generated settings, not a real mirror.
 github_mirror = "https://github.com/"
 pypi_index = "https://pypi.org/simple"
-rustup_mirror = "https://static.rust-lang.org"
 _post_tasks = [
     ["git", "init", "-q"],
-    ["cargo", "init", "--lib", "--name", "demo"],
+    ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
+    ["uv", "add", "--dev", "pytest==9.2.0"],
+    ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_import():\\n    assert demo\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "brigade:hooks"],
@@ -138,12 +110,10 @@ _post_tasks = [
 # A Copier template project.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "ci-local"]
 ci = "github"
-customize_tools = true
-# ponytail: --list avoids ctt 3.0.0's git snapshot, which fails on Windows. Back to the default when fixed.
-ctt_test_command = "ctt --list"
 _post_tasks = [
     ["git", "init", "-q"],
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\n')"],
+    # A one-file Copier template and its ctt variant.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "brigade:hooks"],

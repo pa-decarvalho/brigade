@@ -2,7 +2,7 @@
 
 Pick your tools in one list when applying brigade. A tool brings its version and all its tasks, in one file: `.mise/conf.d/tool-<tool>.toml`.
 
-Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`, and each runs every `<tool>:<stage>` task. Any other action, such as `zensical:serve`, stays out of the pipeline.
+Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`, `operate`, and each runs every `<tool>:<stage>` task. Any other action, such as `zensical:serve`, stays out of the pipeline.
 
 ## Stages
 
@@ -28,18 +28,14 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.mise/**/*.toml` (fails on Windows checkouts with CRLF line endings) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
+| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`) |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check` |
-| `clippy` | `clippy:lint` | `cargo clippy --all-targets -- -D warnings` |
-| `rustfmt` | `rustfmt:lint` | `cargo fmt --check` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
-| `cargo` | `cargo:build` | `cargo build --release` |
-| | `cargo:test` | `cargo test` |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
-| `pypi` | `pypi:release` | `uv build && uv publish` |
-| `crates` | `crates:release` | `cargo publish` |
+| `releasaurus` | `releasaurus:release` | `releasaurus release-pr --tag-prefix '' && releasaurus release`: see [release](#release) |
 | `pages` | `pages:deploy` | GitHub: `zensical build --strict && ghp-import -n -p -f site`. GitLab: `zensical build --strict` |
 | `ci-local` | `brigade:ci-local` | Runs the CI locally: see below |
 
@@ -47,18 +43,21 @@ The CI platform adds its own linter (`actionlint:lint`, `gitlab-ci:lint`): see [
 
 ## release
 
-CI runs this stage only on tags `X.Y.Z` (or `vX.Y.Z`), after the other stages.
+CI runs this stage on pushes to the default branch (`main`), after the other stages.
 
-| Tool | Auth |
-|---|---|
-| `pypi` | GitHub: [trusted publishing](https://docs.pypi.org/trusted-publishers/); otherwise a `UV_PUBLISH_TOKEN` secret |
-| `crates` | a `CARGO_REGISTRY_TOKEN` secret |
+With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the Conventional Commits since the last tag and opens or updates a release pull request, with the next version and a `CHANGELOG.md`. Once you merge it, the next run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on GitHub, GitLab, Gitea and Forgejo.
 
-Secrets are repository secrets (GitHub, Gitea) or CI/CD variables (GitLab), under these names.
+It needs a bot token, not the CI's own token: the tag it pushes must start the CI, which runs `deploy`.
+
+| CI | Secret or CI/CD variable | Scopes |
+|---|---|---|
+| GitHub | `RELEASAURUS_GITHUB_TOKEN` | Contents, Issues and Pull requests: read and write |
+| GitLab | `RELEASAURUS_GITLAB_TOKEN` | `api`, `write_repository` |
+| Gitea, Forgejo | `RELEASAURUS_GITEA_TOKEN` | repository, issue and misc: read and write |
 
 ## deploy
 
-CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`) and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
+CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
 
 `pages` needs the `zensical` tool, and GitHub or GitLab.
 
@@ -67,12 +66,13 @@ CI runs this stage after the others, on tags `X.Y.Z` (or `vX.Y.Z`) and on a manu
 
 Add `site/` and `.cache/` to your `.gitignore`.
 
-## Toolchains
+## operate
 
-| Toolchain | Create the project with | Installed |
-|---|---|---|
-| Python | `uv init` | `uv` is always installed; it picks Python from `.python-version` and `requires-python` |
-| Rust | `cargo init` | `.mise/conf.d/rust.toml`, as soon as `clippy`, `rustfmt`, `cargo` or `crates` is selected, with `clippy` and `rustfmt` |
+Operations that do not belong to a release, such as `renovate:operate`. CI does not run this stage yet: run it with `mise run operate`.
+
+## Toolchain
+
+Create the project with `uv init`: `uv` is always installed, and picks Python from `.python-version` and `requires-python`.
 
 ## Run the CI locally
 

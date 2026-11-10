@@ -5,7 +5,7 @@ Requires [mise](https://mise.jdx.dev/) and git.
 ## Create the project, then apply brigade
 
 ```sh
-uv init my-project            # or cargo init my-project, ...
+uv init my-project
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-project
 cd my-project
 mise trust && mise install
@@ -40,7 +40,6 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
   conf.d/
     stages.toml                   # lint, build, test, release, deploy and the git hook tasks
     tool-<tool>.toml              # one per tool, e.g. tool-ruff.toml
-    rust.toml                     # rust toolchain, when a tool needs it
     <ci>.toml                     # CI file linter
     mirror.toml                   # only with mirrors
 <CI files>                        # see CI platforms (some are yours to edit)

@@ -4,8 +4,9 @@
   ('lint', 'static checks', lint_enabled, lint_commands),
   ('build', 'build', build_enabled, build_commands),
   ('test', 'tests', test_enabled, test_commands),
-  ('release', 'publish (CI runs it on X.Y.Z tags)', release_enabled, release_commands),
+  ('release', 'release (CI runs it on pushes to the default branch)', release_enabled, release_commands),
   ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands),
+  ('operate', 'operate (not run by CI yet)', operate_enabled, operate_commands),
 ] %}
 {%- if enabled %}
 

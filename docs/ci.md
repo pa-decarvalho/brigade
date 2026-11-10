@@ -8,7 +8,7 @@ Jobs only install mise and call `mise run <stage>`, so CI and laptops run the sa
 
 | File | Role |
 |---|---|
-| `.github/workflows/ci.yml` | On pull requests, `X.Y.Z` tags and manual runs: one job per stage. `release` runs on `X.Y.Z` tags only, `deploy` also on a manual run. |
+| `.github/workflows/ci.yml` | On pull requests, pushes to `main`, `X.Y.Z` tags and manual runs: one job per stage. `release` runs on pushes to `main`, `deploy` on `X.Y.Z` tags and manual runs. |
 | `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 
 `actionlint:lint` checks the workflows.
@@ -39,16 +39,15 @@ jobs:
       - run: mise run test
 ```
 
-It runs next to the CI, so it does not hold back the `release` job of a tag.
+It runs next to the CI, so it does not hold back the `deploy` job of a tag.
 
 ## GitLab (`ci: gitlab`)
 
 | File | Role |
 |---|---|
 | `.gitlab-ci.yml` | Stages, and includes every `.gitlab/ci/*.yml`. |
-| `.gitlab/ci/default.yml` | The mise image and the tool cache. |
-| `.gitlab/ci/setup.yml` | `mise install`, and the C toolchain the Rust linker needs when a tool needs it. |
-| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`; `release` runs on `X.Y.Z` tags only, `deploy` also on "Run pipeline". |
+| `.gitlab/ci/default.yml` | The mise image, the tool cache and `mise install`. |
+| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`; `release` runs on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline". |
 
 To add jobs, create your own file in `.gitlab/ci/`, with a name brigade does not generate: it is included automatically, and GitLab merges included files.
 
@@ -64,7 +63,7 @@ extra:
 
 ## Manual run
 
-To deploy without a release, use "Run workflow" on GitHub and Gitea, or "Run pipeline" on GitLab. The stages run, except `release`, then `deploy`.
+To deploy without a release, use "Run workflow" on GitHub and Gitea, or "Run pipeline" on GitLab. The stages run, except `release`, then `deploy`. `operate` has no CI job yet.
 
 ## Gitea and Forgejo (`ci: gitea`)
 

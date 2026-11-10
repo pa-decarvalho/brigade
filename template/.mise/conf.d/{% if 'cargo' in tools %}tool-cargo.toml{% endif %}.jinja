@@ -1,9 +1,0 @@
-# The rust toolchain comes from rust.toml.
-
-[tasks."cargo:build"]
-description = "Build the Rust project in release mode with cargo"
-run = '''{{ cargo_build_command | default('cargo build --release', true) }}'''
-
-[tasks."cargo:test"]
-description = "Run tests with cargo"
-run = '''{{ cargo_test_command | default('cargo test', true) }}'''

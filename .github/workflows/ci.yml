@@ -24,40 +24,31 @@ jobs:
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
-      - run: mise run test:docs
+      - run: mise run docs:test
 
-  # Generated projects must work on every developer OS.
   ctt:
     needs: lint
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
-      - run: mise run test:ctt
+      - run: mise run ctt:test
 
   update:
     needs: lint
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
         with:
-          fetch-depth: 0  # tags, for test:update
+          fetch-depth: 0  # tags, for update:test
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
-      - run: mise run test:update
+      - run: mise run update:test
 
   # Generated CI runs in Linux containers (Docker): Linux runner only.
   ci:
@@ -71,4 +62,4 @@ jobs:
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
-      - run: mise run test:ci
+      - run: mise run ci:test

@@ -11,7 +11,6 @@ Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run 
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |
 | `pypi_index` | URL | empty | PyPI simple index: see [Mirrors](mirrors.md). |
-| `rustup_mirror` | URL | empty | Rustup mirror (`rust` only): see [Mirrors](mirrors.md). |
 
 To change an answer later:
 

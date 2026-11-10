@@ -26,7 +26,7 @@ jobs:
       - uses: jdx/mise-action@v5.2.6
         with:
           version: 2026.11.2
-      - run: mise run test:docs
+      - run: mise run docs:test
       - uses: actions/configure-pages@v6.0.0
       - uses: actions/upload-pages-artifact@v5.0.0
         with:

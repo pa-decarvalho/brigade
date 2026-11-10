@@ -1,5 +1,0 @@
-# The rust toolchain comes from rust.toml.
-
-[tasks."rustfmt:lint"]
-description = "Check formatting with rustfmt"
-run = '''{{ rustfmt_lint_command | default('cargo fmt --check', true) }}'''

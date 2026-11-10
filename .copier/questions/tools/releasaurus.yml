@@ -1,0 +1,12 @@
+---
+releasaurus_version:
+  type: str
+  help: releasaurus version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'releasaurus' in tools }}"
+
+releasaurus_release_command:
+  type: str
+  help: Command of releasaurus:release (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'releasaurus' in tools }}"

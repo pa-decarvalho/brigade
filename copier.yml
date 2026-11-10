@@ -3,6 +3,4 @@
 ---
 !include .copier/questions/common.yml
 ---
-!include .copier/questions/toolchains/*.yml
----
 !include .copier/questions/tools/*.yml

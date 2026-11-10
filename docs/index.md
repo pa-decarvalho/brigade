@@ -13,7 +13,7 @@ The same commands run on a laptop (Linux, macOS, Windows) and in CI.
 
 ## What it does not do
 
-- Create the project: use the ecosystem's own tool (`uv init`, `cargo init`, ...), then apply brigade on top.
+- Create the project: use the ecosystem's own tool (`uv init`, ...), then apply brigade on top.
 - Write source code, package manifests or tool config files. Tool options are given inline in the mise tasks.
 
 Next: [Getting started](getting-started.md).
