@@ -6,7 +6,7 @@
   ('test', 'tests', test_enabled, test_commands),
   ('release', 'release (CI runs it on pushes to the default branch)', release_enabled, release_commands),
   ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands),
-  ('operate', 'operate (not run by CI yet)', operate_enabled, operate_commands),
+  ('operate', 'operate (CI runs it on manual runs, or GitLab schedules)', operate_enabled, operate_commands),
 ] %}
 {%- if enabled %}
 

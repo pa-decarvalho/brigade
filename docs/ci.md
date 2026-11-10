@@ -4,13 +4,13 @@ brigade generates the CI files and `mise run brigade:update` keeps them up to da
 
 Jobs only install mise and call `mise run <stage>`, so CI and laptops run the same tools.
 
-On every platform, `lint`, `build` and `test` run on pull requests (merge requests on GitLab), side by side; `release` runs on pushes to the default branch, and `deploy` on `X.Y.Z` tags and manual runs.
+On every platform, `lint`, `build` and `test` run on pull requests (merge requests on GitLab), side by side; `release` runs on pushes to the default branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs (scheduled pipelines on GitLab).
 
 ## GitHub (`ci: github`)
 
 | File | Role |
 |---|---|
-| `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs. |
+| `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs. |
 | `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 
 `actionlint:lint` checks the workflows.
@@ -48,7 +48,7 @@ jobs:
 |---|---|
 | `.gitlab-ci.yml` | Stages, and includes every `.gitlab/ci/*.yml`. |
 | `.gitlab/ci/default.yml` | The mise image, the tool cache and `mise install`. |
-| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`: `lint`, `build` and `test` in merge request pipelines (`needs: []`, side by side), `release` on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline". |
+| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`: `lint`, `build` and `test` in merge request pipelines (`needs: []`, side by side), `release` on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline", `operate` in scheduled pipelines. |
 
 To add jobs, create your own file in `.gitlab/ci/`, with a name brigade does not generate: it is included automatically, and GitLab merges included files.
 
@@ -64,7 +64,7 @@ extra:
 
 ## Manual run
 
-To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, Gitea), or "Run pipeline" on GitLab: only `deploy` runs. `operate` has no CI job yet.
+To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate`, use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline schedule on GitLab.
 
 ## Gitea and Forgejo (`ci: gitea`)
 

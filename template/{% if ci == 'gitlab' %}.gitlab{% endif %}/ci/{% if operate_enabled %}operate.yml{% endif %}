@@ -1,0 +1,15 @@
+---
+# Scheduled pipelines only (CI/CD > Schedules, "Play" to run it now):
+# mise run operate, e.g. Renovate with a RENOVATE_TOKEN CI/CD variable.
+operate:
+  stage: operate
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  variables:
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: $CI_API_V4_URL
+    RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
+    RENOVATE_ONBOARDING: "false"
+  script:
+    - mise run operate
