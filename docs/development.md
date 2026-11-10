@@ -42,4 +42,6 @@ Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.gith
 
 It needs a `RENOVATE_TOKEN` secret: a fine-grained token on this repo with contents, pull requests, issues, workflows and commit statuses read/write.
 
-Commits and PR titles follow Conventional Commits. Merging the release-please PR tags `X.Y.Z`; Copier uses these tags as template versions.
+Commits and PR titles follow Conventional Commits. On each push to `main`, `.github/workflows/release.yml` runs [Releasaurus](https://github.com/robgonnella/releasaurus) (`mise run release`): it opens or updates the release PR, and once merged tags `X.Y.Z` and updates `CHANGELOG.md`; Copier uses these tags as template versions.
+
+It uses the workflow token: the release PR it opens starts no CI, so it is merged with a bypass of the required checks.
