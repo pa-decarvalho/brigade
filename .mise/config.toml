@@ -30,8 +30,8 @@ description = "Stage: tests"
 depends = ["*:test"]
 
 [tasks.release]
-description = "Stage: open the release PR, then tag X.Y.Z (no \"v\") once it is merged"
-run = "releasaurus release-pr --tag-prefix '' && releasaurus release"
+description = "Stage: tag X.Y.Z (no \"v\") from a merged release PR, then open or update the next one"
+run = "releasaurus release && releasaurus release-pr --tag-prefix ''"
 
 [tasks."lint:yamllint"]
 description = "Check YAML files with yamllint"
@@ -54,7 +54,7 @@ run = [
 
 [tasks."lint:typos"]
 description = "Check spelling with typos"
-run = "typos --hidden --exclude .git"
+run = "typos --hidden --exclude .git --exclude CHANGELOG.md"
 
 [tasks."lint:renovate"]
 description = "Check the Renovate config"
