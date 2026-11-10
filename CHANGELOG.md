@@ -1,0 +1,113 @@
+# [0.1.0](https://github.com/pa-decarvalho/brigade/releases/tag/0.1.0) - 2026-11-10
+
+### 🚀 Features
+
+- release with Releasaurus, deploy to publish, operate for Renovate (#65) [_(e5a60b9)_](https://github.com/pa-decarvalho/brigade/commit/e5a60b921442a00781670f0af3b149de3430f168)
+
+- replace the CI plan job with per-stage commands in mise (#63) [_(4e72fe8)_](https://github.com/pa-decarvalho/brigade/commit/4e72fe8fea145579cf1ca97cd4543fb1c64e8f76)
+
+- pick tools in one list, with <tool>:<action> tasks (#61) [_(9476e15)_](https://github.com/pa-decarvalho/brigade/commit/9476e15ba77fab12042ad930d4d54f9459c9bad3)
+
+- add taplo, renovate, ctt and ci-local to the catalog (#58) [_(e30c929)_](https://github.com/pa-decarvalho/brigade/commit/e30c9298c8df71c19571c07586146e5266b95967)
+
+- add the deploy stage with Zensical and Pages (#57) [_(15a7f10)_](https://github.com/pa-decarvalho/brigade/commit/15a7f104f85afe85b57900171675178dbbd6bfc0)
+
+- customize tool versions and commands per tool (#56) [_(f2ef96b)_](https://github.com/pa-decarvalho/brigade/commit/f2ef96b7b2bcae6c7d04609c9be05bfe773e5790)
+
+- add build and release stages (#55) [_(ab886c1)_](https://github.com/pa-decarvalho/brigade/commit/ab886c1bff3e42b171a7f36531a6c2e12582b7ad)
+
+- pick tools per stage, with languages as presets (#53) [_(8e5e496)_](https://github.com/pa-decarvalho/brigade/commit/8e5e49626ca7449e28d4ccd7a308c8fbaa87d49a)
+
+- brigade-owned CI with user-owned ci.toml and custom.yml (#51) [_(00c9da2)_](https://github.com/pa-decarvalho/brigade/commit/00c9da22e4bd3db50cd7af7242e4297b7ee99d99)
+
+- add optional mirrors for corporate networks (#47) [_(dbb3460)_](https://github.com/pa-decarvalho/brigade/commit/dbb3460da94cc3bc8ee3d5a150bc4f800ed1aedf)
+
+- add a Gitea/Forgejo CI option (#46) [_(4f320c9)_](https://github.com/pa-decarvalho/brigade/commit/4f320c92e0d955b6256aa8b632e54d300967d77f)
+
+- move GitLab CI jobs to .gitlab/ci/ and rename the Copier answers file (#44) [_(23f3444)_](https://github.com/pa-decarvalho/brigade/commit/23f3444eadfdae4f92032853c8d236ab1e2aacc3)
+
+- add a rust project type (#42) [_(976e047)_](https://github.com/pa-decarvalho/brigade/commit/976e047ebde11ce02e03aa94d4d25aaf1c57ce8e)
+
+- add a git pre-commit hook that runs mise run lint [_(9afe0b8)_](https://github.com/pa-decarvalho/brigade/commit/9afe0b8a49f0266f5083ad9f20908752e02d2207)
+
+- add gitleaks and typos to the common lint stage [_(fd418e6)_](https://github.com/pa-decarvalho/brigade/commit/fd418e60d6b5988d02419ae3b066c851417235c6)
+
+- run Renovate weekly in a GitHub Actions workflow [_(3da812a)_](https://github.com/pa-decarvalho/brigade/commit/3da812ad700cebf20c368f0638d972bcc48d4379)
+
+- keep pinned versions up to date with Renovate [_(0ede0bd)_](https://github.com/pa-decarvalho/brigade/commit/0ede0bd7212cc7c4116928ee4279cfd9d583cd93)
+
+- release brigade with release-please [_(f600048)_](https://github.com/pa-decarvalho/brigade/commit/f6000484cc8803fbdd6f4b41a7876b213e3f2bbd)
+
+- init project [_(89905d7)_](https://github.com/pa-decarvalho/brigade/commit/89905d7313ac1c332783c4003fc3fd5bb47d4878)
+
+### 🐛 Bug Fixes
+
+- ignore Copier answers in typos and time out CI jobs [_(49731a6)_](https://github.com/pa-decarvalho/brigade/commit/49731a61f29a0c022551001a57166b0769a18bd0)
+
+- _(deps)_ update template [_(1845b42)_](https://github.com/pa-decarvalho/brigade/commit/1845b42494bbb1ac6169e975a06f8289f95e435d)
+
+- work around ctt git archive failure on Windows [_(91a6aa3)_](https://github.com/pa-decarvalho/brigade/commit/91a6aa35db1d5599e2021a5cbcf27b388de804fe)
+
+- name GitHub releases X.Y.Z without the v prefix [_(b08c141)_](https://github.com/pa-decarvalho/brigade/commit/b08c14124b44dc8258ad0a430eb76bb45fbe435b)
+
+- start releases at 0.1.0 [_(93536cf)_](https://github.com/pa-decarvalho/brigade/commit/93536cf0b2e19c3570831e80fec598eeb0893748)
+
+### 📚 Documentation
+
+- add a Zensical documentation site (#50) [_(0c34103)_](https://github.com/pa-decarvalho/brigade/commit/0c341033a4a2a48e10297d6005aded76080200aa)
+
+- add CLAUDE.md with project principles [_(6fbc728)_](https://github.com/pa-decarvalho/brigade/commit/6fbc72802c9aaedfb2de60da02a1a290d717a142)
+
+### 🧪 Testing
+
+- run the generated CI of every variant and split brigade's CI jobs (#45) [_(cdbff81)_](https://github.com/pa-decarvalho/brigade/commit/cdbff81785921c0e08b7de097bbbba2149d661f8)
+
+- check copier update from the latest release [_(0d696f3)_](https://github.com/pa-decarvalho/brigade/commit/0d696f3a4358f10d7cb19f09e4ada32ecf789620)
+
+### 🧹 Chore
+
+- _(main)_ release 0.10.0 (#66) [_(5082bf8)_](https://github.com/pa-decarvalho/brigade/commit/5082bf869567702a0415e569039daf33946ffa74)
+
+- _(main)_ release 0.9.0 (#64) [_(bebeb83)_](https://github.com/pa-decarvalho/brigade/commit/bebeb8322fa742fd0c6090013e69d498442b5ef7)
+
+- _(main)_ release 0.8.0 (#62) [_(267e13f)_](https://github.com/pa-decarvalho/brigade/commit/267e13f288dff2d447b9c6b7a2f755555ed3b373)
+
+- _(main)_ release 0.7.0 (#59) [_(baef8bd)_](https://github.com/pa-decarvalho/brigade/commit/baef8bdbcc81499c5a0b9d8981560aebf4847cda)
+
+- _(main)_ release 0.6.0 (#54) [_(b91ee0f)_](https://github.com/pa-decarvalho/brigade/commit/b91ee0f994f1f4c1988183c1abf920feaaa550fb)
+
+- _(main)_ release 0.5.0 (#52) [_(f3d9d85)_](https://github.com/pa-decarvalho/brigade/commit/f3d9d85d18fc79956d6d65df136d3e407e13a793)
+
+- _(main)_ release 0.4.0 (#43) [_(edb8a79)_](https://github.com/pa-decarvalho/brigade/commit/edb8a79c82591523faa41ce2e2921363daf21621)
+
+- _(main)_ release 0.3.0 (#38) [_(9099b52)_](https://github.com/pa-decarvalho/brigade/commit/9099b52fa3805307b1f4002184bad87a27e658d1)
+
+- _(main)_ release 0.2.1 [_(fc6f5fe)_](https://github.com/pa-decarvalho/brigade/commit/fc6f5fe12bb2c735247dc67b06e1dac0fb3d1300)
+
+- _(deps)_ update tooling [_(b080c91)_](https://github.com/pa-decarvalho/brigade/commit/b080c91905e3fe08f82553d3e95fdf3532db2cb5)
+
+- split Renovate updates into template and tooling groups [_(1ff1606)_](https://github.com/pa-decarvalho/brigade/commit/1ff16065bb9a2b94ba11db03dbd8734e1936db63)
+
+- group Renovate updates in one PR and drop the dashboard [_(8190551)_](https://github.com/pa-decarvalho/brigade/commit/8190551ce7bb47ce172fb218696e8b1b917c1d44)
+
+- _(main)_ release 0.2.0 [_(e70f07c)_](https://github.com/pa-decarvalho/brigade/commit/e70f07c0d8a0715c5face33f0825482ed7477d7a)
+
+- _(main)_ release 0.1.1 [_(b70f2f2)_](https://github.com/pa-decarvalho/brigade/commit/b70f2f2c7ae8a71dab56136ad996aaf7177b2b58)
+
+- _(main)_ release 0.1.0 [_(ac3f15a)_](https://github.com/pa-decarvalho/brigade/commit/ac3f15a9d8a64f88b490f3b325a915d0832e66f3)
+
+- tag releases as X.Y.Z without the v prefix [_(a638ab5)_](https://github.com/pa-decarvalho/brigade/commit/a638ab54c173d33fece8306f3c1958d74f43ddb3)
+
+- fix ci tests triggers 2 times [_(1e2e6b7)_](https://github.com/pa-decarvalho/brigade/commit/1e2e6b790529ea55320ecd7688acd4903a8a19d7)
+
+- change new-lines yamllint rule in template [_(3cf0dbb)_](https://github.com/pa-decarvalho/brigade/commit/3cf0dbb441cf8beda7ca252c66491a1f630e38c9)
+
+- add claude settings.json [_(7c9e7e5)_](https://github.com/pa-decarvalho/brigade/commit/7c9e7e52555f522a6da4602bfbd5bc4a2751b242)
+
+- add editorconfig [_(6bb738c)_](https://github.com/pa-decarvalho/brigade/commit/6bb738c468f91fb8618ffc40b1904c6808ae241e)
+
+- change CLAUDE.md [_(30c76c6)_](https://github.com/pa-decarvalho/brigade/commit/30c76c66f151b9f458fdf67ce93dda666fbde773)
+
+### ⏩ CI/CD
+
+- release brigade with Releasaurus (#67) [_(73f90c5)_](https://github.com/pa-decarvalho/brigade/commit/73f90c5480d1bff88f5b15b17743326bda8b994a)
