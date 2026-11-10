@@ -3,5 +3,7 @@
 "pipx:ghp-import" = "2.1.0"
 
 [tasks."pages:deploy"]
-description = "Build the documentation site for Pages"
-run = '''zensical build --strict && ghp-import -n -p -f site'''
+description = "Publish site/, built by the *:build tasks, to Pages"
+# Any generator writing site/ (zensical:build, or your own task); CI deploys on a fresh runner.
+depends = [{ task = "*:build", optional = true }]
+run = '''ghp-import -n -p -f site'''
