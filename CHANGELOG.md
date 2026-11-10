@@ -1,3 +1,9 @@
+# [0.1.2](https://github.com/pa-decarvalho/brigade/compare/0.1.1...0.1.2) - 2026-11-10
+
+### 🐛 Bug Fixes
+
+- make the Releasaurus bot token optional (#71) [_(d6b1557)_](https://github.com/pa-decarvalho/brigade/commit/d6b155797d1db989da1597e97168506ff1c5c906)
+
 # [0.1.1](https://github.com/pa-decarvalho/brigade/compare/0.1.0...0.1.1) - 2026-11-10
 
 ### 🐛 Bug Fixes
