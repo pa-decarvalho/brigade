@@ -1,3 +1,9 @@
+# [0.3.0](https://github.com/pa-decarvalho/brigade/compare/0.2.0...0.3.0) - 2026-11-10
+
+### 🚀 Features
+
+- run the operate stage in CI, on manual runs (#82) [_(1c7590c)_](https://github.com/pa-decarvalho/brigade/commit/1c7590c83cbcb253c9eec97f1386cefac4c5bc61)
+
 # [0.2.0](https://github.com/pa-decarvalho/brigade/compare/0.1.2...0.2.0) - 2026-11-10
 
 ### 🚀 Features
