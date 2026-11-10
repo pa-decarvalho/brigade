@@ -1,0 +1,23 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Manual runs only ("Run workflow"): mise run operate, e.g. Renovate.
+# For a schedule, add your own workflow.
+name: Operate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  operate:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      # Renovate: a RENOVATE_TOKEN secret, on this repository.
+      RENOVATE_PLATFORM: github
+      RENOVATE_REPOSITORIES: ${{ github.repository }}
+      RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+      RENOVATE_ONBOARDING: "false"
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/mise
+      - run: mise run operate

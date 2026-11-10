@@ -3,4 +3,4 @@
 
 [tasks."gitlab-ci:lint"]
 description = "Check the GitLab CI files against the GitLab CI schema"
-run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .gitlab/ci/default.yml{% if lint_enabled %} .gitlab/ci/lint.yml{% endif %}{% if build_enabled %} .gitlab/ci/build.yml{% endif %}{% if test_enabled %} .gitlab/ci/test.yml{% endif %}{% if release_enabled %} .gitlab/ci/release.yml{% endif %}{% if deploy_enabled %} .gitlab/ci/deploy.yml{% endif %}"
+run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .gitlab/ci/default.yml{% if lint_enabled %} .gitlab/ci/lint.yml{% endif %}{% if build_enabled %} .gitlab/ci/build.yml{% endif %}{% if test_enabled %} .gitlab/ci/test.yml{% endif %}{% if release_enabled %} .gitlab/ci/release.yml{% endif %}{% if deploy_enabled %} .gitlab/ci/deploy.yml{% endif %}{% if operate_enabled %} .gitlab/ci/operate.yml{% endif %}"

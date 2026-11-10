@@ -6,7 +6,7 @@
 description = "Check the Renovate config"
 run = '''{{ renovate_lint_command | default('check-jsonschema --builtin-schema vendor.renovate renovate.json', true) }}'''
 
-# Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES). Its tools are on the task, so CI skips them.
+# Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES: CI sets them). Its tools are on the task, so other CI jobs skip them.
 [tasks."renovate:operate"]
 description = "Run Renovate"
 run = '''{{ renovate_operate_command | default('renovate', true) }}'''

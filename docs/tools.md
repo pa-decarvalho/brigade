@@ -28,7 +28,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.mise/**/*.toml` (fails on Windows checkouts with CRLF line endings) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
-| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`) |
+| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)) |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -83,7 +83,12 @@ Add `site/` and `.cache/` to your `.gitignore`.
 
 ## operate
 
-Operations that do not belong to a release, such as `renovate:operate`. CI does not run this stage yet: run it with `mise run operate`.
+Operations that do not belong to a release, such as `renovate:operate`. Run it with `mise run operate`, or in CI:
+
+- **GitHub, Gitea**: "Run workflow" on the Operate workflow. For a schedule, add your own workflow.
+- **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now), since "Run pipeline" deploys.
+
+For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
 
 ## Toolchain
 
