@@ -43,6 +43,8 @@ Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.gith
 - template updates as `fix:`, which triggers a release;
 - this repo's tooling as `chore:`.
 
+brigade's generated files (`.mise/config.toml`, `.mise/conf.d/`, `.github/actions/` and the stage workflows) are ignored: like any project, they get new versions through a release and `mise run brigade:update`.
+
 It needs a `RENOVATE_TOKEN` secret: a fine-grained token on this repo with contents, pull requests, issues, workflows and commit statuses read/write.
 
 Commits and PR titles follow Conventional Commits. On each push to `main`, the CI's `release` job runs [Releasaurus](https://github.com/robgonnella/releasaurus) (`mise run release`): it opens or updates the release PR, and once merged tags `X.Y.Z` and updates `CHANGELOG.md`; Copier uses these tags as template versions. `releasaurus.toml` makes a release on `feat`, `fix`, `perf`, `revert` and breaking changes only: other commits do not change the template.
