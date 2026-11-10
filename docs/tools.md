@@ -35,7 +35,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
-| `releasaurus` | `releasaurus:release` | `releasaurus release-pr --tag-prefix '' && releasaurus release`: see [release](#release) |
+| `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | GitHub: `zensical build --strict && ghp-import -n -p -f site`. GitLab: `zensical build --strict` |
 | `ci-local` | `brigade:ci-local` | Runs the CI locally: see below |
 
