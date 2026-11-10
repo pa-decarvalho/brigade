@@ -34,7 +34,7 @@ renovate_operate_command: ''
 renovate_version: ''
 taplo_lint_command: taplo fmt --check --no-auto-config -o indent_string="    " -o
     array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml
-    zensical.toml "template/**/*.toml"
+    zensical.toml releasaurus.toml "template/**/*.toml"
 taplo_version: ''
 test_commands: []
 test_enabled: true
