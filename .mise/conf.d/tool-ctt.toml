@@ -1,0 +1,7 @@
+[tools]
+# renovate: datasource=pypi depName=copier-template-tester
+"pipx:copier-template-tester" = { version = "3.0.0", uvx_args = "--with copier==9.19.1" }
+
+[tasks."ctt:test"]
+description = "Render every ctt.toml variant of this Copier template"
+run = '''uv run --no-project python -c "import shutil; shutil.rmtree('.ctt', ignore_errors=True)" && ctt'''

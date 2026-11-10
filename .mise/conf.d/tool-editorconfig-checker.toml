@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=editorconfig-checker/editorconfig-checker
+editorconfig-checker = "4.0.2"
+
+[tasks."editorconfig-checker:lint"]
+description = "Check files against .editorconfig with editorconfig-checker"
+# .mise-data is the GitLab CI tool cache.
+run = '''editorconfig-checker -exclude "^[.](ctt|mise-data)/"'''

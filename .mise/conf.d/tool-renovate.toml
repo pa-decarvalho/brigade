@@ -1,0 +1,18 @@
+[tools]
+# renovate: datasource=pypi depName=check-jsonschema
+"pipx:check-jsonschema" = { version = "0.39.0", uvx_args = "--with json5" }
+
+[tasks."renovate:lint"]
+description = "Check the Renovate config"
+run = '''check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5'''
+
+# Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES). Its tools are on the task, so CI skips them.
+[tasks."renovate:operate"]
+description = "Run Renovate"
+run = '''renovate'''
+
+[tasks."renovate:operate".tools]
+# renovate: datasource=node-version depName=node
+node = "24.22.2"
+# renovate: datasource=npm depName=renovate
+"npm:renovate" = "44.221.4"
