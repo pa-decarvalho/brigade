@@ -1,0 +1,18 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+name: deploy
+description: mise run deploy, with the project's tools
+runs:
+  using: composite
+  steps:
+    # Not the mise action: no cache restored where a release is published.
+    - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+      with:
+        version: 2026.11.6
+        cache: false
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GIT_COMMITTER_NAME: ${{ github.actor }}
+        GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+      run: mise run deploy

@@ -1,0 +1,7 @@
+[tools]
+"pipx:check-jsonschema" = "0.39.0"
+
+[tasks."gitlab-ci:lint"]
+description = "Check the GitLab CI files against the GitLab CI schema"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = "check-jsonschema --builtin-schema vendor.gitlab-ci .gitlab-ci.yml .brigade/ci/gitlab/default.yml{% if lint_enabled %} .brigade/ci/gitlab/lint.yml{% endif %}{% if build_enabled %} .brigade/ci/gitlab/build.yml{% endif %}{% if test_enabled %} .brigade/ci/gitlab/test.yml{% endif %}{% if release_enabled %} .brigade/ci/gitlab/release.yml{% endif %}{% if deploy_enabled %} .brigade/ci/gitlab/deploy.yml{% endif %}{% if operate_enabled %} .brigade/ci/gitlab/operate.yml{% endif %}"

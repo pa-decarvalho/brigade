@@ -11,19 +11,19 @@
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         // Tool fragments are Jinja: a customManagers entry reads their pins.
-        managerFilePatterns: ["/^template/\\.mise/conf\\.d/[^/]*(\\.toml|\\{% endif %\\})$/"],
+        managerFilePatterns: ["/^template/\\.brigade/(tools/)?[^/]*(\\.toml|\\{% endif %\\})$/"],
     },
     "github-actions": {
         managerFilePatterns: ["/^template/.*/workflows/[^/]*(\\.yml|\\{% endif %\\})(\\.jinja)?$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
     },
     gitlabci: {
-        managerFilePatterns: ["/^template/.*\\.gitlab[^/]*/ci/[^/]+\\.yml/"],
+        managerFilePatterns: ["/^template/\\.brigade/ci/[^/]*gitlab[^/]*/[^/]+\\.yml/"],
     },
     customManagers: [
         {
             // Python tools pinned inside commands
             customType: "regex",
-            managerFilePatterns: ["/^template/\\.mise/config\\.toml$/", "/^template/\\.mise/conf\\.d/.*tool-ctt.*\\.jinja$/"],
+            managerFilePatterns: ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/tools/.*ctt-brigade.*\\.jinja$/"],
             matchStrings: ["(?<depName>copier-template-tester|copier)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             datasourceTemplate: "pypi",
         },
@@ -39,7 +39,7 @@
         {
             // Tool fragments: the version is brigade's default in the Jinja file.
             customType: "regex",
-            managerFilePatterns: ["/^template/\\.mise/conf\\.d/.+\\.jinja$/"],
+            managerFilePatterns: ["/^template/\\.brigade/tools/.+\\.jinja$/"],
             matchStrings: ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
             extractVersionTemplate: "^v?(?<version>.*)$",
         },

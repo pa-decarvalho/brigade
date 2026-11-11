@@ -1,7 +1,7 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# GitLab only reads this file. Every .gitlab/ci/*.yml is included:
-# add your own jobs there, in a file brigade does not generate.
+# GitLab only reads this file. It includes brigade's jobs (.brigade/ci/gitlab/)
+# and yours: add them in .gitlab/ci/*.yml.
 stages:
 {%- for stage, enabled in [('lint', lint_enabled), ('build', build_enabled), ('test', test_enabled), ('release', release_enabled), ('deploy', deploy_enabled), ('operate', operate_enabled)] %}
 {%- if enabled %}
@@ -10,4 +10,7 @@ stages:
 {%- endfor %}
 
 include:
+  - local: .brigade/ci/gitlab/*.yml
   - local: .gitlab/ci/*.yml
+    rules:
+      - exists: [.gitlab/ci/*.yml]

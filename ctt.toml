@@ -47,7 +47,7 @@ _post_tasks = [
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     # The custom version and command are in the rendered files.
-    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.mise/conf.d'); assert '1.51.1' in (d / 'tool-typos.toml').read_text(); assert 'ruff check --extend-exclude .mise-data .' in (d / 'tool-ruff.toml').read_text()"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.brigade/tools'); assert '1.51.1' in (d / 'typos-brigade.toml').read_text(); assert 'ruff check --extend-exclude .mise-data .' in (d / 'ruff-brigade.toml').read_text()"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],

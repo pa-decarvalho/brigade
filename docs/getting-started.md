@@ -8,7 +8,7 @@ Requires [mise](https://mise.jdx.dev/) and git.
 uv init my-project
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-project
 cd my-project
-mise trust && mise install
+mise install
 mise tasks
 ```
 
@@ -34,13 +34,15 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
 ## Generated files
 
 ```text
-.mise/
-  config.toml                     # uv and brigade:update
-  brigade-copier-answers.yml      # your answers, used by brigade:update
-  conf.d/
-    stages.toml                   # lint, build, test, release, deploy and the git hook tasks
-    tool-<tool>.toml              # one per tool, e.g. tool-ruff.toml
-    <ci>.toml                     # CI file linter
-    mirror.toml                   # only with mirrors
-<CI files>                        # see CI platforms (some are yours to edit)
+.miserc.toml                      # the mise files to read: brigade's, then your mise.toml
+.brigade/
+  answers.yml                     # your answers, used by brigade:update
+  mise.toml                       # uv and brigade:update
+  stages.toml                     # the stages and the git hook tasks
+  mirror.toml                     # only with mirrors
+  tools/<tool>-brigade.toml       # one per tool, e.g. ruff-brigade.toml, and the CI file linter
+  ci/<ci>/                        # CI steps: actions (GitHub, Gitea), jobs (GitLab)
+<CI files>                        # workflows or .gitlab-ci.yml: see CI platforms
 ```
+
+Your own tasks and tools go in `mise.toml`: see [Custom tasks](custom-tasks.md).

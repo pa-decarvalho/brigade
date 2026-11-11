@@ -1,6 +1,6 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Runs on pull requests: mise run lint (.mise/conf.d/stages.toml).
+# Runs on pull requests: mise run lint (.brigade/stages.toml).
 name: Lint
 
 on:
@@ -18,9 +18,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.gitea/actions/mise
-      - run: mise run lint
+      - uses: ./.brigade/ci/gitea/actions/lint

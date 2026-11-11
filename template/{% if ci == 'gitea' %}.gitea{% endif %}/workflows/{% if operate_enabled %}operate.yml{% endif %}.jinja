@@ -19,16 +19,9 @@ jobs:
   operate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-      # Renovate: a RENOVATE_TOKEN secret, on this repository.
-      RENOVATE_PLATFORM: gitea
-      RENOVATE_ENDPOINT: ${{ github.server_url }}/api/v1
-      RENOVATE_REPOSITORIES: ${{ github.repository }}
-      RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-      RENOVATE_ONBOARDING: "false"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.gitea/actions/mise
-      - run: mise run operate
+      - uses: ./.brigade/ci/gitea/actions/operate
+        with:
+          renovate-token: ${{ secrets.RENOVATE_TOKEN }}
 {%- endraw %}

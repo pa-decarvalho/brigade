@@ -7,7 +7,7 @@ It does not create the project: do that with the ecosystem's own tool, then appl
 uv init my-project
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-project
 cd my-project
-mise trust && mise install
+mise install
 mise tasks
 ```
 

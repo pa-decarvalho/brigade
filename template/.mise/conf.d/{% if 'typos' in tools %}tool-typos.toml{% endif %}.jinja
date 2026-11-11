@@ -1,8 +1,0 @@
-[tools]
-# renovate: datasource=github-releases depName=crate-ci/typos
-typos = "{{ typos_version | default('1.52.2', true) }}"
-
-[tasks."typos:lint"]
-description = "Check spelling with typos"
-# Copier answers and the changelog hold commit hashes; .mise-data is the GitLab CI tool cache.
-run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise-data --exclude .mise/brigade-copier-answers.yml --exclude CHANGELOG.md', true) }}'''

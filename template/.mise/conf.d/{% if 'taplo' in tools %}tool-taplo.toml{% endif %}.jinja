@@ -1,7 +1,0 @@
-[tools]
-# renovate: datasource=github-releases depName=tamasfe/taplo
-taplo = "{{ taplo_version | default('0.10.0', true) }}"
-
-[tasks."taplo:lint"]
-description = "Check TOML formatting with taplo"
-run = '''{{ taplo_lint_command | default('taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml"', true) }}'''

@@ -1,7 +1,0 @@
-[tools]
-"aqua:jdx/jactionlint" = "2.5.0"
-
-[tasks."jactionlint:lint"]
-description = "Check GitHub workflows and actions with jactionlint"
-# Only this project's files (not the copies in subfolders); Python globs on every OS.
-run = '''uv run --no-project python -c "import glob, subprocess, sys; sys.exit(subprocess.call(['jactionlint', *glob.glob('.github/workflows/*.yml'), *glob.glob('.github/actions/*/action.yml')]))"'''

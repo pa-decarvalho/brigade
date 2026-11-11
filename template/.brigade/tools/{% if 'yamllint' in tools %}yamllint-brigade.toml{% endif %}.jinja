@@ -1,0 +1,10 @@
+[tools]
+# renovate: datasource=pypi depName=yamllint
+"pipx:yamllint" = "{{ yamllint_version | default('1.38.0', true) }}"
+
+[tasks."yamllint:lint"]
+description = "Check YAML files with yamllint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Copier writes the answers file (lists without indentation); .mise-data is the GitLab CI tool cache;
+# one space before a comment, as in actions pinned by SHA (uses: x@<sha> # v1.2.3).
+run = '''{{ yamllint_lint_command | default('yamllint --strict -d "{extends: default, ignore: [.venv/, node_modules/, .mise-data/, .brigade/answers.yml], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}" .', true) }}'''

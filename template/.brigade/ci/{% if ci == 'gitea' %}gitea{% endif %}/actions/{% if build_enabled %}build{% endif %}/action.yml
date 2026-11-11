@@ -1,0 +1,12 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+name: build
+description: mise run build, with the project's tools
+runs:
+  using: composite
+  steps:
+    - uses: ./.brigade/ci/gitea/actions/mise
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: mise run build

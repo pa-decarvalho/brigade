@@ -10,14 +10,17 @@ On every platform, `lint`, `build` and `test` run on pull requests (merge reques
 
 | File | Role |
 |---|---|
-| `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
-| `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
+| `.github/workflows/<stage>.yml` | One workflow per stage, with one job that checks out the code and runs the stage's action: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
+| `.brigade/ci/github/actions/<stage>/action.yml` | The stage's steps: install mise and the tools, then `mise run <stage>` with the stage's environment (Releasaurus, Renovate). Secrets are passed as inputs: `token` (release), `renovate-token` (operate). |
+| `.brigade/ci/github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools, with a cache. `deploy` installs them without a cache. |
 
-[jactionlint](https://jactionlint.jdx.dev) (`jactionlint:lint`) checks the workflows and the mise action, with its default rules: actions pinned by commit SHA (Renovate updates the SHA and its version comment), `permissions:`, `timeout-minutes`, `concurrency:` (pull request runs cancel the older ones, release and deploy runs wait), and no cache restored in `deploy`.
+GitHub only reads workflows in `.github/workflows/`: everything else lives in `.brigade/`.
+
+[jactionlint](https://jactionlint.jdx.dev) (`jactionlint:lint`) checks the workflows and the actions, with its default rules: actions pinned by commit SHA (Renovate updates the SHA and its version comment), `permissions:`, `timeout-minutes`, `concurrency:` (pull request runs cancel the older ones, release and deploy runs wait), and no cache restored in `deploy`.
 
 ### Stages
 
-Each stage is one workflow with one job, on Linux, running `mise run <stage>`. To remove a stage or change its commands, see [Stages](tools.md#stages).
+Each stage is one workflow with one job, on Linux, running its action. To remove a stage or change its commands, see [Stages](tools.md#stages).
 
 ### Your own jobs
 
@@ -37,8 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: ./.github/actions/mise
-      - run: mise run test
+      - uses: ./.brigade/ci/github/actions/test
 ```
 
 
@@ -46,11 +48,11 @@ jobs:
 
 | File | Role |
 |---|---|
-| `.gitlab-ci.yml` | Stages, and includes every `.gitlab/ci/*.yml`. |
-| `.gitlab/ci/default.yml` | The mise image, the tool cache and `mise install`. |
-| `.gitlab/ci/<stage>.yml` | One job per stage, running `mise run <stage>`: `lint`, `build` and `test` in merge request pipelines (`needs: []`, side by side), `release` on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline", `operate` in scheduled pipelines. |
+| `.gitlab-ci.yml` | Stages, and includes every `.brigade/ci/gitlab/*.yml` and `.gitlab/ci/*.yml`. GitLab only reads this file. |
+| `.brigade/ci/gitlab/default.yml` | The mise image, the tool cache and `mise install`. |
+| `.brigade/ci/gitlab/<stage>.yml` | One job per stage, running `mise run <stage>`: `lint`, `build` and `test` in merge request pipelines (`needs: []`, side by side), `release` on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline", `operate` in scheduled pipelines. |
 
-To add jobs, create your own file in `.gitlab/ci/`, with a name brigade does not generate: it is included automatically, and GitLab merges included files.
+To add jobs, create your own file in `.gitlab/ci/`: it is included automatically, and GitLab merges included files.
 
 ```yaml
 # .gitlab/ci/extra.yml
@@ -68,10 +70,10 @@ To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, 
 
 ## Gitea and Forgejo (`ci: gitea`)
 
-Same layout as GitHub, under `.gitea/`: `workflows/<stage>.yml` and `actions/mise/action.yml`.
+Same layout as GitHub: `.gitea/workflows/<stage>.yml` and `.brigade/ci/gitea/actions/`.
 
 - mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action, and act (local runs) refuses full URLs. The script checks the archive against a checksum file from the same server, so it trusts HTTPS only: `jactionlint:lint` ignores that one finding (`unverified-download`).
 
 ## None (`ci: none`)
 
-Only `.mise/` is generated.
+Only `.miserc.toml` and `.brigade/` (without `ci/`) are generated.
