@@ -2,7 +2,7 @@
 # A project tool, not only on the task: re2's install script must run with this node, not the
 # system's (its native binary is built for one Node.js version).
 # renovate: datasource=node-version depName=node
-node = "{{ renovate_node_version | default('26.13.0', true) }}"
+node = "{{ renovate_node_version | default('26.13.1', true) }}"
 # renovate: datasource=pypi depName=check-jsonschema
 "pipx:check-jsonschema" = { version = "{{ renovate_version | default('0.39.0', true) }}", uvx_args = "--with json5" }
 
@@ -22,4 +22,4 @@ run = '''{{ renovate_operate_command | default('renovate', true) }}'''
 # which mise's trust policy rejects: exempt that one version only. re2 (RE2 regexes, as Renovate
 # validates them) installs its native binary with a script, which runs only when allowed.
 # renovate: datasource=npm depName=renovate
-"npm:renovate" = { version = "{{ renovate_cli_version | default('44.227.4', true) }}", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }
+"npm:renovate" = { version = "{{ renovate_cli_version | default('44.234.1', true) }}", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }
