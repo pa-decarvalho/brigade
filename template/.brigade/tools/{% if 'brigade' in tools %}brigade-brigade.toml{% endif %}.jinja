@@ -1,0 +1,10 @@
+[tools]
+# renovate: datasource=pypi depName=copier
+"pipx:copier" = "{{ brigade_version | default('9.19.1', true) }}"
+
+# Renders the template at the version of .brigade/answers.yml and compares: brigade-owned files
+# must not be edited by hand (brigade:update overwrites them). Needs access to the template.
+[tasks."brigade:lint"]
+description = "Check that brigade-owned files match the template"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ brigade_lint_command | default('uv run --no-project python .brigade/scripts/brigade-lint.py', true) }}'''

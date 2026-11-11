@@ -11,6 +11,7 @@ override_config_filenames = [
     ".brigade/tools/editorconfig-checker-brigade.toml",
     ".brigade/tools/taplo-brigade.toml",
     ".brigade/tools/renovate-brigade.toml",
+    ".brigade/tools/ruff-brigade.toml",
     ".brigade/tools/zensical-brigade.toml",
     ".brigade/tools/ctt-brigade.toml",
     ".brigade/tools/releasaurus-brigade.toml",

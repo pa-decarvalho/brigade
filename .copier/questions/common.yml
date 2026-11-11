@@ -14,6 +14,7 @@ tools:
   help: Tools
   multiselect: true
   choices:
+    brigade (lint): brigade
     yamllint (lint): yamllint
     gitleaks (lint): gitleaks
     typos (lint): typos
@@ -39,7 +40,7 @@ tools:
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
-  default: [yamllint, gitleaks, typos]
+  default: [brigade, yamllint, gitleaks, typos]
 
 # Stages: keep one or not, and its commands (empty: all its tools).
 lint_enabled:

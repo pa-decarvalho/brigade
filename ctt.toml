@@ -4,7 +4,7 @@
 [defaults]
 
 [output.".ctt/python-github"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "act", "uv", "zensical", "pages", "releasaurus"]
+tools = ["brigade", "yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "act", "uv", "zensical", "pages", "releasaurus"]
 ci = "github"
 operate_schedule = "0 5 * * 1"
 # The lint stage runs these commands, in order.
@@ -24,6 +24,8 @@ _post_tasks = [
     ["mise", "run", "lint"],
     ["mise", "run", "build"],
     ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
     # renovate:operate installs its tools (npm trust policy) and re2 (native build allowed).
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import subprocess; r = subprocess.run(['mise', 'run', 'renovate:operate', '--', '--platform=local', '--dry-run=extract'], capture_output=True, text=True); out = r.stdout + r.stderr; assert r.returncode == 0 and 'RE2 not usable' not in out, out[-3000:]"],
 ]

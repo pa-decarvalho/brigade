@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=astral-sh/ruff
+ruff = "0.17.4"
+
+[tasks."ruff:lint"]
+description = "Check code and formatting with ruff"
+dir = "{{config_root}}/../.."
+# .mise-data is the GitLab CI tool cache (node ships a Python file).
+run = '''ruff check --extend-exclude .mise-data && ruff format --check --extend-exclude .mise-data'''
