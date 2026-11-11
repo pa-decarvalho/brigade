@@ -38,12 +38,9 @@ brigade's CI runs these tests on Linux only.
 
 ## Versions and releases
 
-Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.github/renovate.json5`), run every Monday by `.github/workflows/renovate.yml` as two grouped PRs:
+Pinned versions are updated by [Renovate](https://docs.renovatebot.com/) (`.github/renovate.json5`), run every Monday by `.github/workflows/renovate.yml` as one PR, `fix(deps): update template`, major updates included: it triggers a release.
 
-- template updates as `fix:`, which triggers a release;
-- this repo's tooling as `chore:`.
-
-brigade's generated files (`.mise/config.toml`, `.mise/conf.d/`, `.github/actions/` and the stage workflows) are ignored: like any project, they get new versions through a release and `mise run brigade:update`.
+Renovate only reads `template/`. brigade's generated files get the new versions like any project, through a release and `mise run brigade:update`; its other pins (`renovate.yml`, Copier and pytest in `ctt.toml`, `README.md`, `.mise/scripts/` and `.copier/settings.yml`) are updated by hand.
 
 It needs a `RENOVATE_TOKEN` secret: a fine-grained token on this repo with contents, pull requests, issues, workflows and commit statuses read/write.
 
