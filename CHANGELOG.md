@@ -1,3 +1,9 @@
+# [0.7.1](https://github.com/pa-decarvalho/brigade/compare/0.7.0...0.7.1) - 2026-11-11
+
+### 🐛 Bug Fixes
+
+- run brigade:lint from git hooks (#120) [_(263abcb)_](https://github.com/pa-decarvalho/brigade/commit/263abcb11e77d708d5f3942ff86d7bff4684d362)
+
 # [0.7.0](https://github.com/pa-decarvalho/brigade/compare/0.6.1...0.7.0) - 2026-11-11
 
 ### 🚀 Features
