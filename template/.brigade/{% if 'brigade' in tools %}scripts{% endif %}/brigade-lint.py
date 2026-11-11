@@ -5,6 +5,7 @@ Renders the template at the version of .brigade/answers.yml into a temporary
 folder, then compares each rendered file with the project's.
 """
 
+import os
 import pathlib
 import re
 import shutil
@@ -36,6 +37,15 @@ def main() -> int:
     src = answer("_src_path")
     # A local template (brigade's own tests) is rendered as it is now, as Copier did.
     ref = "HEAD" if pathlib.Path(src).is_dir() else answer("_commit")
+    # Copier clones the template with git: drop this repository's git variables, which
+    # a git hook sets (a relative GIT_INDEX_FILE breaks the clone).
+    local = subprocess.run(
+        ["git", "rev-parse", "--local-env-vars"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.split()
+    env = {k: v for k, v in os.environ.items() if k not in local}
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(
             [
@@ -51,6 +61,7 @@ def main() -> int:
                 tmp,
             ],
             check=True,
+            env=env,
         )
         rendered = pathlib.Path(tmp)
         problems = []
