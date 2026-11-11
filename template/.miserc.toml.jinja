@@ -1,0 +1,20 @@
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# mise reads only these files: brigade's in .brigade/, then the project's own
+# mise.toml and mise.local.toml (add your tasks and tools there).
+override_config_filenames = [
+    ".brigade/mise.toml",
+    ".brigade/stages.toml",
+{%- if github_mirror or pypi_index %}
+    ".brigade/mirror.toml",
+{%- endif %}
+{%- if ci in ['github', 'gitea'] %}
+    ".brigade/tools/jactionlint-brigade.toml",
+{%- elif ci == 'gitlab' %}
+    ".brigade/tools/gitlab-ci-brigade.toml",
+{%- endif %}
+{%- for tool in tools %}
+    ".brigade/tools/{{ tool }}-brigade.toml",
+{%- endfor %}
+    "mise.toml",
+    "mise.local.toml",
+]

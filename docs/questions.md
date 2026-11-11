@@ -1,10 +1,10 @@
 # Questions
 
-Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run brigade:update`.
+Answers are saved in `.brigade/answers.yml` and reused by `mise run brigade:update`.
 
 | Question | Values | Default | Effect |
 |---|---|---|---|
-| `tools` | tools of the [catalog](tools.md) | `yamllint`, `gitleaks`, `typos` | One `.mise/conf.d/tool-<tool>.toml` each, with its tasks. Stages follow from the tools. |
+| `tools` | tools of the [catalog](tools.md) | `yamllint`, `gitleaks`, `typos` | One `.brigade/tools/<tool>-brigade.toml` each, with its tasks. Stages follow from the tools. |
 | `<stage>_enabled` | yes / no | yes | Keeps the stage: its mise task and its CI job. See [Stages](tools.md#stages). |
 | `<stage>_commands` | list of commands | empty | Commands of the stage, run in order, locally and in CI. Empty runs all its tools. |
 | `operate_schedule` | cron expression, e.g. `0 5 * * 1` | empty | GitHub, Gitea: when the Operate workflow runs, besides manual runs. Empty: manual runs only. On GitLab, set a pipeline schedule instead. |
@@ -16,7 +16,7 @@ Answers are saved in `.mise/brigade-copier-answers.yml` and reused by `mise run 
 To change an answer later:
 
 ```sh
-uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data ci=gitlab
-uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data "tools=[yamllint, ruff]"
-uvx copier@9.19.1 update -a .mise/brigade-copier-answers.yml --data customize_tools=true --data ruff_version=0.16.0
+uvx copier@9.19.1 update -a .brigade/answers.yml --data ci=gitlab
+uvx copier@9.19.1 update -a .brigade/answers.yml --data "tools=[yamllint, ruff]"
+uvx copier@9.19.1 update -a .brigade/answers.yml --data customize_tools=true --data ruff_version=0.16.0
 ```

@@ -1,7 +1,7 @@
 # Mirrors
 
 Behind a corporate network, optional questions point downloads at internal mirrors (e.g. Nexus).
-They are written to `.mise/conf.d/mirror.toml`; leave them empty to download from the internet.
+They are written to `.brigade/mirror.toml`; leave them empty to download from the internet.
 
 | Question | Example | Used for |
 |---|---|---|

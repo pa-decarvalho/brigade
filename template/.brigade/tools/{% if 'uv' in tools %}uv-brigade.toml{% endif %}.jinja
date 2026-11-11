@@ -1,0 +1,4 @@
+[tasks."uv:build"]
+description = "Build the Python package with uv (dist/)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ uv_build_command | default('uv build', true) }}'''

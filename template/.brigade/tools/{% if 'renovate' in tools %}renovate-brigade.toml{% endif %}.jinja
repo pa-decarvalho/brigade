@@ -1,0 +1,25 @@
+[tools]
+# A project tool, not only on the task: re2's install script must run with this node, not the
+# system's (its native binary is built for one Node.js version).
+# renovate: datasource=node-version depName=node
+node = "{{ renovate_node_version | default('26.13.0', true) }}"
+# renovate: datasource=pypi depName=check-jsonschema
+"pipx:check-jsonschema" = { version = "{{ renovate_version | default('0.39.0', true) }}", uvx_args = "--with json5" }
+
+[tasks."renovate:lint"]
+description = "Check the Renovate config"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ renovate_lint_command | default('check-jsonschema --builtin-schema vendor.renovate renovate.json', true) }}'''
+
+# Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES: CI sets them). Renovate itself is on the task, so other CI jobs skip it.
+[tasks."renovate:operate"]
+description = "Run Renovate"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ renovate_operate_command | default('renovate', true) }}'''
+
+[tasks."renovate:operate".tools]
+# @yarnpkg/libzip 3.2.2 has no npm provenance (manual publish of yarnpkg/berry's 2eb9830 release),
+# which mise's trust policy rejects: exempt that one version only. re2 (RE2 regexes, as Renovate
+# validates them) installs its native binary with a script, which runs only when allowed.
+# renovate: datasource=npm depName=renovate
+"npm:renovate" = { version = "{{ renovate_cli_version | default('44.227.4', true) }}", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }

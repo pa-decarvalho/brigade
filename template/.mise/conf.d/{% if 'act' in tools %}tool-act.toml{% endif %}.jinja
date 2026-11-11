@@ -1,9 +1,0 @@
-[tools]
-# renovate: datasource=github-releases depName=nektos/act
-act = "{{ act_version | default('0.2.97', true) }}"
-
-# Replays the pull request workflows in Docker. Does nothing inside act (ACT is set there),
-# where the test job of the replayed CI runs it again.
-[tasks."act:test"]
-description = "Run the pull request workflows locally with act, in Docker"
-run = '''{% raw %}{% if get_env(name="ACT", default="") %}echo act:test: already in act{% else %}{% endraw %}{{ act_test_command | default('act pull_request' ~ (' -W .gitea/workflows' if ci == 'gitea' else '') ~ ' -P ubuntu-latest=catthehacker/ubuntu:act-24.04', true) }}{% raw %}{% endif %}{% endraw %}'''

@@ -1,4 +1,4 @@
 ---
 _min_copier_version: "9.19.1"
 _subdirectory: template
-_answers_file: .mise/brigade-copier-answers.yml
+_answers_file: .brigade/answers.yml
