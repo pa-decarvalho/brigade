@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=github-releases depName=crate-ci/typos
-typos = "1.52.0"
+typos = "1.52.2"
 
 [tasks."typos:lint"]
 description = "Check spelling with typos"

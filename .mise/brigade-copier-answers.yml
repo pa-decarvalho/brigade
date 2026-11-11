@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.3.0
+_commit: 0.4.0
 _src_path: gh:pa-decarvalho/brigade
 build_commands: []
 build_enabled: true
@@ -20,6 +20,7 @@ lint_commands: []
 lint_enabled: true
 operate_commands: []
 operate_enabled: true
+operate_schedule: 0 5 * * 1
 pages_deploy_command: ''
 pages_version: ''
 pypi_index: ''
