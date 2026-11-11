@@ -1,3 +1,9 @@
+# [0.7.0](https://github.com/pa-decarvalho/brigade/compare/0.6.1...0.7.0) - 2026-11-11
+
+### 🚀 Features
+
+- add brigade:lint, checking that brigade-owned files are not edited (#118) [_(5ef6aa1)_](https://github.com/pa-decarvalho/brigade/commit/5ef6aa17737b159c1f4919d169214b5bcab36209)
+
 # [0.6.1](https://github.com/pa-decarvalho/brigade/compare/0.6.0...0.6.1) - 2026-11-11
 
 ### 🐛 Bug Fixes
