@@ -6,12 +6,21 @@ name: Build
 on:
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  # One group per pull request (its ref): a new push cancels the older run.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/mise
       - run: mise run build

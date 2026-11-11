@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.4.0
+_commit: 0.5.0
 _src_path: gh:pa-decarvalho/brigade
 build_commands: []
 build_enabled: true
@@ -54,7 +54,7 @@ typos_lint_command: ''
 typos_version: ''
 yamllint_lint_command: 'yamllint --strict -d "{extends: default, ignore: [.ctt/, template/,
     .mise-data/, .mise/brigade-copier-answers.yml], rules: {truthy: {check-keys: false},
-    new-lines: disable}}" .'
+    new-lines: disable, comments: {min-spaces-from-content: 1}}}" .'
 yamllint_version: ''
 zensical_build_command: ''
 zensical_serve_command: ''
