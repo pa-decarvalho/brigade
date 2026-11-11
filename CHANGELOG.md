@@ -1,3 +1,13 @@
+# [0.4.0](https://github.com/pa-decarvalho/brigade/compare/0.3.1...0.4.0) - 2026-11-11
+
+### 🚀 Features
+
+- schedule the operate workflow with an operate_schedule answer (#93) [_(5eb11d9)_](https://github.com/pa-decarvalho/brigade/commit/5eb11d95b0ed42d53358a170866c0a4b0a1c3468)
+
+### 🐛 Bug Fixes
+
+- install Renovate despite a dependency without npm provenance (#92) [_(0367b41)_](https://github.com/pa-decarvalho/brigade/commit/0367b4144a601222f5130c9f3dd8bb3d485ff75d)
+
 # [0.3.1](https://github.com/pa-decarvalho/brigade/compare/0.3.0...0.3.1) - 2026-11-11
 
 ### 🐛 Bug Fixes
