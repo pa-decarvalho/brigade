@@ -1,10 +1,12 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Manual runs only ("Run workflow"): mise run operate, e.g. Renovate.
-# For a schedule, add your own workflow.
+# mise run operate, e.g. Renovate: on manual runs ("Run workflow"),
+# and on the operate_schedule answer.
 name: Operate
 
 on:
+  schedule:
+    - cron: "0 5 * * 1"
   workflow_dispatch:
 
 jobs:
