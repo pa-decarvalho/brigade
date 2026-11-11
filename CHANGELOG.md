@@ -1,3 +1,11 @@
+# [0.6.1](https://github.com/pa-decarvalho/brigade/compare/0.6.0...0.6.1) - 2026-11-11
+
+### 🐛 Bug Fixes
+
+- set Renovate's git author to the token owner on GitHub (#114) [_(41ad9d9)_](https://github.com/pa-decarvalho/brigade/commit/41ad9d9e0f8c3afde11e491e2a209a57f2e3d9d9)
+
+- _(deps)_ update template (#107) [_(8907c6e)_](https://github.com/pa-decarvalho/brigade/commit/8907c6ed9aaaab8109006ba54115bacf5c85b7e7)
+
 # [0.6.0](https://github.com/pa-decarvalho/brigade/compare/0.5.1...0.6.0) - 2026-11-11
 
 ### 🚀 Features
