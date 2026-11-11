@@ -7,9 +7,15 @@ on:
   push:
     branches: [main]
 
+# A new run waits for the running one: no half-done release.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
       issues: write  # release PR labels
@@ -23,6 +29,6 @@ jobs:
       RELEASAURUS_GITHUB_TOKEN: >-
         ${{ secrets.RELEASAURUS_GITHUB_TOKEN || github.token }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/mise
       - run: mise run release

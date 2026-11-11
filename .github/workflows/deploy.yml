@@ -9,9 +9,15 @@ on:
   # Deploy without a release, e.g. a typo in the documentation.
   workflow_dispatch:
 
+# A new run waits for the running one: no half-done deploy.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write  # pages:deploy pushes the gh-pages branch
     env:
@@ -19,6 +25,8 @@ jobs:
       GIT_COMMITTER_NAME: ${{ github.actor }}
       GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/mise
+        with:
+          cache: false  # no cache restored where a release is published
       - run: mise run deploy
