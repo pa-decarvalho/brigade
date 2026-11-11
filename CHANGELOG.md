@@ -1,3 +1,9 @@
+# [0.3.1](https://github.com/pa-decarvalho/brigade/compare/0.3.0...0.3.1) - 2026-11-11
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#85) [_(93597f9)_](https://github.com/pa-decarvalho/brigade/commit/93597f97cb964c8fb8d7cc138c00bbcfb7a31084)
+
 # [0.3.0](https://github.com/pa-decarvalho/brigade/compare/0.2.0...0.3.0) - 2026-11-10
 
 ### 🚀 Features
