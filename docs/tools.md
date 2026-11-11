@@ -29,7 +29,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.mise/**/*.toml` (fails on Windows checkouts with CRLF line endings) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)) |
-| `ruff` | `ruff:lint` | `ruff check && ruff format --check` |
+| `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
@@ -37,7 +37,8 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
-| `ci-local` | `brigade:ci-local` | Runs the CI locally: see below |
+| `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
+| `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
 
@@ -96,8 +97,11 @@ Create the project with `uv init`: `uv` is always installed, and picks Python fr
 
 ## Run the CI locally
 
-Pick `ci-local` to get `mise run brigade:ci-local`, which runs the project's CI in Docker: [act](https://github.com/nektos/act) on GitHub and Gitea, [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) on GitLab.
-It is a helper, not a stage, and its tools are installed the first time you run it: CI does not download them.
+Pick [act](https://github.com/nektos/act) (GitHub, Gitea) or [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab): `act:test` or `gitlab-ci-local:test` replays the CI of pull requests in Docker, as part of the test stage.
+
+- It needs Docker, also in CI: GitHub runners have it; on GitLab, the task does nothing in a pipeline, and on Gitea it depends on the runner.
+- Inside the replayed CI, its test job runs the task again: there it does nothing (act sets `ACT`, gitlab-ci-local sets `GITLAB_CI`), so the replay does not loop.
+- In CI, the test job then replays the whole CI once more, which takes longer.
 
 ## Customize a version or a command
 
@@ -113,7 +117,7 @@ Command of ruff:lint (empty for brigade's): ruff check src
 - An answer replaces brigade's value, and stays on `brigade:update` until you change it.
 - An empty answer takes brigade's value, and keeps following it on `brigade:update`. Clear an answer to go back to it.
 
-Answers are named `<tool>_version` and `<tool>_<action>_command`, e.g. `ruff_version`, `zensical_serve_command`; `ci-local` uses `ci_local_version` and `ci_local_command`.
+Answers are named `<tool>_version` and `<tool>_<action>_command`, e.g. `ruff_version`, `zensical_serve_command`.
 To change them later, see [Questions](questions.md).
 
 Missing a tool? Add your own task: see [Custom tasks](custom-tasks.md).

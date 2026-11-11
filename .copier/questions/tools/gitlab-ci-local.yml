@@ -1,0 +1,18 @@
+---
+gitlab_ci_local_version:
+  type: str
+  help: gitlab-ci-local version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'gitlab-ci-local' in tools }}"
+
+gitlab_ci_local_node_version:
+  type: str
+  help: Node.js version for gitlab-ci-local (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'gitlab-ci-local' in tools }}"
+
+gitlab_ci_local_test_command:
+  type: str
+  help: Command of gitlab-ci-local:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'gitlab-ci-local' in tools }}"
