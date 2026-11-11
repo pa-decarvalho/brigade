@@ -13,7 +13,7 @@ On every platform, `lint`, `build` and `test` run on pull requests (merge reques
 | `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
 | `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 
-`actionlint:lint` checks the workflows.
+[jactionlint](https://jactionlint.jdx.dev) (`jactionlint:lint`) checks the workflows and the mise action, with its default rules: actions pinned by commit SHA (Renovate updates the SHA and its version comment), `permissions:`, `timeout-minutes`, `concurrency:` (pull request runs cancel the older ones, release and deploy runs wait), and no cache restored in `deploy`.
 
 ### Stages
 
@@ -70,8 +70,7 @@ To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, 
 
 Same layout as GitHub, under `.gitea/`: `workflows/<stage>.yml` and `actions/mise/action.yml`.
 
-- mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action.
-- `actionlint:lint` checks the workflows.
+- mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action, and act (local runs) refuses full URLs. The script checks the archive against a checksum file from the same server, so it trusts HTTPS only: `jactionlint:lint` ignores that one finding (`unverified-download`).
 
 ## None (`ci: none`)
 

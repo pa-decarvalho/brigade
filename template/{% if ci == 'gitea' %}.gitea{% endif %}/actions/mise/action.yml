@@ -1,7 +1,9 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 # Forgejo resolves actions on data.forgejo.org, which mirrors actions/checkout
-# but not jdx/mise-action: install mise with its script.
+# but not jdx/mise-action, and act refuses full URLs: install mise with its
+# script. It checks the archive against SHASUMS256.txt from the same server, so
+# it trusts HTTPS only: unverified-download is ignored here.
 name: mise
 description: Install brigade's pinned mise and the project's tools
 runs:
@@ -9,7 +11,7 @@ runs:
   steps:
     - name: Install mise
       shell: bash
-      run: |
+      run: | # jactionlint ignore=unverified-download
         curl -fsSL https://mise.run | MISE_VERSION=v2026.11.6 sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
     - name: Install tools
