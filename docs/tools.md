@@ -89,7 +89,7 @@ Operations that do not belong to a release, such as `renovate:operate`. Run it w
 - **GitHub, Gitea**: "Run workflow" on the Operate workflow, and on the `operate_schedule` answer (a cron expression, e.g. `0 5 * * 1` for Mondays at 5:00 UTC).
 - **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now), since "Run pipeline" deploys.
 
-For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). Set `gitAuthor` in your Renovate config: its default address belongs to a GitHub user of Mend. See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
+For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits as the token's owner, with their noreply address (`RENOVATE_GIT_AUTHOR`); elsewhere, set `gitAuthor` in your Renovate config if needed. See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
 
 ## Toolchain
 

@@ -10,6 +10,16 @@ runs:
   using: composite
   steps:
     - uses: ./.brigade/ci/github/actions/mise
+    # Renovate's git author: the token owner's noreply address. Without it,
+    # Renovate needs the token to read the owner's emails, else it commits as
+    # a Mend account (and warns).
+    - if: inputs.renovate-token != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.renovate-token }}
+      run: >-
+        gh api user --jq '"RENOVATE_GIT_AUTHOR=\(.name // .login)
+        <\(.id)+\(.login)@users.noreply.github.com>"' >> "$GITHUB_ENV"
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
