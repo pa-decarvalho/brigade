@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=tamasfe/taplo
+taplo = "0.10.0"
+
+[tasks."taplo:lint"]
+description = "Check TOML formatting with taplo"
+dir = "{{config_root}}/../.."
+run = '''taplo fmt --check --no-auto-config -o indent_string="    " -o array_auto_expand=false -o array_auto_collapse=false ".brigade/**/*.toml" .miserc.toml mise.toml ctt.toml zensical.toml releasaurus.toml "template/**/*.toml"'''

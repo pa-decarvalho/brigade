@@ -8,11 +8,13 @@ node = "26.13.0"
 
 [tasks."renovate:lint"]
 description = "Check the Renovate config"
+dir = "{{config_root}}/../.."
 run = '''check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5'''
 
 # Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES: CI sets them). Renovate itself is on the task, so other CI jobs skip it.
 [tasks."renovate:operate"]
 description = "Run Renovate"
+dir = "{{config_root}}/../.."
 run = '''renovate'''
 
 [tasks."renovate:operate".tools]

@@ -1,34 +1,43 @@
 # Pipeline stages, in order. Each stage runs its commands if it has some, otherwise every
-# "<tool>:<stage>" task; tools have one file each in .mise/conf.d/.
+# "<tool>:<stage>" task; tools have one file each in tools/.
+# Tasks run at the project root: dir is relative to this file's folder.
 
 [tasks.lint]
 description = "Stage: static checks"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:lint", optional = true }]
 
 [tasks.build]
 description = "Stage: build"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:build", optional = true }]
 
 [tasks.test]
 description = "Stage: tests"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:test", optional = true }]
 
 [tasks.release]
 description = "Stage: release (CI runs it on pushes to the default branch)"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:release", optional = true }]
 
 [tasks.deploy]
 description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:deploy", optional = true }]
 
 [tasks.operate]
 description = "Stage: operate (CI runs it on manual runs, or GitLab schedules)"
+dir = "{{config_root}}/.."
 depends = [{ task = "*:operate", optional = true }]
 
 [tasks."brigade:pre-commit"]
 description = "Checks run by the git pre-commit hook"
+dir = "{{config_root}}/.."
 depends = ["lint"]
 
 [tasks."brigade:hooks"]
 description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
+dir = "{{config_root}}/.."
 run = "mise generate git-pre-commit --task brigade:pre-commit --write"
