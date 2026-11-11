@@ -3,6 +3,8 @@
     extends: ["config:recommended"],
     dependencyDashboard: false,
     semanticCommits: "enabled",
+    // The token owner's address, not Renovate's default (a GitHub user owned by Mend).
+    gitAuthor: "Renovate <114414637+pa-decarvalho@users.noreply.github.com>",
     // Only the template: generated projects, brigade included, get its versions
     // through a release and mise run brigade:update.
     includePaths: ["template/**"],
