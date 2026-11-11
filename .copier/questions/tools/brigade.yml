@@ -1,0 +1,12 @@
+---
+brigade_version:
+  type: str
+  help: Copier version for brigade:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'brigade' in tools }}"
+
+brigade_lint_command:
+  type: str
+  help: Command of brigade:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'brigade' in tools }}"

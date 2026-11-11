@@ -18,10 +18,11 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 
 ## Catalog
 
-`yamllint`, `gitleaks` and `typos` are selected by default.
+`brigade`, `yamllint`, `gitleaks` and `typos` are selected by default.
 
 | Tool | Task | Command |
 |---|---|---|
+| `brigade` | `brigade:lint` | Fails when a brigade-owned file was edited or deleted: see [brigade](#brigade) |
 | `yamllint` | `yamllint:lint` | `yamllint --strict` |
 | `gitleaks` | `gitleaks:lint` | `gitleaks git` (history and staged changes) |
 | `typos` | `typos:lint` | `typos` |
@@ -41,6 +42,12 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
+
+## brigade
+
+`brigade:lint` renders the template at the version of `.brigade/answers.yml`, with your answers, into a temporary folder, and compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite it. Run `mise run brigade:update` to restore them.
+
+It needs access to the template (`gh:pa-decarvalho/brigade`, through git) on each run. Offline, behind a proxy, or to edit a generated file on purpose, remove `brigade` from your tools.
 
 ## release
 
