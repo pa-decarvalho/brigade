@@ -4,13 +4,13 @@ brigade generates the CI files and `mise run brigade:update` keeps them up to da
 
 Jobs only install mise and call `mise run <stage>`, so CI and laptops run the same tools.
 
-On every platform, `lint`, `build` and `test` run on pull requests (merge requests on GitLab), side by side; `release` runs on pushes to the default branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs (scheduled pipelines on GitLab).
+On every platform, `lint`, `build` and `test` run on pull requests (merge requests on GitLab), side by side; `release` runs on pushes to the default branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs and on the `operate_schedule` answer (scheduled pipelines on GitLab).
 
 ## GitHub (`ci: github`)
 
 | File | Role |
 |---|---|
-| `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs. |
+| `.github/workflows/<stage>.yml` | One workflow per stage, with one job running `mise run <stage>`: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
 | `.github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools. |
 
 `actionlint:lint` checks the workflows.
@@ -64,7 +64,7 @@ extra:
 
 ## Manual run
 
-To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate`, use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline schedule on GitLab.
+To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate` now, use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline schedule on GitLab.
 
 ## Gitea and Forgejo (`ci: gitea`)
 
