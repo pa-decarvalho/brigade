@@ -5,6 +5,7 @@ override_config_filenames = [
     ".brigade/mise.toml",
     ".brigade/stages.toml",
     ".brigade/tools/jactionlint-brigade.toml",
+    ".brigade/tools/brigade-brigade.toml",
     ".brigade/tools/yamllint-brigade.toml",
     ".brigade/tools/gitleaks-brigade.toml",
     ".brigade/tools/typos-brigade.toml",
