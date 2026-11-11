@@ -31,9 +31,14 @@ tools:
       validator: >-
         {% if ci not in ['github', 'gitlab'] %}needs GitHub
         or GitLab{% endif %}
-    ci-local (run the CI locally):
-      value: ci-local
-      validator: "{% if ci == 'none' %}needs a CI platform{% endif %}"
+    act (test):
+      value: act
+      validator: >-
+        {% if ci not in ['github', 'gitea'] %}needs GitHub
+        or Gitea{% endif %}
+    gitlab-ci-local (test):
+      value: gitlab-ci-local
+      validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
   default: [yamllint, gitleaks, typos]
 
 # Stages: keep one or not, and its commands (empty: all its tools).

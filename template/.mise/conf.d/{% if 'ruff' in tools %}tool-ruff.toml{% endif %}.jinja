@@ -4,4 +4,5 @@ ruff = "{{ ruff_version | default('0.17.4', true) }}"
 
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"
-run = '''{{ ruff_lint_command | default('ruff check && ruff format --check', true) }}'''
+# .mise-data is the GitLab CI tool cache (node ships a Python file).
+run = '''{{ ruff_lint_command | default('ruff check --extend-exclude .mise-data && ruff format --check --extend-exclude .mise-data', true) }}'''

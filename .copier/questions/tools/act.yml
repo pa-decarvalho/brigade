@@ -1,0 +1,12 @@
+---
+act_version:
+  type: str
+  help: act version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'act' in tools }}"
+
+act_test_command:
+  type: str
+  help: Command of act:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'act' in tools }}"
