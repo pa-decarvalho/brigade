@@ -1,3 +1,9 @@
+# [0.6.0](https://github.com/pa-decarvalho/brigade/compare/0.5.1...0.6.0) - 2026-11-11
+
+### 🚀 Features
+
+- group brigade files in .brigade/, with one CI action per stage (#109) [_(957025c)_](https://github.com/pa-decarvalho/brigade/commit/957025ca6570b3a91b9f63c02f2beef6959be865)
+
 # [0.5.1](https://github.com/pa-decarvalho/brigade/compare/0.5.0...0.5.1) - 2026-11-11
 
 ### 🐛 Bug Fixes
