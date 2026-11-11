@@ -20,15 +20,9 @@ jobs:
       contents: write
       issues: write  # release PR labels
       pull-requests: write
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-      RELEASAURUS_FORGE: github
-      RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
-      # Optional bot token: the release PR and tag made with the workflow token
-      # start no CI (merge the PR with a bypass, run deploy by hand).
-      RELEASAURUS_GITHUB_TOKEN: >-
-        ${{ secrets.RELEASAURUS_GITHUB_TOKEN || github.token }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/mise
-      - run: mise run release
+      - uses: ./.brigade/ci/github/actions/release
+        with:
+          # Optional bot token, else the workflow token.
+          token: ${{ secrets.RELEASAURUS_GITHUB_TOKEN }}

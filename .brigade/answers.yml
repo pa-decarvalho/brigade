@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.5.1
+_commit: 0.6.0
 _src_path: gh:pa-decarvalho/brigade
 build_commands: []
 build_enabled: true
@@ -34,8 +34,8 @@ renovate_node_version: ''
 renovate_operate_command: ''
 renovate_version: ''
 taplo_lint_command: taplo fmt --check --no-auto-config -o indent_string="    " -o
-    array_auto_expand=false -o array_auto_collapse=false ".mise/**/*.toml" ctt.toml
-    zensical.toml releasaurus.toml "template/**/*.toml"
+    array_auto_expand=false -o array_auto_collapse=false ".brigade/**/*.toml" .miserc.toml
+    mise.toml ctt.toml zensical.toml releasaurus.toml "template/**/*.toml"
 taplo_version: ''
 test_commands: []
 test_enabled: true
@@ -53,8 +53,8 @@ tools:
 typos_lint_command: ''
 typos_version: ''
 yamllint_lint_command: 'yamllint --strict -d "{extends: default, ignore: [.ctt/, template/,
-    .mise-data/, .mise/brigade-copier-answers.yml], rules: {truthy: {check-keys: false},
-    new-lines: disable, comments: {min-spaces-from-content: 1}}}" .'
+    .mise-data/, .brigade/answers.yml], rules: {truthy: {check-keys: false}, new-lines:
+    disable, comments: {min-spaces-from-content: 1}}}" .'
 yamllint_version: ''
 zensical_build_command: ''
 zensical_serve_command: ''

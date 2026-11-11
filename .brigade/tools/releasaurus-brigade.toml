@@ -7,4 +7,5 @@
 # Needs RELEASAURUS_REPO, RELEASAURUS_FORGE and a token (RELEASAURUS_<FORGE>_TOKEN): CI sets them.
 [tasks."releasaurus:release"]
 description = "Tag and publish a merged release PR, then open or update the next one"
+dir = "{{config_root}}/../.."
 run = '''releasaurus release && releasaurus release-pr --tag-prefix '''''

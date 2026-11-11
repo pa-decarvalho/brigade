@@ -4,4 +4,5 @@
 
 [tasks."ctt:test"]
 description = "Render every ctt.toml variant of this Copier template"
+dir = "{{config_root}}/../.."
 run = '''uv run --no-project python -c "import shutil; shutil.rmtree('.ctt', ignore_errors=True)" && ctt'''
