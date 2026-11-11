@@ -33,6 +33,8 @@ renovate_lint_command: check-jsonschema --builtin-schema vendor.renovate .github
 renovate_node_version: ''
 renovate_operate_command: ''
 renovate_version: ''
+ruff_lint_command: ''
+ruff_version: ''
 taplo_lint_command: taplo fmt --check --no-auto-config -o indent_string="    " -o
     array_auto_expand=false -o array_auto_collapse=false ".brigade/**/*.toml" .miserc.toml
     mise.toml ctt.toml zensical.toml releasaurus.toml "template/**/*.toml"
@@ -46,6 +48,7 @@ tools:
 - editorconfig-checker
 - taplo
 - renovate
+- ruff
 - zensical
 - ctt
 - releasaurus
