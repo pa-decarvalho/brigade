@@ -12,9 +12,13 @@ on:
   workflow_dispatch:
 
 {% raw -%}
+permissions:
+  contents: read
+
 jobs:
   operate:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       GITHUB_TOKEN: ${{ github.token }}
       # Renovate: a RENOVATE_TOKEN secret, on this repository.
@@ -23,7 +27,7 @@ jobs:
       RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
       RENOVATE_ONBOARDING: "false"
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/mise
       - run: mise run operate
 {%- endraw %}

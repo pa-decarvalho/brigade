@@ -1,7 +1,7 @@
 [tools]
-actionlint = "1.7.12"
+"aqua:jdx/jactionlint" = "2.5.0"
 
-[tasks."actionlint:lint"]
-description = "Check Gitea/Forgejo workflows with actionlint"
-# actionlint only finds .github/workflows by itself; Python globs on every OS.
-run = '''uv run --no-project python -c "import glob, subprocess, sys; sys.exit(subprocess.call(['actionlint', *glob.glob('.gitea/workflows/*.yml')]))"'''
+[tasks."jactionlint:lint"]
+description = "Check Gitea/Forgejo workflows and actions with jactionlint"
+# Only this project's files (not the copies in subfolders); Python globs on every OS.
+run = '''uv run --no-project python -c "import glob, subprocess, sys; sys.exit(subprocess.call(['jactionlint', *glob.glob('.gitea/workflows/*.yml'), *glob.glob('.gitea/actions/*/action.yml')]))"'''

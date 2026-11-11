@@ -39,7 +39,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ci-local` | `brigade:ci-local` | Runs the CI locally: see below |
 
-The CI platform adds its own linter (`actionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
+The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
 
 ## release
 
