@@ -6,7 +6,7 @@ run = '''{{ ci_local_command | default('gitlab-ci-local --variable CI_PIPELINE_S
 
 [tasks."brigade:ci-local".tools]
 # renovate: datasource=node-version depName=node
-node = "{{ ci_local_node_version | default('24.22.2', true) }}"
+node = "{{ ci_local_node_version | default('26.13.0', true) }}"
 # renovate: datasource=npm depName=gitlab-ci-local
 "npm:gitlab-ci-local" = "{{ ci_local_version | default('4.77.1', true) }}"
 {%- else %}
