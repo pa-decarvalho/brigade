@@ -14,5 +14,7 @@ run = '''{{ renovate_operate_command | default('renovate', true) }}'''
 [tasks."renovate:operate".tools]
 # renovate: datasource=node-version depName=node
 node = "{{ renovate_node_version | default('26.13.0', true) }}"
+# @yarnpkg/libzip 3.2.2 has no npm provenance (manual publish of yarnpkg/berry's 2eb9830 release),
+# which mise's trust policy rejects: exempt that one version only.
 # renovate: datasource=npm depName=renovate
-"npm:renovate" = "{{ renovate_cli_version | default('44.227.4', true) }}"
+"npm:renovate" = { version = "{{ renovate_cli_version | default('44.227.4', true) }}", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }

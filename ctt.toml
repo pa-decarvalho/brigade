@@ -23,6 +23,8 @@ _post_tasks = [
     ["mise", "run", "lint"],
     ["mise", "run", "build"],
     ["mise", "run", "test"],
+    # renovate:operate installs its tools (npm trust policy).
+    ["mise", "run", "renovate:operate", "--", "--version"],
 ]
 
 [output.".ctt/python-gitlab"]
