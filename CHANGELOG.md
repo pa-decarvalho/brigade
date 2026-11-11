@@ -1,3 +1,11 @@
+# [0.5.0](https://github.com/pa-decarvalho/brigade/compare/0.4.0...0.5.0) - 2026-11-11
+
+### 🚀 Features
+
+- act and gitlab-ci-local tools replace ci-local, brigade tests with its own tools (#102) [_(4b6b7e9)_](https://github.com/pa-decarvalho/brigade/commit/4b6b7e9068373127d31adadd55ed91e76ea7703b)
+
+- lint workflows with jactionlint, harden the generated workflows (#100) [_(54bed8a)_](https://github.com/pa-decarvalho/brigade/commit/54bed8a3bfc26eb54645f9a9a09d68da5e9cab09)
+
 # [0.4.0](https://github.com/pa-decarvalho/brigade/compare/0.3.1...0.4.0) - 2026-11-11
 
 ### 🚀 Features
