@@ -1,3 +1,9 @@
+# [0.5.1](https://github.com/pa-decarvalho/brigade/compare/0.5.0...0.5.1) - 2026-11-11
+
+### 🐛 Bug Fixes
+
+- build re2 for Renovate, set Renovate's git author (#104) [_(76f4370)_](https://github.com/pa-decarvalho/brigade/commit/76f437003e024f59c98dcd85c104d4efb519e214)
+
 # [0.5.0](https://github.com/pa-decarvalho/brigade/compare/0.4.0...0.5.0) - 2026-11-11
 
 ### 🚀 Features
