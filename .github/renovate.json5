@@ -12,7 +12,7 @@
         managerFilePatterns: ["/^template/\\.mise/conf\\.d/[^/]*(\\.toml|\\{% endif %\\})$/"],
     },
     "github-actions": {
-        managerFilePatterns: ["/^template/.*/workflows/[^/]*(\\.yml|\\{% endif %\\})$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
+        managerFilePatterns: ["/^template/.*/workflows/[^/]*(\\.yml|\\{% endif %\\})(\\.jinja)?$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
     },
     gitlabci: {
         managerFilePatterns: ["/^template/.*\\.gitlab[^/]*/ci/[^/]+\\.yml/"],

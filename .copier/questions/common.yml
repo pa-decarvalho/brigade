@@ -103,6 +103,14 @@ operate_commands:
   default: []
   when: "{{ operate_enabled }}"
 
+operate_schedule:
+  type: str
+  help: >-
+    Cron schedule of the operate workflow, e.g. "0 5 * * 1" (empty for manual
+    runs only)
+  default: ""
+  when: "{{ operate_enabled and ci in ['github', 'gitea'] }}"
+
 # Asks a version and a command per selected tool (questions/tools/).
 # An empty answer takes brigade's default, which is in the tool's Jinja file.
 customize_tools:

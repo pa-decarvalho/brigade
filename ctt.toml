@@ -6,6 +6,7 @@
 [output.".ctt/python-github"]
 tools = ["yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "ci-local", "uv", "zensical", "pages", "releasaurus"]
 ci = "github"
+operate_schedule = "0 5 * * 1"
 # The lint stage runs these commands, in order.
 lint_commands = ["mise run ruff:lint", "mise run typos:lint"]
 _post_tasks = [

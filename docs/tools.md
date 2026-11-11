@@ -85,7 +85,7 @@ Add `site/` and `.cache/` to your `.gitignore`.
 
 Operations that do not belong to a release, such as `renovate:operate`. Run it with `mise run operate`, or in CI:
 
-- **GitHub, Gitea**: "Run workflow" on the Operate workflow. For a schedule, add your own workflow.
+- **GitHub, Gitea**: "Run workflow" on the Operate workflow, and on the `operate_schedule` answer (a cron expression, e.g. `0 5 * * 1` for Mondays at 5:00 UTC).
 - **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now), since "Run pipeline" deploys.
 
 For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
