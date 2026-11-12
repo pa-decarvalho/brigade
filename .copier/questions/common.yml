@@ -29,6 +29,7 @@ tools:
     molecule (test): molecule
     ctt (test): ctt
     releasaurus (release): releasaurus
+    ansible (deploy, operate): ansible
     pages (deploy):
       value: pages
       validator: >-

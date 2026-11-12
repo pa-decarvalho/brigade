@@ -1,0 +1,18 @@
+[tools]
+# renovate: datasource=pypi depName=ansible-core
+"pipx:ansible-core" = "{{ ansible_version | default('2.22.0', true) }}"
+
+# With ANSIBLE_VAULT_PASSWORD (CI secret), the vault password comes from it; an empty
+# --vault-password-file or ANSIBLE_VAULT_PASSWORD_FILE would break Ansible, hence the condition.
+# With ANSIBLE_PRIVATE_KEY (CI secret), Ansible loads the key into its own SSH agent; else, your setting.
+[tasks."ansible:deploy"]
+description = "Deploy with Ansible (playbooks/deploy.yml)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ ansible_deploy_command | default('ansible-playbook -i inventory playbooks/deploy.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible-vault-password.py{% endif %}{% endraw %}'''
+env = { ANSIBLE_SSH_AGENT = "{% raw %}{% if get_env(name='ANSIBLE_PRIVATE_KEY', default='') %}auto{% else %}{{ get_env(name='ANSIBLE_SSH_AGENT', default='none') }}{% endif %}{% endraw %}" }
+
+[tasks."ansible:operate"]
+description = "Operate with Ansible (playbooks/operate.yml)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ ansible_operate_command | default('ansible-playbook -i inventory playbooks/operate.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible-vault-password.py{% endif %}{% endraw %}'''
+env = { ANSIBLE_SSH_AGENT = "{% raw %}{% if get_env(name='ANSIBLE_PRIVATE_KEY', default='') %}auto{% else %}{{ get_env(name='ANSIBLE_SSH_AGENT', default='none') }}{% endif %}{% endraw %}" }

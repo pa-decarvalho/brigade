@@ -38,11 +38,12 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `molecule` | `molecule:test` | `molecule test --all`, with the Docker driver (needs your `molecule/<scenario>/molecule.yml` and Docker: see [Molecule](#molecule)) |
 | | `molecule:converge`, `molecule:verify`, `molecule:destroy` | `molecule converge`, `verify`, `destroy`, while writing a role |
-| | `molecule:reconverge` | `molecule destroy && molecule converge`, to converge from scratch |
+| | `molecule:reconverge` | `molecule:destroy`, then `molecule converge`, to converge from scratch |
 | | `molecule:login` | `molecule login`, a shell in the instance |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
+| `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
@@ -54,7 +55,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 
 - `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
-- `ansible-lint`, `molecule`: Ansible does not run on Windows (use WSL).
+- `ansible-lint`, `molecule`, `ansible`: Ansible does not run on Windows (use WSL).
 - `act`, `gitlab-ci-local`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
@@ -122,6 +123,17 @@ Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task):
 
 To update every day and merge automatically once the checks pass, answer `operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge" in Settings). A failing check, or Copier's conflict markers in a brigade update, keep the PR open.
 
+## Ansible
+
+`ansible` installs `ansible-core` and runs your playbooks on your inventory: `playbooks/deploy.yml` in the deploy stage (on `X.Y.Z` tags and manual runs), `playbooks/operate.yml` in the operate stage (manual runs and `operate_schedule`), both with `-i inventory`. Other paths or options: change the commands (`ansible_deploy_command`, `ansible_operate_command`), or add `ansible.cfg`.
+
+In CI, two optional secrets (CI/CD variables on GitLab, of type Variable):
+
+- `ANSIBLE_PRIVATE_KEY`: the SSH private key. Ansible loads it into an SSH agent of its own (`ANSIBLE_SSH_AGENT=auto`, ansible-core 2.19 or later), with no key file. Without it, the tasks keep your own SSH setup. On GitLab, brigade's image has no SSH client yet ([#139](https://github.com/pa-decarvalho/brigade/issues/139)).
+- `ANSIBLE_VAULT_PASSWORD`: the vault password. When it is set, the tasks add `--vault-password-file .brigade/scripts/ansible-vault-password.py`, a script that prints it. Without it, Ansible uses your own setup (`ansible.cfg`, `ANSIBLE_VAULT_PASSWORD_FILE`), so it works the same locally: `ANSIBLE_VAULT_PASSWORD=... mise run deploy`.
+
+Lint the playbooks with `ansible-lint`, test roles with `molecule`.
+
 ## Toolchain
 
 Create the project with `uv init`: `uv` is always installed, and picks Python from `.python-version` and `requires-python`.
@@ -140,7 +152,7 @@ platforms:
     pre_build_image: true
 ```
 
-The other tasks stay out of the pipeline and work on the `default` scenario. Arguments go to the last command: `mise run molecule:converge -- -s <scenario>`; for `molecule:reconverge`, which runs two commands, run `mise exec -- molecule destroy -s <scenario>` first.
+The other tasks stay out of the pipeline and work on the `default` scenario. Arguments go to the command: `mise run molecule:converge -- -s <scenario>`; `molecule:reconverge` passes them to `converge` only (its `molecule:destroy` takes the `default` scenario). The tasks run Molecule with `mise exec pipx:molecule@<version>`, so that its `ansible-playbook` (with the Docker libraries) comes before the `ansible` tool's.
 
 It needs Docker, also in CI: GitHub runners and `act` have it; on GitLab and Gitea, the runner must give the job access to a Docker daemon (mounted socket or `DOCKER_HOST`).
 

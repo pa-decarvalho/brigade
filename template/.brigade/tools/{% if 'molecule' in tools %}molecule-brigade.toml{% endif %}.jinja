@@ -1,37 +1,38 @@
 [tools]
 # The docker driver, and ansible-core's executables (ansible-playbook, ansible-galaxy), which Molecule runs.
-# ansible-core is not pinned: a version that needs a newer Python than the system's makes uv download one
-# outside mise's install folder, which the CI cache does not keep.
 # renovate: datasource=pypi depName=molecule
-"pipx:molecule" = { version = "{{ molecule_version | default('26.11.0', true) }}", uvx_args = "--with molecule-plugins[docker]==26.11.0 --with-executables-from ansible-core" }
+{% set molecule = 'pipx:molecule@' ~ (molecule_version | default('26.11.0', true)) -%}
+"pipx:molecule" = { version = "{{ molecule.split('@')[1] }}", uvx_args = "--with molecule-plugins[docker]==26.11.0 --with ansible-core==2.22.0 --with-executables-from ansible-core" }
 
+# mise exec puts Molecule's ansible-playbook first in PATH: the ansible tool's has no docker library.
 [tasks."molecule:test"]
 description = "Test Ansible roles and playbooks with Molecule, in Docker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_test_command | default('molecule test --all', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_test_command | default('molecule test --all', true) }}'''
 
-# Not stage names: stay out of the pipeline. Arguments go to the last command (mise run molecule:converge -- -s <scenario>).
+# Not stage names: stay out of the pipeline. Arguments go to the command (mise run molecule:converge -- -s <scenario>).
 [tasks."molecule:converge"]
 description = "Create the default scenario's instances if needed and apply its converge playbook"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_converge_command | default('molecule converge', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_converge_command | default('molecule converge', true) }}'''
 
 [tasks."molecule:verify"]
 description = "Run the default scenario's verify playbook"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_verify_command | default('molecule verify', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_verify_command | default('molecule verify', true) }}'''
 
 [tasks."molecule:destroy"]
 description = "Destroy the default scenario's instances"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_destroy_command | default('molecule destroy', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_destroy_command | default('molecule destroy', true) }}'''
 
 [tasks."molecule:reconverge"]
 description = "Destroy the default scenario's instances, then converge from scratch"
+depends = ["molecule:destroy"]
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_reconverge_command | default('molecule destroy && molecule converge', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_reconverge_command | default('molecule converge', true) }}'''
 
 [tasks."molecule:login"]
 description = "Open a shell in the default scenario's instance"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ molecule_login_command | default('molecule login', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_login_command | default('molecule login', true) }}'''

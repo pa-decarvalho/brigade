@@ -24,4 +24,6 @@ jobs:
       - uses: ./.brigade/ci/gitea/actions/operate
         with:
           renovate-token: ${{ secrets.RENOVATE_TOKEN }}
+          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
+          ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 {%- endraw %}
