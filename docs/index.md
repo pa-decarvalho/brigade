@@ -9,7 +9,7 @@ brigade is a [Copier](https://copier.readthedocs.io/) template that adds [mise](
 - Generates a CI that installs mise and runs those stages, for GitHub, GitLab or Gitea/Forgejo.
 - Keeps all of it up to date: `mise run brigade:update` applies the latest brigade release.
 
-The same commands run on a laptop (Linux, macOS, Windows) and in CI.
+The same commands run on a laptop (Linux, macOS, Windows: see [Platforms](tools.md#platforms)) and in CI.
 
 ## What it does not do
 
