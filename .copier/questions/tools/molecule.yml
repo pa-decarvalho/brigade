@@ -10,3 +10,33 @@ molecule_test_command:
   help: Command of molecule:test (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_converge_command:
+  type: str
+  help: Command of molecule:converge (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_verify_command:
+  type: str
+  help: Command of molecule:verify (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_destroy_command:
+  type: str
+  help: Command of molecule:destroy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_reconverge_command:
+  type: str
+  help: Command of molecule:reconverge (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_login_command:
+  type: str
+  help: Command of molecule:login (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"

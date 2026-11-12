@@ -9,3 +9,29 @@
 description = "Test Ansible roles and playbooks with Molecule, in Docker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 run = '''{{ molecule_test_command | default('molecule test --all', true) }}'''
+
+# Not stage names: stay out of the pipeline. Arguments go to the last command (mise run molecule:converge -- -s <scenario>).
+[tasks."molecule:converge"]
+description = "Create the default scenario's instances if needed and apply its converge playbook"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_converge_command | default('molecule converge', true) }}'''
+
+[tasks."molecule:verify"]
+description = "Run the default scenario's verify playbook"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_verify_command | default('molecule verify', true) }}'''
+
+[tasks."molecule:destroy"]
+description = "Destroy the default scenario's instances"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_destroy_command | default('molecule destroy', true) }}'''
+
+[tasks."molecule:reconverge"]
+description = "Destroy the default scenario's instances, then converge from scratch"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_reconverge_command | default('molecule destroy && molecule converge', true) }}'''
+
+[tasks."molecule:login"]
+description = "Open a shell in the default scenario's instance"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_login_command | default('molecule login', true) }}'''

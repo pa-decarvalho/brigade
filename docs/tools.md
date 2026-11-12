@@ -37,6 +37,9 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `molecule` | `molecule:test` | `molecule test --all`, with the Docker driver (needs your `molecule/<scenario>/molecule.yml` and Docker: see [Molecule](#molecule)) |
+| | `molecule:converge`, `molecule:verify`, `molecule:destroy` | `molecule converge`, `verify`, `destroy`, while writing a role |
+| | `molecule:reconverge` | `molecule destroy && molecule converge`, to converge from scratch |
+| | `molecule:login` | `molecule login`, a shell in the instance |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
@@ -136,6 +139,8 @@ platforms:
     image: docker.io/library/python:3.13-slim
     pre_build_image: true
 ```
+
+The other tasks stay out of the pipeline and work on the `default` scenario. Arguments go to the last command: `mise run molecule:converge -- -s <scenario>`; for `molecule:reconverge`, which runs two commands, run `mise exec -- molecule destroy -s <scenario>` first.
 
 It needs Docker, also in CI: GitHub runners and `act` have it; on GitLab and Gitea, the runner must give the job access to a Docker daemon (mounted socket or `DOCKER_HOST`).
 
