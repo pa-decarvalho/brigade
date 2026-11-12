@@ -22,4 +22,10 @@ jobs:
       contents: write  # pages:deploy pushes the gh-pages branch
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.brigade/ci/github/actions/deploy
+        with:
+          persist-credentials: true  # pages:deploy pushes with git
+      - name: mise run deploy  # zizmor: ignore[self-repository]
+        uses: ./.brigade/ci/github/actions/deploy
+        with:
+          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
+          ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}

@@ -6,18 +6,24 @@ inputs:
   renovate-token:
     description: Renovate's token (RENOVATE_TOKEN secret)
     default: ""
+  ansible-private-key:
+    description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
+    default: ""
+  ansible-vault-password:
+    description: Ansible vault password (ANSIBLE_VAULT_PASSWORD secret)
+    default: ""
 runs:
   using: composite
   steps:
-    - uses: ./.brigade/ci/github/actions/mise
+    - uses: ./.brigade/ci/github/actions/mise  # zizmor: ignore[self-repository]
     # Renovate's git author: the token owner's noreply address. Without it,
     # Renovate needs the token to read the owner's emails, else it commits as
-    # a Mend account (and warns).
+    # a Mend account (and warns). zizmor: the token owner's own name.
     - if: inputs.renovate-token != ''
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.renovate-token }}
-      run: >-
+      run: >-  # zizmor: ignore[github-env]
         gh api user --jq '"RENOVATE_GIT_AUTHOR=\(.name // .login)
         <\(.id)+\(.login)@users.noreply.github.com>"' >> "$GITHUB_ENV"
     - shell: bash
@@ -27,4 +33,6 @@ runs:
         RENOVATE_REPOSITORIES: ${{ github.repository }}
         RENOVATE_TOKEN: ${{ inputs.renovate-token }}
         RENOVATE_ONBOARDING: "false"
+        ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
+        ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
       run: mise run operate
