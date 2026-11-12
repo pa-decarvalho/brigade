@@ -1,3 +1,17 @@
+# [0.9.0](https://github.com/pa-decarvalho/brigade/compare/0.8.2...0.9.0) - 2026-11-12
+
+### 🚀 Features
+
+- add ansible deploy and operate tasks (#140) [_(00e5f3e)_](https://github.com/pa-decarvalho/brigade/commit/00e5f3efc2b808eef8d9b447987060ddff32681f)
+
+- add molecule to the tool catalog (#137) [_(3468c82)_](https://github.com/pa-decarvalho/brigade/commit/3468c827baf4d40ea285f7d663be793966fa640f)
+
+- add ansible-lint to the tool catalog (#136) [_(7dadb45)_](https://github.com/pa-decarvalho/brigade/commit/7dadb45ae7c51f41811be20595caf31cdc15e93b)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update dependency renovate to v44.235.3 (#133) [_(8a2161d)_](https://github.com/pa-decarvalho/brigade/commit/8a2161d9893e6291fd61fe7d089fd6a6e5a3fe4f)
+
 # [0.8.2](https://github.com/pa-decarvalho/brigade/compare/0.8.1...0.8.2) - 2026-11-12
 
 ### 🐛 Bug Fixes
