@@ -4,8 +4,9 @@
     dependencyDashboard: false,
     semanticCommits: "enabled",
     // Only the template: generated projects, brigade included, get its versions
-    // through a release and mise run brigade:update.
-    includePaths: ["template/**"],
+    // through a release and mise run brigade:update, which Renovate runs in a PR
+    // on each release (brigade's own answers file, see the renovate tool).
+    includePaths: ["template/**", ".brigade/answers.yml"],
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         // Tool fragments are Jinja: a customManagers entry reads their pins.
@@ -49,6 +50,11 @@
             matchFileNames: ["template/**"],
             groupName: "template",
             semanticCommitType: "fix",
+        },
+        {
+            // brigade's own update: no release.
+            matchDepNames: ["brigade"],
+            semanticCommitType: "ci",
         },
     ],
 }

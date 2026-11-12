@@ -29,7 +29,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/**/*.toml` and `.miserc.toml` (fails on Windows checkouts with CRLF line endings) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
-| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)) |
+| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -46,6 +46,8 @@ The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see 
 ## brigade
 
 `brigade:lint` renders the template at the version of `.brigade/answers.yml`, with your answers, into a temporary folder, and compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite it. Run `mise run brigade:update` to restore them.
+
+It also tells when a newer brigade release is out (`copier check-update`), without failing: run `mise run brigade:update`, or let [Renovate](#brigade-updates) open the PR.
 
 It needs access to the template (`gh:pa-decarvalho/brigade`, through git) on each run. Offline, behind a proxy, or to edit a generated file on purpose, remove `brigade` from your tools.
 
@@ -97,6 +99,12 @@ Operations that do not belong to a release, such as `renovate:operate`. Run it w
 - **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now), since "Run pipeline" deploys.
 
 For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits as the token's owner, with their noreply address (`RENOVATE_GIT_AUTHOR`); elsewhere, set `gitAuthor` in your Renovate config if needed. See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
+
+### brigade updates
+
+`renovate:operate` also follows brigade: on a new release, it opens a PR that runs `mise run brigade:update` to that version, on every CI platform. Copier shows conflicts with your edits as inline markers in the PR: fix them there before merging (`brigade:lint` fails until then). On GitHub, the token also needs the Workflows permission, since updates change workflow files.
+
+Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/answers.yml`.
 
 ## Toolchain
 
