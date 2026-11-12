@@ -129,3 +129,19 @@ _post_tasks = [
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
+
+[output.".ctt/ansible-github"]
+# An Ansible project: ansible-galaxy's role skeleton fails ansible-lint --strict
+# (placeholder metadata), so a one-play playbook.
+tools = ["yamllint", "gitleaks", "typos", "ansible-lint", "act"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('site.yml').write_text('---\\n- name: Demo\\n  hosts: localhost\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]

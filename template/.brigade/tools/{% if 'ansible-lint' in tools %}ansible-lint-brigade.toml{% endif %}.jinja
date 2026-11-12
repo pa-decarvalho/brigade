@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=pypi depName=ansible-lint
+"pipx:ansible-lint" = "{{ ansible_lint_version | default('26.11.0', true) }}"
+
+[tasks."ansible-lint:lint"]
+description = "Check Ansible content with ansible-lint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# .mise-data is the GitLab CI tool cache; Copier writes the answers file (lists without indentation).
+run = '''{{ ansible_lint_lint_command | default('ansible-lint --strict --exclude .mise-data --exclude .brigade/answers.yml', true) }}'''

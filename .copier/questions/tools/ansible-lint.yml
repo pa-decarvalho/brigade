@@ -1,0 +1,12 @@
+---
+ansible_lint_version:
+  type: str
+  help: ansible-lint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible-lint' in tools }}"
+
+ansible_lint_lint_command:
+  type: str
+  help: Command of ansible-lint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible-lint' in tools }}"

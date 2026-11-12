@@ -31,6 +31,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
+| `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/answers.yml` (written by Copier) and `.mise-data/` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
@@ -49,6 +50,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 
 - `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
+- `ansible-lint`: Ansible does not run on Windows (use WSL).
 - `act`, `gitlab-ci-local`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
