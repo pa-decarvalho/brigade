@@ -1,0 +1,12 @@
+---
+molecule_version:
+  type: str
+  help: molecule version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"
+
+molecule_test_command:
+  type: str
+  help: Command of molecule:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'molecule' in tools }}"

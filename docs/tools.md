@@ -36,6 +36,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
+| `molecule` | `molecule:test` | `molecule test --all`, with the Docker driver (needs your `molecule/<scenario>/molecule.yml` and Docker: see [Molecule](#molecule)) |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
@@ -50,7 +51,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 
 - `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
-- `ansible-lint`: Ansible does not run on Windows (use WSL).
+- `ansible-lint`, `molecule`: Ansible does not run on Windows (use WSL).
 - `act`, `gitlab-ci-local`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
@@ -121,6 +122,22 @@ To update every day and merge automatically once the checks pass, answer `operat
 ## Toolchain
 
 Create the project with `uv init`: `uv` is always installed, and picks Python from `.python-version` and `requires-python`.
+
+## Molecule
+
+`molecule:test` runs every scenario of `molecule/` (`molecule test --all`), with the Docker driver of `molecule-plugins` and `ansible-core` installed alongside. `molecule init scenario` writes a scenario to fill in; for Docker, set the driver and an image with Python (`pre_build_image` uses it as is; without it, the driver builds an image and needs `rsync`):
+
+```yaml
+# molecule/default/molecule.yml
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: docker.io/library/python:3.13-slim
+    pre_build_image: true
+```
+
+It needs Docker, also in CI: GitHub runners and `act` have it; on GitLab and Gitea, the runner must give the job access to a Docker daemon (mounted socket or `DOCKER_HOST`).
 
 ## Run the CI locally
 

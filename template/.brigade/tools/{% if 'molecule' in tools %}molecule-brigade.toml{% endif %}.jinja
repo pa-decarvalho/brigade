@@ -1,0 +1,11 @@
+[tools]
+# The docker driver, and ansible-core's executables (ansible-playbook, ansible-galaxy), which Molecule runs.
+# ansible-core is not pinned: a version that needs a newer Python than the system's makes uv download one
+# outside mise's install folder, which the CI cache does not keep.
+# renovate: datasource=pypi depName=molecule
+"pipx:molecule" = { version = "{{ molecule_version | default('26.11.0', true) }}", uvx_args = "--with molecule-plugins[docker]==26.11.0 --with-executables-from ansible-core" }
+
+[tasks."molecule:test"]
+description = "Test Ansible roles and playbooks with Molecule, in Docker"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ molecule_test_command | default('molecule test --all', true) }}'''
