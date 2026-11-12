@@ -22,7 +22,7 @@ lint_commands: []
 lint_enabled: true
 operate_commands: []
 operate_enabled: true
-operate_schedule: 0 5 * * 1
+operate_schedule: 0 5 * * *
 pages_deploy_command: ''
 pages_version: ''
 pypi_index: ''

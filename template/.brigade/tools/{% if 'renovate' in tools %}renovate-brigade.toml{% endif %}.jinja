@@ -18,33 +18,35 @@ description = "Run Renovate"
 run = '''{{ renovate_operate_command | default('renovate', true) }}'''
 
 # Renovate also follows brigade: on a new release, its PR runs brigade:update (Renovate's own
-# change to _commit is undone first, since Copier diffs from the current version). Renovate's
+# change to _commit is undone first, since Copier diffs from the current version), in its own PR
+# (Copier needs a clean tree). Renovate's
 # handlebars templates are escaped twice: for Copier, then for mise (Tera).
 [tasks."renovate:operate".env]
 RENOVATE_CONFIG = '''{{ '{% raw %}' }}{% raw %}{
-  "allowedCommands": [
-    "^git checkout -- \\.brigade/answers\\.yml$",
-    "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
-  ],
-  "customManagers": [{
-    "customType": "regex",
-    "managerFilePatterns": ["/^\\.brigade/answers\\.yml$/"],
-    "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
-    "datasourceTemplate": "git-tags",
-    "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
-    "depNameTemplate": "brigade"
-  }],
-  "packageRules": [{
-    "matchDepNames": ["brigade"],
-    "commitMessageTopic": "brigade",
-    "postUpgradeTasks": {
-      "commands": [
-        "git checkout -- .brigade/answers.yml",
-        "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
-      ],
-      "executionMode": "branch"
-    }
-  }]
+    "allowedCommands": [
+        "^git checkout -- \\.brigade/answers\\.yml$",
+        "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
+    ],
+    "customManagers": [{
+        "customType": "regex",
+        "managerFilePatterns": ["/^\\.brigade/answers\\.yml$/"],
+        "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
+        "datasourceTemplate": "git-tags",
+        "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
+        "depNameTemplate": "brigade"
+    }],
+    "packageRules": [{
+        "matchDepNames": ["brigade"],
+        "groupName": null,
+        "commitMessageTopic": "brigade",
+        "postUpgradeTasks": {
+            "commands": [
+                "git checkout -- .brigade/answers.yml",
+                "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
+            ],
+            "executionMode": "branch"
+        }
+    }]
 }{% endraw %}{{ '{% endraw %}' }}'''
 
 [tasks."renovate:operate".tools]
