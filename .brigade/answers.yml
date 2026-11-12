@@ -1,7 +1,9 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.6.1
+_commit: 0.7.1
 _src_path: gh:pa-decarvalho/brigade
+brigade_lint_command: ''
+brigade_version: ''
 build_commands: []
 build_enabled: true
 ci: github
@@ -42,6 +44,7 @@ taplo_version: ''
 test_commands: []
 test_enabled: true
 tools:
+- brigade
 - yamllint
 - gitleaks
 - typos
