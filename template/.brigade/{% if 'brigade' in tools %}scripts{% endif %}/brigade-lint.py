@@ -2,9 +2,11 @@
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 Renders the template at the version of .brigade/answers.yml into a temporary
-folder, then compares each rendered file with the project's.
+folder, then compares each rendered file with the project's. Also tells when a newer
+brigade release is out (a notice, not a failure).
 """
 
+import json
 import os
 import pathlib
 import re
@@ -82,7 +84,35 @@ def main() -> int:
         )
         return 1
     print(f"brigade:lint: brigade-owned files match the template ({ref})")
+    if ref != "HEAD":
+        notify_update(env)
     return 0
+
+
+def notify_update(env: dict[str, str]) -> None:
+    result = subprocess.run(
+        [
+            shutil.which("copier") or "copier",
+            "check-update",
+            "--answers-file",
+            ANSWERS,
+            "--output-format",
+            "json",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    try:
+        status = json.loads(result.stdout)
+    except ValueError:
+        return  # a notice only: never fail the lint for it
+    if status.get("update_available"):
+        print(
+            f"brigade:lint: brigade {status['latest_version']} is out (this project:"
+            f" {status['current_version']}): run mise run brigade:update"
+        )
 
 
 if __name__ == "__main__":

@@ -7,6 +7,8 @@ mise run brigade:update
 This runs `copier update` with the answers in `.brigade/answers.yml` and applies the latest brigade release: new tool versions, new tasks, CI changes.
 Commit your work first: Copier needs a clean git tree, and shows conflicts as inline markers.
 
+With the `renovate` tool, Renovate opens this update as a PR on each release (see [brigade updates](tools.md#brigade-updates)); with the `brigade` tool, `brigade:lint` tells when a release is out.
+
 brigade releases are tagged `X.Y.Z`. Tool versions are bumped by Renovate in brigade, so a project gets them through a release and `brigade:update`.
 
 ## What is overwritten
