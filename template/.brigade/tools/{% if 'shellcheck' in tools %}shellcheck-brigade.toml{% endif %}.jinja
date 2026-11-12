@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=koalaman/shellcheck
+shellcheck = "{{ shellcheck_version | default('0.11.0', true) }}"
+
+[tasks."shellcheck:lint"]
+description = "Check shell scripts with ShellCheck"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Python globs on every OS, without hidden folders (.mise-data); no script: nothing to check.
+run = '''{{ shellcheck_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = glob.glob('**/*.sh', recursive=True) + glob.glob('**/*.bash', recursive=True); sys.exit(subprocess.call(['shellcheck', *files]) if files else 0)\"", true) }}'''

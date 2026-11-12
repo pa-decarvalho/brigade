@@ -1,0 +1,12 @@
+---
+rumdl_version:
+  type: str
+  help: rumdl version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'rumdl' in tools }}"
+
+rumdl_lint_command:
+  type: str
+  help: Command of rumdl:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'rumdl' in tools }}"
