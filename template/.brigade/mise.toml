@@ -1,7 +1,7 @@
 min_version = "2026.11.0"
 
 [tools]
-uv = "0.13.7"
+uv = "0.13.8"
 
 # Stages are in stages.toml, tools in tools/ (one file each), all listed in .miserc.toml.
 # Tasks run at the project root: dir is relative to this file's folder.
