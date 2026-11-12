@@ -98,8 +98,8 @@ _post_tasks = [
 ]
 
 [output.".ctt/none-github"]
-# No test tool: the test stage does nothing. Adds an optional lint tool.
-tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "act"]
+# No test tool: the test stage does nothing. Adds optional lint tools.
+tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "act"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],

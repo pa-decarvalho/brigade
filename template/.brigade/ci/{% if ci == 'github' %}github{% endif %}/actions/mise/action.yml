@@ -7,9 +7,9 @@ runs:
   steps:
     # Python tools link to uv's Python: it must be in the cache with them
     # (mise's data dir), else a version that needs a newer Python than the
-    # runner's is missing after a cache restore.
+    # runner's is missing after a cache restore. zizmor: a fixed value.
     - shell: bash
-      run: >-
+      run: >-  # zizmor: ignore[github-env]
         echo "UV_PYTHON_INSTALL_DIR=$HOME/.local/share/mise/uv-python"
         >> "$GITHUB_ENV"
     - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
