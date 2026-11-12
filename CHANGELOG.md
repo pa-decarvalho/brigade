@@ -1,3 +1,9 @@
+# [0.8.1](https://github.com/pa-decarvalho/brigade/compare/0.8.0...0.8.1) - 2026-11-12
+
+### 🐛 Bug Fixes
+
+- keep brigade updates in their own Renovate PR, with 4-space JSON (#127) [_(b782054)_](https://github.com/pa-decarvalho/brigade/commit/b7820548f3c963c62a764d43e47e645280bb77bd)
+
 # [0.8.0](https://github.com/pa-decarvalho/brigade/compare/0.7.1...0.8.0) - 2026-11-12
 
 ### 🚀 Features
