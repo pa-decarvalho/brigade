@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=rvben/rumdl
+rumdl = "{{ rumdl_version | default('0.3.3', true) }}"
+
+[tasks."rumdl:lint"]
+description = "Check Markdown files with rumdl"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ rumdl_lint_command | default("rumdl check --no-cache --exclude .mise-data .", true) }}'''

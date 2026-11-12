@@ -1,0 +1,12 @@
+---
+osv_scanner_version:
+  type: str
+  help: osv-scanner version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'osv-scanner' in tools }}"
+
+osv_scanner_lint_command:
+  type: str
+  help: Command of osv-scanner:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'osv-scanner' in tools }}"

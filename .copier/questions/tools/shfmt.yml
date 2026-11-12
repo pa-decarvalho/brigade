@@ -1,0 +1,12 @@
+---
+shfmt_version:
+  type: str
+  help: shfmt version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'shfmt' in tools }}"
+
+shfmt_lint_command:
+  type: str
+  help: Command of shfmt:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'shfmt' in tools }}"

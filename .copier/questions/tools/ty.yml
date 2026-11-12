@@ -1,0 +1,12 @@
+---
+ty_version:
+  type: str
+  help: ty version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ty' in tools }}"
+
+ty_lint_command:
+  type: str
+  help: Command of ty:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ty' in tools }}"

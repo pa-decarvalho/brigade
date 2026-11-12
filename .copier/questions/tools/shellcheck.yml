@@ -1,0 +1,12 @@
+---
+shellcheck_version:
+  type: str
+  help: shellcheck version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'shellcheck' in tools }}"
+
+shellcheck_lint_command:
+  type: str
+  help: Command of shellcheck:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'shellcheck' in tools }}"

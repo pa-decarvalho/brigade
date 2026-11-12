@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=google/osv-scanner
+osv-scanner = "{{ osv_scanner_version | default('2.7.1', true) }}"
+
+[tasks."osv-scanner:lint"]
+description = "Check dependency lockfiles for known vulnerabilities with OSV-Scanner"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ osv_scanner_lint_command | default("osv-scanner scan source --recursive --allow-no-lockfiles --x-exclude .mise-data .", true) }}'''

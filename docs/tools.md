@@ -31,6 +31,11 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
+| `ty` | `ty:lint` | `uv sync && ty check` (`uv sync`: ty reads the project's `.venv`), without `.mise-data/` |
+| `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
+| `shfmt` | `shfmt:lint` | `shfmt --diff` on the same files (style: your `.editorconfig`) |
+| `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown), without `.mise-data/` |
+| `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/answers.yml` (written by Copier) and `.mise-data/` |
 | `hadolint` | `hadolint:lint` | `hadolint` on every `*Dockerfile*` and `*Containerfile*` (outside hidden folders); none: nothing to check |
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |

@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=astral-sh/ty
+ty = "{{ ty_version | default('0.0.101', true) }}"
+
+[tasks."ty:lint"]
+description = "Check Python types with ty"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# uv sync: ty reads the project's .venv for its dependencies.
+run = '''{{ ty_lint_command | default("uv sync && ty check --exclude .mise-data", true) }}'''

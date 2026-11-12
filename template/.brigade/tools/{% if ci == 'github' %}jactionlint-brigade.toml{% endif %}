@@ -1,5 +1,7 @@
 [tools]
 "aqua:jdx/jactionlint" = "2.5.0"
+# jactionlint checks run: scripts with the shellcheck in PATH: pinned, so local runs match CI's.
+shellcheck = "0.11.0"
 
 [tasks."jactionlint:lint"]
 description = "Check GitHub workflows and actions with jactionlint"

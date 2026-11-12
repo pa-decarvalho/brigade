@@ -22,7 +22,12 @@ tools:
     taplo (lint): taplo
     renovate (lint, operate): renovate
     ruff (lint): ruff
+    ty (lint): ty
     hadolint (lint): hadolint
+    shellcheck (lint): shellcheck
+    shfmt (lint): shfmt
+    rumdl (lint): rumdl
+    osv-scanner (lint): osv-scanner
     zizmor (lint):
       value: zizmor
       validator: "{% if ci != 'github' %}needs GitHub{% endif %}"
