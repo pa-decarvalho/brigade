@@ -3,6 +3,9 @@
     extends: ["config:recommended"],
     dependencyDashboard: false,
     semanticCommits: "enabled",
+    // Merged once the required checks pass (GitHub auto-merge); a failing check,
+    // or Copier's conflict markers in a brigade update, keep the PR open.
+    automerge: true,
     // Only the template: generated projects, brigade included, get its versions
     // through a release and mise run brigade:update, which Renovate runs in a PR
     // on each release (brigade's own answers file, see the renovate tool).

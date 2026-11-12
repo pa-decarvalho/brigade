@@ -104,7 +104,9 @@ For Renovate, CI sets the platform, the endpoint and the repository; add a `RENO
 
 `renovate:operate` also follows brigade: on a new release, it opens a PR that runs `mise run brigade:update` to that version, on every CI platform. Copier shows conflicts with your edits as inline markers in the PR: fix them there before merging (`brigade:lint` fails until then). On GitHub, the token also needs the Workflows permission, since updates change workflow files.
 
-Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/answers.yml`.
+Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/answers.yml`. Keep `brigade` out of groups (such as `group:all`): Copier needs a clean tree, so the update must be its own PR.
+
+To update every day and merge automatically once the checks pass, answer `operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge" in Settings). A failing check, or Copier's conflict markers in a brigade update, keep the PR open.
 
 ## Toolchain
 
