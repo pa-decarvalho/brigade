@@ -1,3 +1,9 @@
+# [0.8.0](https://github.com/pa-decarvalho/brigade/compare/0.7.1...0.8.0) - 2026-11-12
+
+### 🚀 Features
+
+- open a brigade update PR with Renovate on each release (#124) [_(0b6af03)_](https://github.com/pa-decarvalho/brigade/commit/0b6af037242bf332c451277c4e799936bee68fab)
+
 # [0.7.1](https://github.com/pa-decarvalho/brigade/compare/0.7.0...0.7.1) - 2026-11-11
 
 ### 🐛 Bug Fixes
