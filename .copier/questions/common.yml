@@ -26,6 +26,7 @@ tools:
     uv (build): uv
     zensical (build, serve): zensical
     pytest (test): pytest
+    molecule (test): molecule
     ctt (test): ctt
     releasaurus (release): releasaurus
     pages (deploy):

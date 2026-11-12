@@ -25,8 +25,8 @@
         {
             // Python tools pinned inside commands
             customType: "regex",
-            managerFilePatterns: ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/tools/.*ctt-brigade.*\\.jinja$/"],
-            matchStrings: ["(?<depName>copier-template-tester|copier)(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+            managerFilePatterns: ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/tools/.*(ctt|molecule)-brigade.*\\.jinja$/"],
+            matchStrings: ["(?<depName>copier-template-tester|copier|molecule-plugins)(?:\\[\\w+\\])?(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             datasourceTemplate: "pypi",
         },
         {
