@@ -22,6 +22,7 @@ tools:
     taplo (lint): taplo
     renovate (lint, operate): renovate
     ruff (lint): ruff
+    hadolint (lint): hadolint
     zizmor (lint):
       value: zizmor
       validator: "{% if ci != 'github' %}needs GitHub{% endif %}"

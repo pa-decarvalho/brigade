@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=hadolint/hadolint
+hadolint = "{{ hadolint_version | default('2.15.1', true) }}"
+
+[tasks."hadolint:lint"]
+description = "Check Dockerfiles with hadolint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Python globs on every OS, without hidden folders (.mise-data); no Dockerfile: nothing to check.
+run = '''{{ hadolint_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = glob.glob('**/*Dockerfile*', recursive=True) + glob.glob('**/*Containerfile*', recursive=True); sys.exit(subprocess.call(['hadolint', *files]) if files else 0)\"", true) }}'''
