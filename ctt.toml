@@ -133,17 +133,24 @@ _post_tasks = [
 [output.".ctt/ansible-github"]
 # An Ansible project: ansible-galaxy's role skeleton fails ansible-lint --strict
 # (placeholder metadata), and molecule init has no Docker scenario: a one-play
-# playbook and a Docker scenario, written here.
-tools = ["yamllint", "gitleaks", "typos", "ansible-lint", "molecule", "act"]
+# playbook and a Docker scenario, written here. ansible:deploy and ansible:operate run
+# playbooks/ on inventory/ (localhost); deploy.yml needs the vault password.
+tools = ["yamllint", "gitleaks", "typos", "ansible-lint", "molecule", "ansible", "act"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('site.yml').write_text('---\\n- name: Demo\\n  hosts: localhost\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('molecule/default'); d.mkdir(parents=True); (d / 'molecule.yml').write_text('---\\ndriver:\\n  name: docker\\nplatforms:\\n  - name: instance\\n    image: docker.io/library/python:3.13-slim\\n    pre_build_image: true\\n'); (d / 'converge.yml').write_text('---\\n- name: Converge\\n  hosts: all\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('inventory').mkdir(); pathlib.Path('inventory/hosts.yml').write_text('---\\nall:\\n  hosts:\\n    localhost:\\n      ansible_connection: local\\n'); pathlib.Path('playbooks').mkdir(); pathlib.Path('playbooks/operate.yml').write_text('---\\n- name: Operate\\n  hosts: all\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
+    # A vault-encrypted variable, with the password from ANSIBLE_VAULT_PASSWORD (brigade's script).
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, pathlib, subprocess; env = {**os.environ, 'ANSIBLE_VAULT_PASSWORD': 'ctt'}; v = subprocess.run(['ansible-vault', 'encrypt_string', '--vault-password-file', '.brigade/scripts/ansible-vault-password.py', 'from vault', '--name', 'message'], env=env, capture_output=True, text=True, check=True).stdout; pathlib.Path('playbooks/deploy.yml').write_text('---\\n- name: Deploy\\n  hosts: all\\n  gather_facts: false\\n  vars:\\n' + ''.join('    ' + line + '\\n' for line in v.splitlines()) + '  tasks:\\n    - name: Show the secret\\n      ansible.builtin.assert:\\n        that: message == \"from vault\"\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
+    # deploy decrypts the vault variable with ANSIBLE_VAULT_PASSWORD; operate needs no secret.
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, subprocess; subprocess.run(['mise', 'run', 'deploy'], env={**os.environ, 'ANSIBLE_VAULT_PASSWORD': 'ctt'}, check=True)"],
+    ["mise", "run", "operate"],
 ]

@@ -1,0 +1,18 @@
+---
+ansible_version:
+  type: str
+  help: ansible-core version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible' in tools }}"
+
+ansible_deploy_command:
+  type: str
+  help: Command of ansible:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible' in tools }}"
+
+ansible_operate_command:
+  type: str
+  help: Command of ansible:operate (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible' in tools }}"

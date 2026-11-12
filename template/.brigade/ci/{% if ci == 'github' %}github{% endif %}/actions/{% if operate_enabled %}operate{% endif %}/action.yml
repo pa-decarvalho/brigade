@@ -6,6 +6,12 @@ inputs:
   renovate-token:
     description: Renovate's token (RENOVATE_TOKEN secret)
     default: ""
+  ansible-private-key:
+    description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
+    default: ""
+  ansible-vault-password:
+    description: Ansible vault password (ANSIBLE_VAULT_PASSWORD secret)
+    default: ""
 runs:
   using: composite
   steps:
@@ -27,4 +33,6 @@ runs:
         RENOVATE_REPOSITORIES: ${{ github.repository }}
         RENOVATE_TOKEN: ${{ inputs.renovate-token }}
         RENOVATE_ONBOARDING: "false"
+        ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
+        ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
       run: mise run operate

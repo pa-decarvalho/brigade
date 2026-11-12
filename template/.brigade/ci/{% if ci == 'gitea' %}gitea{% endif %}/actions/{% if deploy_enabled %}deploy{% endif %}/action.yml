@@ -2,6 +2,13 @@
 # brigade-owned: updated by mise run brigade:update, do not edit.
 name: deploy
 description: mise run deploy, with the project's tools
+inputs:
+  ansible-private-key:
+    description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
+    default: ""
+  ansible-vault-password:
+    description: Ansible vault password (ANSIBLE_VAULT_PASSWORD secret)
+    default: ""
 runs:
   using: composite
   steps:
@@ -9,6 +16,8 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
+        ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
       run: mise run deploy
