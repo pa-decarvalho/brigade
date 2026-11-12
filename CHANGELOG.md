@@ -1,3 +1,9 @@
+# [0.8.2](https://github.com/pa-decarvalho/brigade/compare/0.8.1...0.8.2) - 2026-11-12
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#130) [_(cd8a18a)_](https://github.com/pa-decarvalho/brigade/commit/cd8a18ae53cb55b18fa849acd9659988e7f1c38f)
+
 # [0.8.1](https://github.com/pa-decarvalho/brigade/compare/0.8.0...0.8.1) - 2026-11-12
 
 ### 🐛 Bug Fixes
