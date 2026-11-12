@@ -22,6 +22,7 @@ tools:
     taplo (lint): taplo
     renovate (lint, operate): renovate
     ruff (lint): ruff
+    ansible-lint (lint): ansible-lint
     uv (build): uv
     zensical (build, serve): zensical
     pytest (test): pytest
