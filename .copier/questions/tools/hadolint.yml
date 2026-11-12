@@ -1,0 +1,12 @@
+---
+hadolint_version:
+  type: str
+  help: hadolint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'hadolint' in tools }}"
+
+hadolint_lint_command:
+  type: str
+  help: Command of hadolint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'hadolint' in tools }}"
