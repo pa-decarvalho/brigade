@@ -27,7 +27,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `gitleaks` | `gitleaks:lint` | `gitleaks git` (history and staged changes) |
 | `typos` | `typos:lint` | `typos` |
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`) |
-| `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/**/*.toml` and `.miserc.toml` (fails on Windows checkouts with CRLF line endings) |
+| `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/**/*.toml` and `.miserc.toml` |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
@@ -35,13 +35,21 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
-| `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; on Windows, ctt 3.0.0 fails inside a git repository) |
+| `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
+
+## Platforms
+
+brigade's own files run on Linux, macOS and Windows; each tool runs where it is supported. CI runs on Linux, so these limits only matter for local runs (`mise run <stage>`, git hooks). Known limits on Windows:
+
+- `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
+- `ctt`: ctt 3.0.0 fails inside a git repository.
+- `act`, `gitlab-ci-local`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
 
