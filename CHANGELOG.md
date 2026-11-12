@@ -1,3 +1,13 @@
+# [0.10.0](https://github.com/pa-decarvalho/brigade/compare/0.9.0...0.10.0) - 2026-11-12
+
+### 🚀 Features
+
+- add ty, shellcheck, shfmt, rumdl and osv-scanner to the tool catalog (#144) [_(96b586c)_](https://github.com/pa-decarvalho/brigade/commit/96b586cf91aff346ebbd473d93187dec32e100f9)
+
+- add hadolint to the tool catalog (#143) [_(76841fd)_](https://github.com/pa-decarvalho/brigade/commit/76841fd80189c94c25fc20cf4d91428b3bf573e6)
+
+- add zizmor to the tool catalog (#141) [_(c557fa3)_](https://github.com/pa-decarvalho/brigade/commit/c557fa3992207de0757b60248cb29d0ce9af2915)
+
 # [0.9.0](https://github.com/pa-decarvalho/brigade/compare/0.8.2...0.9.0) - 2026-11-12
 
 ### 🚀 Features
