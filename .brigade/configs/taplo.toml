@@ -1,0 +1,6 @@
+# taplo config (taplo fmt --check -c .brigade/configs/taplo.toml <brigade's TOML files>).
+# Yours: brigade created it once and never changes it. It replaces the project's taplo.toml.
+[formatting]
+indent_string = "    "
+array_auto_expand = false
+array_auto_collapse = false

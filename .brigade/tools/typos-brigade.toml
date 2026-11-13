@@ -5,5 +5,5 @@ typos = "1.52.2"
 [tasks."typos:lint"]
 description = "Check spelling with typos"
 dir = "{{config_root}}/../.."
-# Copier answers and the changelog hold commit hashes; .mise-data is the GitLab CI tool cache.
-run = '''typos --hidden --exclude .git --exclude .mise-data --exclude .brigade/copier/answers.yml --exclude CHANGELOG.md'''
+# Config: .brigade/configs/typos.toml (the project's), added to its _typos.toml.
+run = '''typos --hidden --exclude .git -c .brigade/configs/typos.toml'''
