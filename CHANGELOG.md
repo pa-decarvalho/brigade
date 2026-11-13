@@ -1,3 +1,9 @@
+# [0.13.0](https://github.com/pa-decarvalho/brigade/compare/0.12.0...0.13.0) - 2026-11-13
+
+### 🚀 Features
+
+- declarative answers in .brigade/copier/ (#157) [_(ef9c15d)_](https://github.com/pa-decarvalho/brigade/commit/ef9c15d1a81fda4ef049a21ec3a2f0247b09e0be)
+
 # [0.12.0](https://github.com/pa-decarvalho/brigade/compare/0.11.0...0.12.0) - 2026-11-13
 
 ### 🚀 Features
