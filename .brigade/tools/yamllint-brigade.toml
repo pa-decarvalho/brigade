@@ -5,6 +5,5 @@
 [tasks."yamllint:lint"]
 description = "Check YAML files with yamllint"
 dir = "{{config_root}}/../.."
-# Copier writes the answers files (lists without indentation); .mise-data is the GitLab CI tool cache;
-# one space before a comment, as in actions pinned by SHA (uses: x@<sha> # v1.2.3).
-run = '''yamllint --strict -d "{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/copier/], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}" .'''
+# Config: .brigade/configs/yamllint.yml (the project's).
+run = '''yamllint --strict -c .brigade/configs/yamllint.yml .'''
