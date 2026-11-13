@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ruff
-ruff = "0.17.4"
+ruff = "0.17.5"
 
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"

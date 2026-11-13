@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.10.0
+_commit: 0.12.0
 _src_path: gh:pa-decarvalho/brigade
 brigade_lint_command: ''
 brigade_version: ''
@@ -25,6 +25,7 @@ operate_enabled: true
 operate_schedule: 0 5 * * *
 pages_deploy_command: ''
 pages_version: ''
+presets: []
 pypi_index: ''
 releasaurus_release_command: ''
 releasaurus_version: ''
