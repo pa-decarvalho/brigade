@@ -54,4 +54,4 @@ RENOVATE_CONFIG = '''{% raw %}{
 # which mise's trust policy rejects: exempt that one version only. re2 (RE2 regexes, as Renovate
 # validates them) installs its native binary with a script, which runs only when allowed.
 # renovate: datasource=npm depName=renovate
-"npm:renovate" = { version = "44.235.3", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }
+"npm:renovate" = { version = "44.236.4", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }

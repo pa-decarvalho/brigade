@@ -1,5 +1,5 @@
 [tools]
-"aqua:jdx/jactionlint" = "2.5.0"
+"aqua:jdx/jactionlint" = "2.6.0"
 # jactionlint checks run: scripts with the shellcheck in PATH: pinned, so local runs match CI's.
 shellcheck = "0.11.0"
 
