@@ -1,0 +1,12 @@
+---
+vale_version:
+  type: str
+  help: vale version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'vale' in tools }}"
+
+vale_lint_command:
+  type: str
+  help: Command of vale:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'vale' in tools }}"

@@ -1,0 +1,12 @@
+---
+sqlfluff_version:
+  type: str
+  help: sqlfluff version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'sqlfluff' in tools }}"
+
+sqlfluff_lint_command:
+  type: str
+  help: Command of sqlfluff:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'sqlfluff' in tools }}"

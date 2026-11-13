@@ -1,0 +1,18 @@
+---
+markdownlint_version:
+  type: str
+  help: markdownlint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'markdownlint' in tools }}"
+
+markdownlint_lint_command:
+  type: str
+  help: Command of markdownlint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'markdownlint' in tools }}"
+
+markdownlint_node_version:
+  type: str
+  help: Node.js version for markdownlint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'markdownlint' in tools }}"

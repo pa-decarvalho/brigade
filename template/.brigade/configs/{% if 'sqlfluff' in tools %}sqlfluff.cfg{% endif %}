@@ -1,0 +1,6 @@
+# SQLFluff config: sqlfluff lint --config .brigade/configs/sqlfluff.cfg
+# Yours: brigade created it once and never changes it. It applies on top of the project's
+# .sqlfluff, and wins over it.
+[sqlfluff]
+# Set your SQL dialect: ansi, postgres, mysql, sqlite, bigquery... (sqlfluff dialects)
+dialect = ansi

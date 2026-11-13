@@ -1,0 +1,12 @@
+---
+codespell_version:
+  type: str
+  help: codespell version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'codespell' in tools }}"
+
+codespell_lint_command:
+  type: str
+  help: Command of codespell:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'codespell' in tools }}"

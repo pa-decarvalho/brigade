@@ -1,0 +1,10 @@
+[tools]
+# renovate: datasource=pypi depName=sqlfluff
+"pipx:sqlfluff" = "{{ sqlfluff_version | default('4.5.0', true) }}"
+
+[tasks."sqlfluff:lint"]
+description = "Check SQL files with SQLFluff"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Config: .brigade/configs/sqlfluff.cfg (the project's, with the SQL dialect), on top of the
+# project's .sqlfluff. A file list: sqlfluff walks hidden folders (.mise-data, the GitLab CI tool cache).
+run = '''{{ sqlfluff_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = glob.glob('**/*.sql', recursive=True); sys.exit(subprocess.call(['sqlfluff', 'lint', '--config', '.brigade/configs/sqlfluff.cfg', *files]) if files else 0)\"", true) }}'''
