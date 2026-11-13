@@ -1,3 +1,13 @@
+# [0.11.0](https://github.com/pa-decarvalho/brigade/compare/0.10.0...0.11.0) - 2026-11-13
+
+### 🚀 Features
+
+- add golangci-lint, tflint, checkov, dotenv-linter and stylua to the tool catalog (#152) [_(3358713)_](https://github.com/pa-decarvalho/brigade/commit/33587135a1674ec09c0f8f76b749b767bdb7aa75)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#150) [_(0b48f39)_](https://github.com/pa-decarvalho/brigade/commit/0b48f39da1b0cfb8cb70385f4be715ff0df7f95a)
+
 # [0.10.0](https://github.com/pa-decarvalho/brigade/compare/0.9.0...0.10.0) - 2026-11-12
 
 ### 🚀 Features
