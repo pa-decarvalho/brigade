@@ -12,9 +12,9 @@ dir = "{{config_root}}/.."
 run = "uvx copier@9.19.1 update -a .brigade/copier/answers.yml --data-file .brigade/copier/data.yml"
 depends_post = ["brigade:data"]
 
-# Writes all the answers back to data.yml, new questions included, as copier/data.yml.jinja does.
+# Writes all the answers back to data.yml, new questions included (PyYAML from Copier's env).
 [tasks."brigade:data"]
 description = "Write the answers to .brigade/copier/data.yml"
 hide = true
 dir = "{{config_root}}/.."
-run = '''uv run --no-project python -c "import pathlib, re; f = pathlib.Path('.brigade/copier'); (f / 'data.yml').write_text('# Your answers: edit them, commit, then run mise run brigade:update.' + chr(10) + re.sub(r'(?m)^(---|#|_commit:|_src_path:).*\n', '', (f / 'answers.yml').read_text(encoding='utf-8')), encoding='utf-8')"'''
+run = "uvx --from copier@9.19.1 python .brigade/scripts/brigade-data.py"
