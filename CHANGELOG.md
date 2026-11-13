@@ -1,3 +1,11 @@
+# [0.16.0](https://github.com/pa-decarvalho/brigade/compare/0.15.1...0.16.0) - 2026-11-13
+
+### 🚀 Features
+
+- add prettier, biome, opentofu, clang-format and trivy to the tool catalog (#173) [_(9ea21b6)_](https://github.com/pa-decarvalho/brigade/commit/9ea21b6d1c5f83cf11a6c7c6fd6695980685e71a)
+
+- add vale, lychee, codespell, markdownlint and sqlfluff to the tool catalog (#171) [_(378b349)_](https://github.com/pa-decarvalho/brigade/commit/378b349f58a8bf2aead684edf1f13f898184be13)
+
 # [0.15.1](https://github.com/pa-decarvalho/brigade/compare/0.15.0...0.15.1) - 2026-11-13
 
 ### 🐛 Bug Fixes
