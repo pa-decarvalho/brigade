@@ -18,7 +18,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 
 ## Presets
 
-The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects.
+The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's answer is its tool list, e.g. `--data 'presets=[[ruff, ty, pytest, uv]]'` without prompts.
 
 | Preset | Tools |
 |---|---|

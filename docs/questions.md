@@ -4,7 +4,7 @@ Answers are saved in `.brigade/answers.yml` and reused by `mise run brigade:upda
 
 | Question | Values | Default | Effect |
 |---|---|---|---|
-| `presets` | `python`, `go`, `terraform`, `ansible`, `shell`, `docker`, `lua`, `docs`, `copier-template`, `security`, `ci`, `maintenance` | none | Pre-select their tools in `tools`: see [Presets](tools.md#presets). |
+| `presets` | `python`, `go`, `terraform`, `ansible`, `shell`, `docker`, `lua`, `docs`, `copier-template`, `security`, `ci`, `maintenance` (each answered as its tool list) | none | Pre-select their tools in `tools`: see [Presets](tools.md#presets). |
 | `tools` | tools of the [catalog](tools.md) | `brigade`, `yamllint`, `gitleaks`, `typos` | One `.brigade/tools/<tool>-brigade.toml` each, with its tasks. Stages follow from the tools. |
 | `<stage>_enabled` | yes / no | yes | Keeps the stage: its mise task and its CI job. See [Stages](tools.md#stages). |
 | `<stage>_commands` | list of commands | empty | Commands of the stage, run in order, locally and in CI. Empty runs all its tools. |
