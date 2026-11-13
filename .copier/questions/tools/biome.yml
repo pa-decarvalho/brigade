@@ -1,0 +1,12 @@
+---
+biome_version:
+  type: str
+  help: biome version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'biome' in tools }}"
+
+biome_lint_command:
+  type: str
+  help: Command of biome:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'biome' in tools }}"

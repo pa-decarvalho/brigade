@@ -1,0 +1,12 @@
+---
+opentofu_version:
+  type: str
+  help: opentofu version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'opentofu' in tools }}"
+
+opentofu_lint_command:
+  type: str
+  help: Command of opentofu:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'opentofu' in tools }}"

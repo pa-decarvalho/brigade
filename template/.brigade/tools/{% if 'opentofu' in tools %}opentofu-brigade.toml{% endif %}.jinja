@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=opentofu/opentofu
+"aqua:opentofu/opentofu" = "{{ opentofu_version | default('1.13.9', true) }}"
+
+[tasks."opentofu:lint"]
+description = "Check Terraform/OpenTofu formatting with tofu fmt"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Skips hidden folders (.terraform, .mise-data).
+run = '''{{ opentofu_lint_command | default('tofu fmt -check -recursive', true) }}'''

@@ -1,0 +1,12 @@
+---
+trivy_version:
+  type: str
+  help: trivy version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'trivy' in tools }}"
+
+trivy_lint_command:
+  type: str
+  help: Command of trivy:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'trivy' in tools }}"

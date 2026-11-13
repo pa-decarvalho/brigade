@@ -1,0 +1,12 @@
+---
+clang_format_version:
+  type: str
+  help: clang-format version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'clang-format' in tools }}"
+
+clang_format_lint_command:
+  type: str
+  help: Command of clang-format:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'clang-format' in tools }}"
