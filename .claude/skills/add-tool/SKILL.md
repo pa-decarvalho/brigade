@@ -18,6 +18,7 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
   - **files it writes** in the project (caches: `--no-cache`).
   - **no input files**: must pass, not fail or wait for stdin.
   - **network** needs, and whether results can change without a project change (say so in the docs).
+  - **CI-only behavior**: CI sets env vars a local run lacks (`GITHUB_TOKEN`, `GITHUB_ACTIONS`, `CI`). Run it once with them set to dummy values and check it writes nothing (checkov wrote `github_conf/`).
 - A tool that takes a file list: a Python glob run by uv, as in `hadolint` or `shellcheck` (no shell, works on Windows; `glob` skips hidden folders):
   `uv run --no-project python -c "import glob, subprocess, sys; files = glob.glob('**/*.sh', recursive=True); sys.exit(subprocess.call(['<tool>', *files]) if files else 0)"`
 - Clean up afterwards: tools installed from the scratchpad leave global mise shims (`mise uninstall <tool> --all && mise reshim`); a shim with no version breaks tools that look it up in PATH (jactionlint and shellcheck).

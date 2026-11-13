@@ -38,7 +38,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
-| `checkov` | `checkov:lint` | `checkov --directory . --skip-download` (Terraform, Kubernetes, Dockerfiles, workflows...), without `.mise-data/` |
+| `checkov` | `checkov:lint` | `checkov --directory . --skip-download` (Terraform, Kubernetes, Dockerfiles, workflows...), without `.mise-data/` and without reading the repository's settings through the GitHub API (`--skip-framework github_configuration`) |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
 | `stylua` | `stylua:lint` | `stylua --check .` (Lua) |
 | `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/answers.yml` (written by Copier) and `.mise-data/` |
