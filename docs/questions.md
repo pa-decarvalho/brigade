@@ -1,6 +1,6 @@
 # Questions
 
-Answers are saved in `.brigade/answers.yml` and reused by `mise run brigade:update`.
+Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Changing answers](#changing-answers)), and in `.brigade/copier/answers.yml`, Copier's own copy (do not edit).
 
 | Question | Values | Default | Effect |
 |---|---|---|---|
@@ -14,10 +14,27 @@ Answers are saved in `.brigade/answers.yml` and reused by `mise run brigade:upda
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |
 | `pypi_index` | URL | empty | PyPI simple index: see [Mirrors](mirrors.md). |
 
-To change an answer later:
+## Changing answers
 
-```sh
-uvx copier@9.19.1 update -a .brigade/answers.yml --data ci=gitlab
-uvx copier@9.19.1 update -a .brigade/answers.yml --data "tools=[yamllint, ruff]"
-uvx copier@9.19.1 update -a .brigade/answers.yml --data customize_tools=true --data ruff_version=0.16.0
+Your answers are all in `.brigade/copier/data.yml`. Edit them there, commit, then run `mise run brigade:update`:
+
+```yaml
+# Your answers: edit them, commit, then run mise run brigade:update.
+build_commands:
+- uv build
+ci: gitlab
+customize_tools: true
+ruff_version: 0.16.0
+tools:
+- brigade
+- ruff
 ```
+
+`brigade:update` applies them, then writes all the answers back to this file, in Copier's format:
+
+- New questions of a release show up with their default (Renovate's update PR included): change them there too.
+- A removed key comes back with its last value: set the value you want instead.
+- A key that is not a question (a typo), or a question not asked (tool versions need `customize_tools: true`), is dropped.
+- Your comments and formatting are not kept.
+
+Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.

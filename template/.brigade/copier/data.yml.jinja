@@ -1,0 +1,2 @@
+# Your answers: edit them, commit, then run mise run brigade:update.
+{{ dict(_copier_answers.items() | rejectattr('0', 'in', ['_commit', '_src_path'])) | to_nice_yaml -}}

@@ -6,4 +6,4 @@ typos = "{{ typos_version | default('1.52.2', true) }}"
 description = "Check spelling with typos"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Copier answers and the changelog hold commit hashes; .mise-data is the GitLab CI tool cache.
-run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise-data --exclude .brigade/answers.yml --exclude CHANGELOG.md', true) }}'''
+run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise-data --exclude .brigade/copier/answers.yml --exclude CHANGELOG.md', true) }}'''

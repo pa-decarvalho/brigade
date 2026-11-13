@@ -36,7 +36,8 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
 ```text
 .miserc.toml                      # the mise files to read: brigade's, then your mise.toml
 .brigade/
-  answers.yml                     # your answers, used by brigade:update
+  copier/answers.yml              # your answers, written by Copier
+  copier/data.yml                 # your answers, to edit: applied by brigade:update
   mise.toml                       # uv and brigade:update
   stages.toml                     # the stages and the git hook tasks
   mirror.toml                     # only with mirrors

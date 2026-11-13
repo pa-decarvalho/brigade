@@ -4,7 +4,7 @@
 mise run brigade:update
 ```
 
-This runs `copier update` with the answers in `.brigade/answers.yml` and applies the latest brigade release: new tool versions, new tasks, CI changes.
+This runs `copier update` with the answers in `.brigade/copier/answers.yml` (edited in `.brigade/copier/data.yml`, see [Changing answers](questions.md#changing-answers)) and applies the latest brigade release: new tool versions, new tasks, CI changes.
 Commit your work first: Copier needs a clean git tree, and shows conflicts as inline markers.
 
 With the `renovate` tool, Renovate opens this update as a PR on each release (see [brigade updates](tools.md#brigade-updates)); with the `brigade` tool, `brigade:lint` tells when a release is out.
@@ -19,15 +19,27 @@ Files you add are yours: brigade never touches them, such as `mise.toml`, your o
 
 See [CI platforms](ci.md). For your own tasks, see [Custom tasks](custom-tasks.md).
 
+## From brigade 0.12 and earlier
+
+Since 0.13, the answers are in `.brigade/copier/`. Update as usual (or merge Renovate's PR), then move them:
+
+```sh
+mise run brigade:update
+git mv .brigade/answers.yml .brigade/copier/answers.yml
+git commit -m "chore: move brigade answers"
+```
+
+Until then, `brigade:lint` fails and `brigade:update` cannot find the answers.
+
 ## From brigade 0.5 and earlier
 
 Before 0.6, brigade's files were in `.mise/` and `.github/actions/` (`.gitea/actions/`, `.gitlab/ci/`). Move your answers, then update:
 
 ```sh
-mkdir .brigade
-git mv .mise/brigade-copier-answers.yml .brigade/answers.yml
+mkdir -p .brigade/copier
+git mv .mise/brigade-copier-answers.yml .brigade/copier/answers.yml
 git commit -m "chore: move brigade answers"
-uvx copier@9.19.1 update -a .brigade/answers.yml
+uvx copier@9.19.1 update -a .brigade/copier/answers.yml
 ```
 
 Copier removes the old generated files. Move your own files out of `.mise/` into `mise.toml` (see [Custom tasks](custom-tasks.md)): mise no longer reads `.mise/`.

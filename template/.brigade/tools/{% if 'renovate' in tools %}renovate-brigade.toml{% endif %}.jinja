@@ -24,12 +24,12 @@ run = '''{{ renovate_operate_command | default('renovate', true) }}'''
 [tasks."renovate:operate".env]
 RENOVATE_CONFIG = '''{{ '{% raw %}' }}{% raw %}{
     "allowedCommands": [
-        "^git checkout -- \\.brigade/answers\\.yml$",
+        "^git checkout -- \\.brigade/copier/answers\\.yml$",
         "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
     ],
     "customManagers": [{
         "customType": "regex",
-        "managerFilePatterns": ["/^\\.brigade/answers\\.yml$/"],
+        "managerFilePatterns": ["/^\\.brigade/copier/answers\\.yml$/"],
         "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
         "datasourceTemplate": "git-tags",
         "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
@@ -41,7 +41,7 @@ RENOVATE_CONFIG = '''{{ '{% raw %}' }}{% raw %}{
         "commitMessageTopic": "brigade",
         "postUpgradeTasks": {
             "commands": [
-                "git checkout -- .brigade/answers.yml",
+                "git checkout -- .brigade/copier/answers.yml",
                 "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
             ],
             "executionMode": "branch"
