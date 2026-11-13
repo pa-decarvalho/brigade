@@ -1,3 +1,9 @@
+# [0.15.1](https://github.com/pa-decarvalho/brigade/compare/0.15.0...0.15.1) - 2026-11-13
+
+### 🐛 Bug Fixes
+
+- write editorconfig-checker's config on one line (#169) [_(b688977)_](https://github.com/pa-decarvalho/brigade/commit/b688977080d99eb9488b5e2cb42ded8b89093ac7)
+
 # [0.15.0](https://github.com/pa-decarvalho/brigade/compare/0.14.0...0.15.0) - 2026-11-13
 
 ### 🚀 Features
