@@ -24,7 +24,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 |---|---|
 | `python` | `ruff`, `ty`, `pytest`, `uv` |
 | `go` | `golangci-lint` |
-| `terraform` | `tflint`, `checkov` |
+| `terraform` | `tflint`, `checkov`, `opentofu` |
 | `ansible` | `ansible-lint`, `molecule`, `ansible` |
 | `shell` | `shellcheck`, `shfmt` |
 | `docker` | `hadolint` |
@@ -59,9 +59,14 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
 | `codespell` | `codespell:lint` | `codespell`, outside hidden folders ([config](#tool-configs)) |
 | `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
+| `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
+| `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS: lint and formatting), without `.mise-data/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
+| `clang-format` | `clang-format:lint` | `clang-format --dry-run --Werror` on every C and C++ file (outside hidden folders), with your `.clang-format` (else LLVM style); none: nothing to check |
+| `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
+| `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
 | `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
 | `stylua` | `stylua:lint` | `stylua --check .` (Lua) |
@@ -101,10 +106,12 @@ Tools that read a config file get one in `.brigade/configs/`, created with briga
 | `ansible-lint` | `.brigade/configs/ansible-lint.yml` | `.ansible-lint`: not read |
 | `vale` | `.brigade/configs/vale.ini` | `.vale.ini`: not read |
 | `codespell` | `.brigade/configs/codespell.cfg` | `.codespellrc`: not read |
+| `biome` | `.brigade/configs/biome-brigade.jsonc` | `biome.json`, `biome.jsonc`: not read |
+| `trivy` | `.brigade/configs/trivy.yaml` | `trivy.yaml`: not read |
 | `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
 
-Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`...).
+Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`, `.clang-format`...).
 
 Before brigade 0.15, these settings were command-line options: `brigade:update` creates the files with the same settings. A file brigade creates is not updated by later releases: compare it with the template when a release changes it (release notes).
 

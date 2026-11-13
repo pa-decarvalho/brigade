@@ -18,12 +18,12 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
-      issues: write  # release PR labels
+      issues: write # release PR labels
       pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: true  # releasaurus's git operations
+          persist-credentials: true # releasaurus's git operations
       - uses: ./.brigade/ci/gitea/actions/release
         with:
           # Optional bot token, else the workflow token.

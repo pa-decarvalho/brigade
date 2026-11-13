@@ -1,0 +1,12 @@
+[tools]
+# renovate: datasource=node-version depName=node
+node = "{{ prettier_node_version | default('26.13.1', true) }}"
+# renovate: datasource=npm depName=prettier
+"npm:prettier" = "{{ prettier_version | default('3.10.1', true) }}"
+
+[tasks."prettier:lint"]
+description = "Check formatting (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...) with Prettier"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Reads the project's .prettierrc and .prettierignore. Its ignore files cannot skip folders from
+# elsewhere: "!" patterns skip the GitLab CI tool cache, .venv and brigade's own files.
+run = '''{{ prettier_lint_command | default('prettier --check --no-error-on-unmatched-pattern . "!**/.mise-data/**" "!**/.venv/**" "!.brigade/**"', true) }}'''

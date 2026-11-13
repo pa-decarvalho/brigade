@@ -11,7 +11,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ./.brigade/ci/github/actions/mise  # zizmor: ignore[self-repository]
+    - uses: ./.brigade/ci/github/actions/mise # zizmor: ignore[self-repository]
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}

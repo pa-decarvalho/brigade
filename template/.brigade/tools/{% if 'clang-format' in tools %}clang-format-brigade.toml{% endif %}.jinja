@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=pypi depName=clang-format
+"pipx:clang-format" = "{{ clang_format_version | default('23.1.5', true) }}"
+
+[tasks."clang-format:lint"]
+description = "Check C and C++ formatting with clang-format"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Every C/C++ file outside hidden folders; style from the project's .clang-format (else LLVM).
+run = '''{{ clang_format_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = [f for e in ('c', 'h', 'cc', 'cpp', 'cxx', 'hh', 'hpp', 'hxx') for f in glob.glob(f'**/*.{e}', recursive=True)]; sys.exit(subprocess.call(['clang-format', '--dry-run', '--Werror', *files]) if files else 0)\"", true) }}'''

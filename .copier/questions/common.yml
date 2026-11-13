@@ -18,7 +18,7 @@ presets:
   choices:
     python (ruff, ty, pytest, uv): [ruff, ty, pytest, uv]
     go (golangci-lint): [golangci-lint]
-    terraform (tflint, checkov): [tflint, checkov]
+    terraform (tflint, checkov, opentofu): [tflint, checkov, opentofu]
     ansible (ansible-lint, molecule, ansible): [ansible-lint, molecule, ansible]
     shell (shellcheck, shfmt): [shellcheck, shfmt]
     docker (hadolint): [hadolint]
@@ -53,9 +53,14 @@ tools:
     lychee (lint): lychee
     codespell (lint): codespell
     sqlfluff (lint): sqlfluff
+    prettier (lint): prettier
+    biome (lint): biome
+    clang-format (lint): clang-format
+    trivy (lint): trivy
     osv-scanner (lint): osv-scanner
     golangci-lint (lint): golangci-lint
     tflint (lint): tflint
+    opentofu (lint): opentofu
     checkov (lint): checkov
     dotenv-linter (lint): dotenv-linter
     stylua (lint): stylua

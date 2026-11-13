@@ -1,0 +1,10 @@
+---
+# Trivy config: trivy fs --config .brigade/configs/trivy.yaml .
+# Yours: brigade created it once and never changes it.
+# It replaces the project's trivy.yaml. Paths are relative to the project root.
+quiet: true
+exit-code: 1
+scan:
+  skip-dirs:
+    # The GitLab CI tool cache.
+    - .mise-data

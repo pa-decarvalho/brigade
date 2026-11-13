@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
-      contents: write  # pages:deploy pushes the gh-pages branch
+      contents: write # pages:deploy pushes the gh-pages branch
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: true  # pages:deploy pushes with git
+          persist-credentials: true # pages:deploy pushes with git
       - uses: ./.brigade/ci/gitea/actions/deploy
         with:
           ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}

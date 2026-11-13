@@ -1,0 +1,18 @@
+---
+prettier_version:
+  type: str
+  help: prettier version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prettier' in tools }}"
+
+prettier_lint_command:
+  type: str
+  help: Command of prettier:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prettier' in tools }}"
+
+prettier_node_version:
+  type: str
+  help: Node.js version for prettier (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prettier' in tools }}"
