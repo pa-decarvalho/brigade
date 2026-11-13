@@ -1,5 +1,7 @@
 # Tools
 
+*The stations of the brigade, and who works at each one.*
+
 Pick your tools in one list when applying brigade. A tool brings its version and all its tasks, in one file: `.brigade/tools/<tool>-brigade.toml`, listed in `.miserc.toml`. Its tasks run at the project root.
 
 Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`, `operate`, and each runs every `<tool>:<stage>` task. Any other action, such as `zensical:serve`, stays out of the pipeline.

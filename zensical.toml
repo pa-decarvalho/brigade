@@ -20,3 +20,5 @@ nav = [
 
 [project.theme]
 features = ["content.code.copy", "navigation.footer"]
+logo = "assets/logo.png"
+favicon = "assets/favicon.png"

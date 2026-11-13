@@ -1,5 +1,7 @@
 # Getting started
 
+*Tie your apron: your first service starts here.*
+
 Requires [mise](https://mise.jdx.dev/) and git.
 
 ## Create the project, then apply brigade

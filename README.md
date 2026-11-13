@@ -1,4 +1,8 @@
+![brigade: mise-en-place, ready for service](docs/assets/banner.webp)
+
 # brigade
+
+*Mise-en-place, ready for service.*
 
 [Copier](https://copier.readthedocs.io/) template that adds [mise](https://mise.jdx.dev/) tooling and CI to a project.
 It does not create the project: do that with the ecosystem's own tool, then apply brigade.

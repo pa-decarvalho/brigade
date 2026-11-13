@@ -1,5 +1,7 @@
 # CI platforms
 
+*The pass: every plate is checked before it leaves the kitchen.*
+
 brigade generates the CI files and `mise run brigade:update` keeps them up to date: do not edit them. Change the stages through your answers, or add your own files.
 
 Jobs only install mise and call `mise run <stage>`, so CI and laptops run the same tools.
