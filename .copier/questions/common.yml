@@ -9,6 +9,26 @@ ci:
     - none
   default: github
 
+# Presets only pre-select tools below: the tools answer is the one used.
+presets:
+  type: str
+  help: Presets (pre-select their tools in the next question)
+  multiselect: true
+  choices:
+    python (ruff, ty, pytest, uv): python
+    go (golangci-lint): go
+    terraform (tflint, checkov): terraform
+    ansible (ansible-lint, molecule, ansible): ansible
+    shell (shellcheck, shfmt): shell
+    docker (hadolint): docker
+    lua (stylua): lua
+    docs (rumdl, zensical, pages): docs
+    copier-template (ctt): copier-template
+    security (osv-scanner, checkov, zizmor): security
+    ci (act or gitlab-ci-local, replays the CI): ci
+    maintenance (renovate, releasaurus): maintenance
+  default: []
+
 tools:
   type: str
   help: Tools
@@ -57,7 +77,35 @@ tools:
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
-  default: [brigade, yamllint, gitleaks, typos]
+  # brigade's defaults, then each preset's tools, without those the CI
+  # platform refuses.
+  default: >-
+    {%- set gh = ci == 'github' -%}
+    {%- set pages = ['pages'] if ci in ['github', 'gitlab'] else [] -%}
+    {%- set replay = {'github': ['act'], 'gitea': ['act'],
+      'gitlab': ['gitlab-ci-local']} -%}
+    {%- set by_preset = {
+      'python': ['ruff', 'ty', 'pytest', 'uv'],
+      'go': ['golangci-lint'],
+      'terraform': ['tflint', 'checkov'],
+      'ansible': ['ansible-lint', 'molecule', 'ansible'],
+      'shell': ['shellcheck', 'shfmt'],
+      'docker': ['hadolint'],
+      'lua': ['stylua'],
+      'docs': ['rumdl', 'zensical'] + pages,
+      'copier-template': ['ctt'],
+      'security': ['osv-scanner', 'checkov'] + (['zizmor'] if gh else []),
+      'ci': replay.get(ci, []),
+      'maintenance': ['renovate', 'releasaurus'],
+    } -%}
+    {%- set ns = namespace(
+      tools=['brigade', 'yamllint', 'gitleaks', 'typos']) -%}
+    {%- for preset in presets -%}
+    {%- for tool in by_preset[preset] if tool not in ns.tools -%}
+    {%- set ns.tools = ns.tools + [tool] -%}
+    {%- endfor -%}
+    {%- endfor -%}
+    {{ ns.tools }}
 
 # Stages: keep one or not, and its commands (empty: all its tools).
 lint_enabled:
