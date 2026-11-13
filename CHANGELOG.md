@@ -1,3 +1,13 @@
+# [0.14.0](https://github.com/pa-decarvalho/brigade/compare/0.13.0...0.14.0) - 2026-11-13
+
+### 🚀 Features
+
+- write data.yml with double quotes and indented lists (#162) [_(77073de)_](https://github.com/pa-decarvalho/brigade/commit/77073de874a67c48de8a840246c481c68f2c02f6)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#158) [_(d2cebb5)_](https://github.com/pa-decarvalho/brigade/commit/d2cebb57695934e3d010e6670770ca55343f70b0)
+
 # [0.13.0](https://github.com/pa-decarvalho/brigade/compare/0.12.0...0.13.0) - 2026-11-13
 
 ### 🚀 Features
