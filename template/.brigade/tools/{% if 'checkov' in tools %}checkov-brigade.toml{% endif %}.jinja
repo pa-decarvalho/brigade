@@ -5,7 +5,5 @@
 [tasks."checkov:lint"]
 description = "Check infrastructure code (Terraform, Kubernetes, Dockerfiles, workflows...) for misconfigurations with Checkov"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# --skip-download: no download from Prisma Cloud, results only change with Checkov's version.
-# --skip-framework github_configuration: with a GITHUB_TOKEN (CI), it reads the repository's
-# settings through the API and writes them to github_conf/ in the project.
-run = '''{{ checkov_lint_command | default('checkov --directory . --quiet --compact --skip-download --skip-framework github_configuration --skip-path .mise-data', true) }}'''
+# Config: .brigade/configs/checkov.yml (the project's).
+run = '''{{ checkov_lint_command | default('checkov --config-file .brigade/configs/checkov.yml', true) }}'''

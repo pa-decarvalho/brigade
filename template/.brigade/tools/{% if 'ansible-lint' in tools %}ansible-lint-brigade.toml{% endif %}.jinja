@@ -5,5 +5,5 @@
 [tasks."ansible-lint:lint"]
 description = "Check Ansible content with ansible-lint"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# .mise-data is the GitLab CI tool cache; Copier writes the answers file (lists without indentation).
-run = '''{{ ansible_lint_lint_command | default('ansible-lint --strict --exclude .mise-data --exclude .brigade/copier', true) }}'''
+# Config: .brigade/configs/ansible-lint.yml (the project's).
+run = '''{{ ansible_lint_lint_command | default('ansible-lint --strict -c .brigade/configs/ansible-lint.yml', true) }}'''

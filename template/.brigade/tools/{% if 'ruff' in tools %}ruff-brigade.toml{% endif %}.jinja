@@ -5,5 +5,5 @@ ruff = "{{ ruff_version | default('0.17.5', true) }}"
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# .mise-data is the GitLab CI tool cache (node ships a Python file).
-run = '''{{ ruff_lint_command | default('ruff check --extend-exclude .mise-data && ruff format --check --extend-exclude .mise-data', true) }}'''
+# Config: .brigade/configs/ruff.toml (the project's).
+run = '''{{ ruff_lint_command | default('ruff check --config .brigade/configs/ruff.toml && ruff format --check --config .brigade/configs/ruff.toml', true) }}'''

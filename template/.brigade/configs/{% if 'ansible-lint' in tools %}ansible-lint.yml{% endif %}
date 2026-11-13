@@ -1,0 +1,10 @@
+---
+# ansible-lint config:
+# ansible-lint --strict -c .brigade/configs/ansible-lint.yml
+# Yours: brigade created it once and never changes it.
+# Paths are relative to the project root.
+exclude_paths:
+  # The GitLab CI tool cache.
+  - .mise-data
+  # Copier writes the answers files (lists without indentation).
+  - .brigade/copier

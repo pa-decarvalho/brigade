@@ -5,5 +5,5 @@ editorconfig-checker = "{{ editorconfig_checker_version | default('4.0.2', true)
 [tasks."editorconfig-checker:lint"]
 description = "Check files against .editorconfig with editorconfig-checker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# .mise-data is the GitLab CI tool cache.
-run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -exclude "^[.]mise-data/"', true) }}'''
+# Config: .brigade/configs/editorconfig-checker.json (the project's).
+run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -config .brigade/configs/editorconfig-checker.json', true) }}'''

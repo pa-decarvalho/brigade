@@ -38,6 +38,7 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
 .brigade/
   copier/answers.yml              # your answers, written by Copier
   copier/data.yml                 # your answers, to edit: applied by brigade:update
+  configs/                        # your tool configs, created once (yamllint.yml, ruff.toml...)
   mise.toml                       # uv and brigade:update
   stages.toml                     # the stages and the git hook tasks
   mirror.toml                     # only with mirrors

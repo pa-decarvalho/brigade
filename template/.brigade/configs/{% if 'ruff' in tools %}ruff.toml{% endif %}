@@ -1,0 +1,4 @@
+# ruff config (ruff check / ruff format --check --config .brigade/configs/ruff.toml).
+# Yours: brigade created it once and never changes it. It replaces [tool.ruff] in pyproject.toml.
+# .mise-data is the GitLab CI tool cache (node ships a Python file).
+extend-exclude = [".mise-data"]
