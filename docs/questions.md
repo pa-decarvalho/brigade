@@ -1,5 +1,7 @@
 # Questions
 
+*Taking the order: what goes on the menu.*
+
 Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Changing answers](#changing-answers)), and in `.brigade/copier/answers.yml`, Copier's own copy (do not edit).
 
 | Question | Values | Default | Effect |

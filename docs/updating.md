@@ -1,5 +1,7 @@
 # Updating
 
+*Fresh deliveries: a new brigade release, straight to your kitchen.*
+
 ```sh
 mise run brigade:update
 ```

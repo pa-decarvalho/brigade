@@ -1,5 +1,7 @@
 # Mirrors
 
+*Your own suppliers, for kitchens that cannot shop at the open market.*
+
 Behind a corporate network, optional questions point downloads at internal mirrors (e.g. Nexus).
 They are written to `.brigade/mirror.toml`; leave them empty to download from the internet.
 

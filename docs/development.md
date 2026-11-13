@@ -1,5 +1,7 @@
 # Development
 
+*Back of house: working on brigade itself.*
+
 Working on brigade itself. Requires [mise](https://mise.jdx.dev/) and a running Docker (the variants replay their CI with act and gitlab-ci-local).
 
 ```sh
