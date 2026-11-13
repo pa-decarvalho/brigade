@@ -16,6 +16,25 @@ For each stage, Copier asks whether to keep it, then its commands.
 lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 ```
 
+## Presets
+
+The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's answer is its tool list, e.g. `--data 'presets=[[ruff, ty, pytest, uv]]'` without prompts.
+
+| Preset | Tools |
+|---|---|
+| `python` | `ruff`, `ty`, `pytest`, `uv` |
+| `go` | `golangci-lint` |
+| `terraform` | `tflint`, `checkov` |
+| `ansible` | `ansible-lint`, `molecule`, `ansible` |
+| `shell` | `shellcheck`, `shfmt` |
+| `docker` | `hadolint` |
+| `lua` | `stylua` |
+| `docs` | `rumdl`, `zensical`, `pages` (GitHub, GitLab) |
+| `copier-template` | `ctt` |
+| `security` | `osv-scanner`, `checkov`, `zizmor` (GitHub) |
+| `ci` | `act` (GitHub, Gitea) or `gitlab-ci-local` (GitLab): replays the CI |
+| `maintenance` | `renovate`, `releasaurus` |
+
 ## Catalog
 
 `brigade`, `yamllint`, `gitleaks` and `typos` are selected by default.

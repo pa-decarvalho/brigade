@@ -78,7 +78,8 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-mirror"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv"]
+# Tools from a preset: brigade's defaults, then ruff, ty, pytest, uv.
+presets = [["ruff", "ty", "pytest", "uv"]]
 ci = "none"
 # Mirrors set to the upstream servers: checks the generated settings, not a real mirror.
 github_mirror = "https://github.com/"

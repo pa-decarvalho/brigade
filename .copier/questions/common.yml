@@ -9,6 +9,27 @@ ci:
     - none
   default: github
 
+# Presets only pre-select tools below: the tools answer is the one used.
+# Each value is the preset's tools.
+presets:
+  type: yaml
+  help: Presets (pre-select their tools in the next question)
+  multiselect: true
+  choices:
+    python (ruff, ty, pytest, uv): [ruff, ty, pytest, uv]
+    go (golangci-lint): [golangci-lint]
+    terraform (tflint, checkov): [tflint, checkov]
+    ansible (ansible-lint, molecule, ansible): [ansible-lint, molecule, ansible]
+    shell (shellcheck, shfmt): [shellcheck, shfmt]
+    docker (hadolint): [hadolint]
+    lua (stylua): [stylua]
+    docs (rumdl, zensical, pages): [rumdl, zensical, pages]
+    copier-template (ctt): [ctt]
+    security (osv-scanner, checkov, zizmor): [osv-scanner, checkov, zizmor]
+    ci (act or gitlab-ci-local, replays the CI): [act, gitlab-ci-local]
+    maintenance (renovate, releasaurus): [renovate, releasaurus]
+  default: []
+
 tools:
   type: str
   help: Tools
@@ -57,7 +78,17 @@ tools:
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
-  default: [brigade, yamllint, gitleaks, typos]
+  # brigade's defaults, then the presets' tools, without those the CI
+  # platform refuses (see their validator).
+  default: >-
+    {%- set refused = {
+      'github': ['gitlab-ci-local'],
+      'gitlab': ['zizmor', 'act'],
+      'gitea': ['zizmor', 'pages', 'gitlab-ci-local'],
+      'none': ['zizmor', 'pages', 'act', 'gitlab-ci-local'],
+    }[ci] -%}
+    {{ (['brigade', 'yamllint', 'gitleaks', 'typos'] + presets | sum(start=[]))
+    | reject('in', refused) | unique | list }}
 
 # Stages: keep one or not, and its commands (empty: all its tools).
 lint_enabled:
