@@ -1,4 +1,4 @@
-# Your answers: edit them, commit, then run mise run brigade:update.
+# Your answers: edit them, then run mise run brigade:update.
 {% for key, value in _copier_answers | dictsort(true) if not key.startswith('_') -%}
 {% if value is sequence and value is not string and value -%}
 {{ key }}:

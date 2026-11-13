@@ -1,4 +1,4 @@
-"""brigade:data: write all the answers to .brigade/copier/data.yml.
+"""Write all the answers to .brigade/copier/data.yml (run by brigade-update.py).
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 Runs after copier update, in Copier's environment (PyYAML), so that data.yml holds
@@ -16,7 +16,7 @@ FOLDER = pathlib.Path(".brigade/copier")
 
 def main() -> None:
     answers = yaml.safe_load((FOLDER / "answers.yml").read_text(encoding="utf-8"))
-    lines = ["# Your answers: edit them, commit, then run mise run brigade:update."]
+    lines = ["# Your answers: edit them, then run mise run brigade:update."]
     for key, value in sorted(answers.items()):
         if key.startswith("_"):
             continue

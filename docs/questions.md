@@ -16,10 +16,10 @@ Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Cha
 
 ## Changing answers
 
-Your answers are all in `.brigade/copier/data.yml`. Edit them there, commit, then run `mise run brigade:update`:
+Your answers are all in `.brigade/copier/data.yml`. Edit them there, then run `mise run brigade:update`:
 
 ```yaml
-# Your answers: edit them, commit, then run mise run brigade:update.
+# Your answers: edit them, then run mise run brigade:update.
 build_commands:
   - "uv build"
 ci: "gitlab"
@@ -37,4 +37,4 @@ tools:
 - A key that is not a question (a typo), or a question not asked (tool versions need `customize_tools: true`), is dropped.
 - Your comments and formatting are not kept.
 
-Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.
+When `data.yml` is your only change, `brigade:update` applies it without a commit first: review and commit the edit and the update together. With other uncommitted changes, Copier refuses to update: commit them first. Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.
