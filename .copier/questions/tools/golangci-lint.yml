@@ -1,0 +1,12 @@
+---
+golangci_lint_version:
+  type: str
+  help: golangci-lint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'golangci-lint' in tools }}"
+
+golangci_lint_lint_command:
+  type: str
+  help: Command of golangci-lint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'golangci-lint' in tools }}"

@@ -1,0 +1,12 @@
+---
+tflint_version:
+  type: str
+  help: tflint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'tflint' in tools }}"
+
+tflint_lint_command:
+  type: str
+  help: Command of tflint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'tflint' in tools }}"

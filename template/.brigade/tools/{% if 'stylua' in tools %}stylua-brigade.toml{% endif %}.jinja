@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
+stylua = "{{ stylua_version | default('2.6.0', true) }}"
+
+[tasks."stylua:lint"]
+description = "Check Lua formatting with StyLua"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ stylua_lint_command | default('stylua --check .', true) }}'''

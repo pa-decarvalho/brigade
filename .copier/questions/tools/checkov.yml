@@ -1,0 +1,12 @@
+---
+checkov_version:
+  type: str
+  help: checkov version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'checkov' in tools }}"
+
+checkov_lint_command:
+  type: str
+  help: Command of checkov:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'checkov' in tools }}"

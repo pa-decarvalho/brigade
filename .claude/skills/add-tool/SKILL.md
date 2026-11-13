@@ -10,11 +10,15 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
 ## 1. Check the tool first (in the scratchpad, not the repo)
 
 - `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else `pipx:`/`npm:`. Latest version: `gh release view -R <owner>/<repo> --json tagName`.
+  - aqua's registry can miss platforms the release has (dotenv-linter: no linux/arm64, which act uses on Apple Silicon): compare with `gh release view <tag> -R <owner>/<repo> --json assets`, and use `github:<owner>/<repo>` then.
+  - A tool that needs a runtime (golangci-lint: Go) relies on the project's `mise.toml` for it, as `pytest` relies on the project's dependencies.
+  - A tool that needs a config file to do anything (vale, kubeconform's manifest folder) waits for #145.
 - In a scratch dir with a `mise.toml` pinning it, run its command and check:
   - **file discovery**: does it walk the folder itself? Does it skip hidden folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a bad file in `.mise-data/x/` and see. Exclude it with the tool's option (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit (biome was left out for this).
   - **files it writes** in the project (caches: `--no-cache`).
   - **no input files**: must pass, not fail or wait for stdin.
   - **network** needs, and whether results can change without a project change (say so in the docs).
+  - **CI-only behavior**: CI sets env vars a local run lacks (`GITHUB_TOKEN`, `GITHUB_ACTIONS`, `CI`). Run it once with them set to dummy values and check it writes nothing (checkov wrote `github_conf/`).
 - A tool that takes a file list: a Python glob run by uv, as in `hadolint` or `shellcheck` (no shell, works on Windows; `glob` skips hidden folders):
   `uv run --no-project python -c "import glob, subprocess, sys; files = glob.glob('**/*.sh', recursive=True); sys.exit(subprocess.call(['<tool>', *files]) if files else 0)"`
 - Clean up afterwards: tools installed from the scratchpad leave global mise shims (`mise uninstall <tool> --all && mise reshim`); a shim with no version breaks tools that look it up in PATH (jactionlint and shellcheck).
@@ -35,6 +39,7 @@ Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint
 ## 3. Verify
 
 - `mise run lint`, `mise run build`.
+- Start Docker first (`docker info`; macOS: `open -a Docker`).
 - `git add -A && mise run test; git reset -q` (ctt only sees tracked files; needs Docker). Check the tool's lines in the log, also inside the act / gitlab-ci-local replays.
 - Fix what the new tool finds in brigade's own generated files (as `zizmor` did) rather than weakening its command.
 

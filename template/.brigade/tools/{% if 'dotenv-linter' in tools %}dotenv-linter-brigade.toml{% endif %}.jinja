@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=dotenv-linter/dotenv-linter
+# github:, not aqua: aqua's registry has no linux/arm64 build.
+"github:dotenv-linter/dotenv-linter" = "{{ dotenv_linter_version | default('4.0.0', true) }}"
+
+[tasks."dotenv-linter:lint"]
+description = "Check .env files with dotenv-linter"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ dotenv_linter_lint_command | default('dotenv-linter check --recursive --exclude .mise-data .', true) }}'''

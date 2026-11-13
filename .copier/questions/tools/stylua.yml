@@ -1,0 +1,12 @@
+---
+stylua_version:
+  type: str
+  help: stylua version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'stylua' in tools }}"
+
+stylua_lint_command:
+  type: str
+  help: Command of stylua:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'stylua' in tools }}"
