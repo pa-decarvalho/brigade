@@ -53,7 +53,7 @@ tools:
   - "pages"
 typos_lint_command: ""
 typos_version: ""
-yamllint_lint_command: "yamllint --strict -d \"{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/answers.yml], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}\" ."
+yamllint_lint_command: "yamllint --strict -d \"{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/copier/], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}\" ."
 yamllint_version: ""
 zensical_build_command: ""
 zensical_serve_command: ""
