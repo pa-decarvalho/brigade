@@ -1,0 +1,12 @@
+---
+lychee_version:
+  type: str
+  help: lychee version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'lychee' in tools }}"
+
+lychee_lint_command:
+  type: str
+  help: Command of lychee:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'lychee' in tools }}"

@@ -54,6 +54,11 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
 | `shfmt` | `shfmt:lint` | `shfmt --diff` on the same files (style: your `.editorconfig`) |
 | `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown; [config](#tool-configs)) |
+| `markdownlint` | `markdownlint:lint` | `markdownlint-cli2 "**/*.md"`, without `.mise-data/`, `.venv/` and `node_modules/`; reads your `.markdownlint-cli2.*` or `.markdownlint.*`. Same rules as `rumdl`: pick one |
+| `vale` | `vale:lint` | `vale sync && vale .` (prose in Markdown, with Vale's built-in style), without `.mise-data/`, `.venv/` and `node_modules/` ([config](#tool-configs); `vale sync` downloads the style packages it lists) |
+| `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
+| `codespell` | `codespell:lint` | `codespell`, outside hidden folders ([config](#tool-configs)) |
+| `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
@@ -94,9 +99,12 @@ Tools that read a config file get one in `.brigade/configs/`, created with briga
 | `rumdl` | `.brigade/configs/rumdl.toml` | `.rumdl.toml`: not read |
 | `editorconfig-checker` | `.brigade/configs/editorconfig-checker.json` | `.editorconfig-checker.json`: not read (`.editorconfig` still is) |
 | `ansible-lint` | `.brigade/configs/ansible-lint.yml` | `.ansible-lint`: not read |
+| `vale` | `.brigade/configs/vale.ini` | `.vale.ini`: not read |
+| `codespell` | `.brigade/configs/codespell.cfg` | `.codespellrc`: not read |
+| `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
 
-Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`...).
+Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`...).
 
 Before brigade 0.15, these settings were command-line options: `brigade:update` creates the files with the same settings. A file brigade creates is not updated by later releases: compare it with the template when a release changes it (release notes).
 

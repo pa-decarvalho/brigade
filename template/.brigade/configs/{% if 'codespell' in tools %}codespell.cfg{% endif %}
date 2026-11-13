@@ -1,0 +1,6 @@
+# codespell config: codespell --config .brigade/configs/codespell.cfg
+# Yours: brigade created it once and never changes it. It replaces the project's .codespellrc.
+# Paths are relative to the project root; hidden folders are skipped already.
+[codespell]
+# Dependencies, and lock files (hashes and package names).
+skip = ./node_modules,*.lock,*-lock.json,*-lock.yaml

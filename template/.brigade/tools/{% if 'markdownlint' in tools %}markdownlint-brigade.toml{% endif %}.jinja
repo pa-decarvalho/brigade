@@ -1,0 +1,12 @@
+[tools]
+# renovate: datasource=node-version depName=node
+node = "{{ markdownlint_node_version | default('26.13.1', true) }}"
+# renovate: datasource=npm depName=markdownlint-cli2
+"npm:markdownlint-cli2" = "{{ markdownlint_version | default('0.24.1', true) }}"
+
+[tasks."markdownlint:lint"]
+description = "Check Markdown files with markdownlint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Reads the project's .markdownlint-cli2.* or .markdownlint.* (its --config skips the ignores).
+# "#<folder>" skips the GitLab CI tool cache and dependency folders.
+run = '''{{ markdownlint_lint_command | default('markdownlint-cli2 "**/*.md" "#.mise-data" "#.venv" "#node_modules"', true) }}'''

@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=pypi depName=codespell
+"pipx:codespell" = "{{ codespell_version | default('2.4.3', true) }}"
+
+[tasks."codespell:lint"]
+description = "Check spelling with codespell"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Config: .brigade/configs/codespell.cfg (the project's). Skips hidden folders.
+run = '''{{ codespell_lint_command | default('codespell --config .brigade/configs/codespell.cfg', true) }}'''

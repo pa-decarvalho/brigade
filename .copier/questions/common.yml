@@ -48,6 +48,11 @@ tools:
     shellcheck (lint): shellcheck
     shfmt (lint): shfmt
     rumdl (lint): rumdl
+    markdownlint (lint): markdownlint
+    vale (lint): vale
+    lychee (lint): lychee
+    codespell (lint): codespell
+    sqlfluff (lint): sqlfluff
     osv-scanner (lint): osv-scanner
     golangci-lint (lint): golangci-lint
     tflint (lint): tflint
