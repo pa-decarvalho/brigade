@@ -4,6 +4,8 @@
 # Paths are relative to the project root.
 extends: default
 ignore: |
+  .ctt/
+  template/
   .venv/
   node_modules/
   .mise-data/
