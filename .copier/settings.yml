@@ -5,3 +5,5 @@ _answers_file: .brigade/copier/answers.yml
 # Created once, then written by brigade:update (Copier would merge it).
 _skip_if_exists:
   - .brigade/copier/data.yml
+  # Tool configs: the project's (docs/tools.md).
+  - .brigade/configs/*

@@ -5,4 +5,5 @@ rumdl = "{{ rumdl_version | default('0.3.4', true) }}"
 [tasks."rumdl:lint"]
 description = "Check Markdown files with rumdl"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ rumdl_lint_command | default("rumdl check --no-cache --exclude .mise-data .", true) }}'''
+# Config: .brigade/configs/rumdl.toml (the project's).
+run = '''{{ rumdl_lint_command | default("rumdl check --no-cache --config .brigade/configs/rumdl.toml .", true) }}'''

@@ -1,0 +1,17 @@
+---
+# Checkov config: checkov --config-file .brigade/configs/checkov.yml
+# Yours: brigade created it once and never changes it.
+# It replaces the project's .checkov.yaml.
+directory:
+  - .
+quiet: true
+compact: true
+# No download from Prisma Cloud: results only change with Checkov's version.
+skip-download: true
+# With a GITHUB_TOKEN (CI), it reads the repository's settings through
+# the API and writes them to github_conf/ in the project.
+skip-framework:
+  - github_configuration
+# The GitLab CI tool cache.
+skip-path:
+  - .mise-data

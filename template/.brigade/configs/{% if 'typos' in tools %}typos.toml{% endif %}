@@ -1,0 +1,6 @@
+# typos config (typos --hidden --exclude .git -c .brigade/configs/typos.toml), added to
+# _typos.toml or typos.toml when the project has one.
+# Yours: brigade created it once and never changes it. Paths are relative to the project root.
+[files]
+# Copier answers and the changelog hold commit hashes; .mise-data is the GitLab CI tool cache.
+extend-exclude = [".mise-data", ".brigade/copier/answers.yml", "CHANGELOG.md"]

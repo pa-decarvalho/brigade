@@ -12,9 +12,9 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
 - `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else `pipx:`/`npm:`. Latest version: `gh release view -R <owner>/<repo> --json tagName`.
   - aqua's registry can miss platforms the release has (dotenv-linter: no linux/arm64, which act uses on Apple Silicon): compare with `gh release view <tag> -R <owner>/<repo> --json assets`, and use `github:<owner>/<repo>` then.
   - A tool that needs a runtime (golangci-lint: Go) relies on the project's `mise.toml` for it, as `pytest` relies on the project's dependencies.
-  - A tool that needs a config file to do anything (vale, kubeconform's manifest folder) waits for #145.
+  - A tool that needs a config file to do anything (vale's `.vale.ini`) gets a working one in `.brigade/configs/` (see Config below). One that needs a project layout instead (kubeconform's manifest folder) is a poor fit until there is a question for it.
 - In a scratch dir with a `mise.toml` pinning it, run its command and check:
-  - **file discovery**: does it walk the folder itself? Does it skip hidden folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a bad file in `.mise-data/x/` and see. Exclude it with the tool's option (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit (biome was left out for this).
+  - **file discovery**: does it walk the folder itself? Does it skip hidden folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a bad file in `.mise-data/x/` and see. Exclude it in the tool's config file when it has one (see Config below), else with its option (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit (biome was left out for this).
   - **files it writes** in the project (caches: `--no-cache`).
   - **no input files**: must pass, not fail or wait for stdin.
   - **network** needs, and whether results can change without a project change (say so in the docs).
@@ -25,15 +25,16 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
 
 ## 2. Files
 
-Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint` for a file list, `ansible-lint` for `pipx:`).
+Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint` for a file list, `ansible-lint` for `pipx:`, `yamllint` for a config file).
 
 - `template/.brigade/tools/{% if '<tool>' in tools %}<tool>-brigade.toml{% endif %}.jinja`:
   - `# renovate: datasource=<github-releases|pypi|npm> depName=<owner/repo|package>` on the line above `<tool> = "{{ <tool_>_version | default('<pin>', true) }}"`. The `customManagers` regex in `.github/renovate.json5` reads it; a pin elsewhere in the line (`uvx_args`...) needs its own entry there.
   - `[tasks."<tool>:<stage>"]` with `description`, `{% raw %}dir = "{{config_root}}/../.."{% endraw %}` and one `run = '''{{ <tool_>_<action>_command | default('<command>', true) }}'''`. Inside a `default("...")` with double quotes, escape inner `"` as `\"`.
   - In variable names, `-` becomes `_` (`osv_scanner_version`).
+- Config: when the tool takes a config path (`-c`...) and brigade passes it settings (excluding `.mise-data`...), put them in `template/.brigade/configs/{% if '<tool>' in tools %}<tool>.<ext>{% endif %}` (no Jinja inside, a header comment saying it is the project's, paths relative to the project root; YAML within yamllint's rules: `---`, 80 columns) and pass `-c .brigade/configs/<tool>.<ext>`. Check first, in the scratch dir: the config's paths resolve from the project root, and whether the tool still reads its usual config file (`docs/tools.md#tool-configs` table). A tool with nothing to configure gets no file (it would hide the project's usual config).
 - `.copier/questions/tools/<tool>.yml`: copy `gitleaks.yml`, replace the name (`sed 's/gitleaks/<tool>/g'`, then fix `-` → `_` in the variable names only).
 - `.copier/questions/common.yml`: a choice `<tool> (<stage>): <tool>` next to tools of the same stage; a `validator` on `ci` when it only fits one CI platform (`zizmor`).
-- `docs/tools.md`: a catalog row (tool, task, command and what it excludes); a "Platforms" line if it does not run on Windows.
+- `docs/tools.md`: a catalog row (tool, task, command; `([config](#tool-configs))` with a row in the "Tool configs" table); a "Platforms" line if it does not run on Windows.
 - `ctt.toml`: add it to a variant whose project type fits (`none-github` for generic linters, `python-gitlab` to test the `.mise-data` exclusion inside the gitlab-ci-local replay), with a file for it to check (`_post_tasks`, written with `uv run --no-project python -c`; in TOML basic strings, `\\n` is a Python `\n` and `\"` a quote).
 
 ## 3. Verify

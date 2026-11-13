@@ -42,25 +42,25 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | Tool | Task | Command |
 |---|---|---|
 | `brigade` | `brigade:lint` | Fails when a brigade-owned file was edited or deleted: see [brigade](#brigade) |
-| `yamllint` | `yamllint:lint` | `yamllint --strict` |
+| `yamllint` | `yamllint:lint` | `yamllint --strict` ([config](#tool-configs)) |
 | `gitleaks` | `gitleaks:lint` | `gitleaks git` (history and staged changes) |
-| `typos` | `typos:lint` | `typos` |
-| `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`) |
-| `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/**/*.toml` and `.miserc.toml` |
+| `typos` | `typos:lint` | `typos` ([config](#tool-configs)) |
+| `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`; [config](#tool-configs)) |
+| `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/**/*.toml` and `.miserc.toml` ([config](#tool-configs)) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
-| `ruff` | `ruff:lint` | `ruff check && ruff format --check`, without `.mise-data/` (GitLab CI tool cache) |
-| `ty` | `ty:lint` | `uv sync && ty check` (`uv sync`: ty reads the project's `.venv`), without `.mise-data/` |
+| `ruff` | `ruff:lint` | `ruff check && ruff format --check` ([config](#tool-configs)) |
+| `ty` | `ty:lint` | `uv sync && ty check` (`uv sync`: ty reads the project's `.venv`; [config](#tool-configs)) |
 | `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
 | `shfmt` | `shfmt:lint` | `shfmt --diff` on the same files (style: your `.editorconfig`) |
-| `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown), without `.mise-data/` |
+| `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown; [config](#tool-configs)) |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
-| `checkov` | `checkov:lint` | `checkov --directory . --skip-download` (Terraform, Kubernetes, Dockerfiles, workflows...), without `.mise-data/` and without reading the repository's settings through the GitHub API (`--skip-framework github_configuration`) |
+| `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
 | `stylua` | `stylua:lint` | `stylua --check .` (Lua) |
-| `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/copier/` (written by Copier) and `.mise-data/` |
+| `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict` ([config](#tool-configs)) |
 | `hadolint` | `hadolint:lint` | `hadolint` on every `*Dockerfile*` and `*Containerfile*` (outside hidden folders); none: nothing to check |
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
@@ -79,6 +79,26 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
+
+## Tool configs
+
+Tools that read a config file get one in `.brigade/configs/`, created with brigade's settings when the tool is selected (the folders to skip, such as `.mise-data/`, the GitLab CI tool cache). The file is yours: edit it, brigade never changes it again (`brigade:update` keeps it, `brigade:lint` skips it). Removing the tool from `tools` removes it. Paths in it are relative to the project root.
+
+| Tool | Config | Your usual config file |
+|---|---|---|
+| `yamllint` | `.brigade/configs/yamllint.yml` | `.yamllint`: not read |
+| `ruff` | `.brigade/configs/ruff.toml` | `[tool.ruff]` in `pyproject.toml`, `ruff.toml`: not read |
+| `ty` | `.brigade/configs/ty.toml` | `[tool.ty]` in `pyproject.toml`, `ty.toml`: not read |
+| `typos` | `.brigade/configs/typos.toml` | `_typos.toml`, `typos.toml`: still read, both apply |
+| `taplo` | `.brigade/configs/taplo.toml` | `taplo.toml`: not read |
+| `rumdl` | `.brigade/configs/rumdl.toml` | `.rumdl.toml`: not read |
+| `editorconfig-checker` | `.brigade/configs/editorconfig-checker.json` | `.editorconfig-checker.json`: not read (`.editorconfig` still is) |
+| `ansible-lint` | `.brigade/configs/ansible-lint.yml` | `.ansible-lint`: not read |
+| `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
+
+Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`...).
+
+Before brigade 0.15, these settings were command-line options: `brigade:update` creates the files with the same settings. A file brigade creates is not updated by later releases: compare it with the template when a release changes it (release notes).
 
 ## Platforms
 
