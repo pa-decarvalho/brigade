@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=pypi depName=checkov
+"pipx:checkov" = "{{ checkov_version | default('3.4.5', true) }}"
+
+[tasks."checkov:lint"]
+description = "Check infrastructure code (Terraform, Kubernetes, Dockerfiles, workflows...) for misconfigurations with Checkov"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# --skip-download: no download from Prisma Cloud, results only change with Checkov's version.
+run = '''{{ checkov_lint_command | default('checkov --directory . --quiet --compact --skip-download --skip-path .mise-data', true) }}'''

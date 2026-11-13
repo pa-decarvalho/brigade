@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=terraform-linters/tflint
+tflint = "{{ tflint_version | default('0.66.0', true) }}"
+
+[tasks."tflint:lint"]
+description = "Check Terraform code with TFLint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ tflint_lint_command | default('tflint --recursive', true) }}'''

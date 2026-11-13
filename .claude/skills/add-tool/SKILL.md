@@ -10,6 +10,9 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
 ## 1. Check the tool first (in the scratchpad, not the repo)
 
 - `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else `pipx:`/`npm:`. Latest version: `gh release view -R <owner>/<repo> --json tagName`.
+  - aqua's registry can miss platforms the release has (dotenv-linter: no linux/arm64, which act uses on Apple Silicon): compare with `gh release view <tag> -R <owner>/<repo> --json assets`, and use `github:<owner>/<repo>` then.
+  - A tool that needs a runtime (golangci-lint: Go) relies on the project's `mise.toml` for it, as `pytest` relies on the project's dependencies.
+  - A tool that needs a config file to do anything (vale, kubeconform's manifest folder) waits for #145.
 - In a scratch dir with a `mise.toml` pinning it, run its command and check:
   - **file discovery**: does it walk the folder itself? Does it skip hidden folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a bad file in `.mise-data/x/` and see. Exclude it with the tool's option (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit (biome was left out for this).
   - **files it writes** in the project (caches: `--no-cache`).
@@ -35,6 +38,7 @@ Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint
 ## 3. Verify
 
 - `mise run lint`, `mise run build`.
+- Start Docker first (`docker info`; macOS: `open -a Docker`).
 - `git add -A && mise run test; git reset -q` (ctt only sees tracked files; needs Docker). Check the tool's lines in the log, also inside the act / gitlab-ci-local replays.
 - Fix what the new tool finds in brigade's own generated files (as `zizmor` did) rather than weakening its command.
 

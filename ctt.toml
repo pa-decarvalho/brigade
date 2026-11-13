@@ -99,15 +99,19 @@ _post_tasks = [
 
 [output.".ctt/none-github"]
 # No test tool: the test stage does nothing. Adds optional lint tools.
-tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hadolint", "shellcheck", "shfmt", "rumdl", "osv-scanner", "act"]
+tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hadolint", "shellcheck", "shfmt", "rumdl", "osv-scanner", "golangci-lint", "tflint", "checkov", "dotenv-linter", "stylua", "act"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # editorconfig-checker needs the project's own .editorconfig; root = true stops it from
     # reading brigade's (end_of_line = lf), which fails on Windows CRLF checkouts.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')"],
-    # A Dockerfile in a subfolder (hadolint), a shell script (shellcheck, shfmt), a README (rumdl).
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docker').mkdir(); pathlib.Path('docker/Dockerfile').write_text('FROM python:3.13-slim\\n'); pathlib.Path('docker/run.sh').write_text('#!/bin/sh\\necho \"$1\"\\n'); pathlib.Path('README.md').write_text('# Demo\\n')"],
+    # A file for each linter: Dockerfile (hadolint, checkov), shell script (shellcheck, shfmt), README (rumdl),
+    # Terraform (tflint, checkov), .env (dotenv-linter), Lua (stylua).
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docker').mkdir(); pathlib.Path('docker/Dockerfile').write_text('FROM python:3.13-slim\\nUSER 65534\\nHEALTHCHECK NONE\\n'); pathlib.Path('infra').mkdir(); pathlib.Path('infra/main.tf').write_text('terraform {\\n  required_version = \">= 1.0\"\\n}\\n'); pathlib.Path('.env').write_text('FOO=bar\\n'); pathlib.Path('demo.lua').write_text('print(\"demo\")\\n'); pathlib.Path('docker/run.sh').write_text('#!/bin/sh\\necho \"$1\"\\n'); pathlib.Path('README.md').write_text('# Demo\\n')"],
+    # A Go module (golangci-lint), with Go pinned in the project's mise.toml.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('mise.toml').write_text('[tools]\\ngo = \"1.27.4\"\\n'); pathlib.Path('go.mod').write_text('module demo\\n\\ngo 1.27\\n'); pathlib.Path('main.go').write_text('package main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(\"demo\")\\n}\\n')"],
+    ["mise", "trust", "-q", "mise.toml"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "init"],
     ["mise", "run", "brigade:hooks"],

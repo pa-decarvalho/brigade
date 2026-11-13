@@ -14,6 +14,9 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+# No token rights by default: each job sets its own.
+permissions: {}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

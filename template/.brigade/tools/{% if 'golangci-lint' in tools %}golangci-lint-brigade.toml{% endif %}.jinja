@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=golangci/golangci-lint
+golangci-lint = "{{ golangci_lint_version | default('2.15.0', true) }}"
+
+[tasks."golangci-lint:lint"]
+description = "Check Go code with golangci-lint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Needs Go: the project pins go in its mise.toml.
+run = '''{{ golangci_lint_lint_command | default('golangci-lint run', true) }}'''

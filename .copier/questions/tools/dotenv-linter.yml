@@ -1,0 +1,12 @@
+---
+dotenv_linter_version:
+  type: str
+  help: dotenv-linter version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'dotenv-linter' in tools }}"
+
+dotenv_linter_lint_command:
+  type: str
+  help: Command of dotenv-linter:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'dotenv-linter' in tools }}"
