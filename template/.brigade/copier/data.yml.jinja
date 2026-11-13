@@ -1,2 +1,10 @@
 # Your answers: edit them, commit, then run mise run brigade:update.
-{{ dict(_copier_answers.items() | rejectattr('0', 'in', ['_commit', '_src_path'])) | to_nice_yaml -}}
+{% for key, value in _copier_answers | dictsort(true) if not key.startswith('_') -%}
+{% if value is sequence and value is not string and value -%}
+{{ key }}:
+{% for item in value %}  - {{ item | to_json(ensure_ascii=False) }}
+{% endfor -%}
+{% else -%}
+{{ key }}: {{ value | to_json(ensure_ascii=False) }}
+{% endif -%}
+{% endfor -%}

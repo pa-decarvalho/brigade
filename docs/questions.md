@@ -21,16 +21,16 @@ Your answers are all in `.brigade/copier/data.yml`. Edit them there, commit, the
 ```yaml
 # Your answers: edit them, commit, then run mise run brigade:update.
 build_commands:
-- uv build
-ci: gitlab
+  - "uv build"
+ci: "gitlab"
 customize_tools: true
-ruff_version: 0.16.0
+ruff_version: "0.16.0"
 tools:
-- brigade
-- ruff
+  - "brigade"
+  - "ruff"
 ```
 
-`brigade:update` applies them, then writes all the answers back to this file, in Copier's format:
+`brigade:update` applies them, then writes all the answers back to this file, sorted, with JSON values (double quotes) and lists indented under their key:
 
 - New questions of a release show up with their default (Renovate's update PR included): change them there too.
 - A removed key comes back with its last value: set the value you want instead.
