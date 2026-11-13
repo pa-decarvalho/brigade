@@ -6,4 +6,4 @@
 description = "Check YAML files with yamllint"
 dir = "{{config_root}}/../.."
 # Config: .brigade/configs/yamllint.yml (the project's).
-run = '''yamllint --strict -d "{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/copier/], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}" .'''
+run = '''yamllint --strict -c .brigade/configs/yamllint.yml .'''

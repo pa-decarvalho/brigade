@@ -6,4 +6,4 @@ editorconfig-checker = "4.0.2"
 description = "Check files against .editorconfig with editorconfig-checker"
 dir = "{{config_root}}/../.."
 # Config: .brigade/configs/editorconfig-checker.json (the project's).
-run = '''editorconfig-checker -exclude "^[.](ctt|mise-data)/"'''
+run = '''editorconfig-checker -config .brigade/configs/editorconfig-checker.json'''

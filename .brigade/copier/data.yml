@@ -9,7 +9,7 @@ ctt_version: ""
 customize_tools: true
 deploy_commands: []
 deploy_enabled: true
-editorconfig_checker_lint_command: "editorconfig-checker -exclude \"^[.](ctt|mise-data)/\""
+editorconfig_checker_lint_command: ""
 editorconfig_checker_version: ""
 github_mirror: ""
 gitleaks_lint_command: ""
@@ -34,7 +34,7 @@ renovate_operate_command: ""
 renovate_version: ""
 ruff_lint_command: ""
 ruff_version: ""
-taplo_lint_command: "taplo fmt --check --no-auto-config -o indent_string=\"    \" -o array_auto_expand=false -o array_auto_collapse=false \".brigade/**/*.toml\" .miserc.toml mise.toml ctt.toml zensical.toml releasaurus.toml \"template/**/*.toml\""
+taplo_lint_command: "taplo fmt --check -c .brigade/configs/taplo.toml \".brigade/**/*.toml\" .miserc.toml mise.toml ctt.toml zensical.toml releasaurus.toml \"template/**/*.toml\""
 taplo_version: ""
 test_commands: []
 test_enabled: true
@@ -53,7 +53,7 @@ tools:
   - "pages"
 typos_lint_command: ""
 typos_version: ""
-yamllint_lint_command: "yamllint --strict -d \"{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/copier/], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}\" ."
+yamllint_lint_command: ""
 yamllint_version: ""
 zensical_build_command: ""
 zensical_serve_command: ""

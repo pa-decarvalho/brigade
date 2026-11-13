@@ -1,3 +1,1 @@
-{
-  "Exclude": ["^[.](ctt|mise-data)/"]
-}
+{"Exclude": ["^[.](ctt|mise-data)/"]}
