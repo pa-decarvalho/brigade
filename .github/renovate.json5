@@ -9,7 +9,7 @@
     // Only the template: generated projects, brigade included, get its versions
     // through a release and mise run brigade:update, which Renovate runs in a PR
     // on each release (brigade's own answers file, see the renovate tool).
-    includePaths: ["template/**", ".brigade/answers.yml"],
+    includePaths: ["template/**", ".brigade/copier/answers.yml"],
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         // Tool fragments are Jinja: a customManagers entry reads their pins.

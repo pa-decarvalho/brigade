@@ -24,12 +24,12 @@ run = '''renovate'''
 [tasks."renovate:operate".env]
 RENOVATE_CONFIG = '''{% raw %}{
     "allowedCommands": [
-        "^git checkout -- \\.brigade/answers\\.yml$",
+        "^git checkout -- \\.brigade/copier/answers\\.yml$",
         "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
     ],
     "customManagers": [{
         "customType": "regex",
-        "managerFilePatterns": ["/^\\.brigade/answers\\.yml$/"],
+        "managerFilePatterns": ["/^\\.brigade/copier/answers\\.yml$/"],
         "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
         "datasourceTemplate": "git-tags",
         "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
@@ -41,7 +41,7 @@ RENOVATE_CONFIG = '''{% raw %}{
         "commitMessageTopic": "brigade",
         "postUpgradeTasks": {
             "commands": [
-                "git checkout -- .brigade/answers.yml",
+                "git checkout -- .brigade/copier/answers.yml",
                 "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
             ],
             "executionMode": "branch"
@@ -54,4 +54,4 @@ RENOVATE_CONFIG = '''{% raw %}{
 # which mise's trust policy rejects: exempt that one version only. re2 (RE2 regexes, as Renovate
 # validates them) installs its native binary with a script, which runs only when allowed.
 # renovate: datasource=npm depName=renovate
-"npm:renovate" = { version = "44.236.4", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }
+"npm:renovate" = { version = "44.238.1", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }

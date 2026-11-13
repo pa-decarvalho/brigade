@@ -9,4 +9,12 @@ uv = "0.13.8"
 [tasks."brigade:update"]
 description = "Update brigade files from the template"
 dir = "{{config_root}}/.."
-run = "uvx copier@9.19.1 update -a .brigade/answers.yml"
+run = "uvx copier@9.19.1 update -a .brigade/copier/answers.yml --data-file .brigade/copier/data.yml"
+depends_post = ["brigade:data"]
+
+# Writes all the answers back to data.yml, new questions included (PyYAML from Copier's env).
+[tasks."brigade:data"]
+description = "Write the answers to .brigade/copier/data.yml"
+hide = true
+dir = "{{config_root}}/.."
+run = "uvx --from copier@9.19.1 python .brigade/scripts/brigade-data.py"
