@@ -1,9 +1,10 @@
 """brigade:lint: fail when a brigade-owned file differs from the template.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Renders the template at the version of .brigade/answers.yml into a temporary
-folder, then compares each rendered file with the project's. Also tells when a newer
-brigade release is out (a notice, not a failure).
+Renders the template at the version of .brigade/copier/answers.yml into a temporary
+folder, then compares each rendered file with the project's: data.yml differs when
+edited answers are not applied yet. Also tells when a newer brigade release is out
+(a notice, not a failure).
 """
 
 import json
@@ -15,7 +16,8 @@ import subprocess
 import sys
 import tempfile
 
-ANSWERS = ".brigade/answers.yml"
+ANSWERS = ".brigade/copier/answers.yml"
+DATA = ".brigade/copier/data.yml"
 
 
 def read(path: pathlib.Path) -> bytes:
@@ -26,6 +28,11 @@ def read(path: pathlib.Path) -> bytes:
 def main() -> int:
     answers = pathlib.Path(ANSWERS)
     if not answers.is_file():
+        if pathlib.Path(".brigade/answers.yml").is_file():
+            print(
+                f"brigade:lint: move .brigade/answers.yml to {ANSWERS} (brigade 0.13)"
+            )
+            return 1
         print(f"brigade:lint: no {ANSWERS}, skipped")
         return 0
     text = answers.read_text(encoding="utf-8")
@@ -75,7 +82,9 @@ def main() -> int:
             if not mine.is_file():
                 problems.append(f"  {name}: missing")
             elif read(mine) != read(path):
-                problems.append(f"  {name}: edited")
+                problems.append(
+                    f"  {name}: {'not applied' if name == DATA else 'edited'}"
+                )
     if problems:
         print(f"brigade:lint: brigade-owned files differ from the template ({ref}):")
         print("\n".join(problems))

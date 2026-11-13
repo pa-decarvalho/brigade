@@ -18,7 +18,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 
 ## Presets
 
-The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's answer is its tool list, e.g. `--data 'presets=[[ruff, ty, pytest, uv]]'` without prompts.
+The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's answer is its tool list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 
 | Preset | Tools |
 |---|---|
@@ -60,7 +60,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `checkov` | `checkov:lint` | `checkov --directory . --skip-download` (Terraform, Kubernetes, Dockerfiles, workflows...), without `.mise-data/` and without reading the repository's settings through the GitHub API (`--skip-framework github_configuration`) |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
 | `stylua` | `stylua:lint` | `stylua --check .` (Lua) |
-| `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/answers.yml` (written by Copier) and `.mise-data/` |
+| `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict`, without `.brigade/copier/` (written by Copier) and `.mise-data/` |
 | `hadolint` | `hadolint:lint` | `hadolint` on every `*Dockerfile*` and `*Containerfile*` (outside hidden folders); none: nothing to check |
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
@@ -91,7 +91,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 
 ## brigade
 
-`brigade:lint` renders the template at the version of `.brigade/answers.yml`, with your answers, into a temporary folder, and compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite it. Run `mise run brigade:update` to restore them.
+`brigade:lint` renders the template at the version of `.brigade/copier/answers.yml`, with your answers, into a temporary folder, and compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite it. Run `mise run brigade:update` to restore them. An edited `.brigade/copier/data.yml` fails it too until `brigade:update` applies it (see [Changing answers](questions.md#changing-answers)).
 
 It also tells when a newer brigade release is out (`copier check-update`), without failing: run `mise run brigade:update`, or let [Renovate](#brigade-updates) open the PR.
 
@@ -150,7 +150,7 @@ For Renovate, CI sets the platform, the endpoint and the repository; add a `RENO
 
 `renovate:operate` also follows brigade: on a new release, it opens a PR that runs `mise run brigade:update` to that version, on every CI platform. Copier shows conflicts with your edits as inline markers in the PR: fix them there before merging (`brigade:lint` fails until then). On GitHub, the token also needs the Workflows permission, since updates change workflow files.
 
-Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/answers.yml`. Keep `brigade` out of groups (such as `group:all`): Copier needs a clean tree, so the update must be its own PR.
+Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/copier/answers.yml`. Keep `brigade` out of groups (such as `group:all`): Copier needs a clean tree, so the update must be its own PR.
 
 To update every day and merge automatically once the checks pass, answer `operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge" in Settings). A failing check, or Copier's conflict markers in a brigade update, keep the PR open.
 

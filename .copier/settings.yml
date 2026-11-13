@@ -1,4 +1,7 @@
 ---
 _min_copier_version: "9.19.1"
 _subdirectory: template
-_answers_file: .brigade/answers.yml
+_answers_file: .brigade/copier/answers.yml
+# Created once, then written by brigade:update (Copier would merge it).
+_skip_if_exists:
+  - .brigade/copier/data.yml
