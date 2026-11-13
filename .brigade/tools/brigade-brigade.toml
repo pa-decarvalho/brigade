@@ -2,7 +2,7 @@
 # renovate: datasource=pypi depName=copier
 "pipx:copier" = "9.19.1"
 
-# Renders the template at the version of .brigade/answers.yml and compares: brigade-owned files
+# Renders the template at the version of .brigade/copier/answers.yml and compares: brigade-owned files
 # must not be edited by hand (brigade:update overwrites them). Needs access to the template.
 [tasks."brigade:lint"]
 description = "Check that brigade-owned files match the template"

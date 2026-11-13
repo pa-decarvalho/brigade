@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.12.0
+_commit: 0.14.0
 _src_path: gh:pa-decarvalho/brigade
 brigade_lint_command: ''
 brigade_version: ''

@@ -1,0 +1,60 @@
+# Your answers: edit them, commit, then run mise run brigade:update.
+brigade_lint_command: ""
+brigade_version: ""
+build_commands: []
+build_enabled: true
+ci: "github"
+ctt_test_command: "uv run --no-project python -c \"import shutil; shutil.rmtree('.ctt', ignore_errors=True)\" && ctt"
+ctt_version: ""
+customize_tools: true
+deploy_commands: []
+deploy_enabled: true
+editorconfig_checker_lint_command: "editorconfig-checker -exclude \"^[.](ctt|mise-data)/\""
+editorconfig_checker_version: ""
+github_mirror: ""
+gitleaks_lint_command: ""
+gitleaks_version: ""
+lint_commands: []
+lint_enabled: true
+operate_commands: []
+operate_enabled: true
+operate_schedule: "0 5 * * *"
+pages_deploy_command: ""
+pages_version: ""
+presets: []
+pypi_index: ""
+releasaurus_release_command: ""
+releasaurus_version: ""
+release_commands: []
+release_enabled: true
+renovate_cli_version: ""
+renovate_lint_command: "check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
+renovate_node_version: ""
+renovate_operate_command: ""
+renovate_version: ""
+ruff_lint_command: ""
+ruff_version: ""
+taplo_lint_command: "taplo fmt --check --no-auto-config -o indent_string=\"    \" -o array_auto_expand=false -o array_auto_collapse=false \".brigade/**/*.toml\" .miserc.toml mise.toml ctt.toml zensical.toml releasaurus.toml \"template/**/*.toml\""
+taplo_version: ""
+test_commands: []
+test_enabled: true
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "taplo"
+  - "renovate"
+  - "ruff"
+  - "zensical"
+  - "ctt"
+  - "releasaurus"
+  - "pages"
+typos_lint_command: ""
+typos_version: ""
+yamllint_lint_command: "yamllint --strict -d \"{extends: default, ignore: [.ctt/, template/, .mise-data/, .brigade/answers.yml], rules: {truthy: {check-keys: false}, new-lines: disable, comments: {min-spaces-from-content: 1}}}\" ."
+yamllint_version: ""
+zensical_build_command: ""
+zensical_serve_command: ""
+zensical_version: ""
