@@ -1,3 +1,11 @@
+# [0.15.0](https://github.com/pa-decarvalho/brigade/compare/0.14.0...0.15.0) - 2026-11-13
+
+### 🚀 Features
+
+- tool configs in .brigade/configs/ (#167) [_(74ad696)_](https://github.com/pa-decarvalho/brigade/commit/74ad69677bdc2c7c519422329ace75e40c8edcc8)
+
+- apply an uncommitted data.yml in brigade:update (#165) [_(91127d4)_](https://github.com/pa-decarvalho/brigade/commit/91127d43a0f7eab4d91ea036e6f6906a743b1149)
+
 # [0.14.0](https://github.com/pa-decarvalho/brigade/compare/0.13.0...0.14.0) - 2026-11-13
 
 ### 🚀 Features
