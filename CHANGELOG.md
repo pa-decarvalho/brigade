@@ -1,3 +1,9 @@
+# [0.12.0](https://github.com/pa-decarvalho/brigade/compare/0.11.0...0.12.0) - 2026-11-13
+
+### 🚀 Features
+
+- add tool presets (#154) [_(b932c61)_](https://github.com/pa-decarvalho/brigade/commit/b932c610c929e19ad10fb6b7605e9c5887dd55ff)
+
 # [0.11.0](https://github.com/pa-decarvalho/brigade/compare/0.10.0...0.11.0) - 2026-11-13
 
 ### 🚀 Features
