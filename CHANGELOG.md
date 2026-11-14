@@ -1,3 +1,9 @@
+# [0.17.1](https://github.com/pa-decarvalho/brigade/compare/0.17.0...0.17.1) - 2026-11-14
+
+### 🐛 Bug Fixes
+
+- import PyYAML at run time in brigade-data.py (#189) [_(7631d70)_](https://github.com/pa-decarvalho/brigade/commit/7631d70caa17fdd980e14094141f1d793cedaf7e)
+
 # [0.17.0](https://github.com/pa-decarvalho/brigade/compare/0.16.1...0.17.0) - 2026-11-14
 
 ### 🚀 Features
