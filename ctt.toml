@@ -4,19 +4,18 @@
 [defaults]
 
 [output.".ctt/python-github"]
-tools = ["brigade", "yamllint", "gitleaks", "typos", "ruff", "renovate", "pytest", "act", "uv", "zensical", "pages", "releasaurus"]
+# The Python example: a package with its docs, everything a real project uses, up to PyPI.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "taplo", "rumdl", "ruff", "ty", "osv-scanner", "pytest", "act", "uv", "zensical", "pages", "releasaurus", "renovate"]
 ci = "github"
 operate_schedule = "0 5 * * 1"
-# The lint stage runs these commands, in order.
-lint_commands = ["mise run ruff:lint", "mise run typos:lint"]
+# uv:deploy publishes the package on each release.
+uv_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
-    ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_hello():\\n    assert demo.hello()\\n')"],
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('renovate.json').write_text('{}\\n')"],
-    # The documentation source: brigade only adds the build and deploy tools.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \"demo\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n')"],
+    # The project's files: a test, the docs source, an .editorconfig (editorconfig-checker), renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_hello():\\n    assert demo.hello()\\n'); pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \\\"demo\\\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n'); pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n'); pathlib.Path('renovate.json').write_text('{}\\n'); pathlib.Path('README.md').write_text('# Demo\\n\\nA demo package.\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "brigade:hooks"],
@@ -26,6 +25,15 @@ _post_tasks = [
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
+    # uv:deploy against a local index (pypiserver in Docker, on 127.0.0.1 only), twice:
+    # the second run skips the files already there (UV_PUBLISH_CHECK_URL).
+    ["docker", "rm", "-f", "brigade-ctt-pypi"],
+    ["docker", "run", "-d", "--name", "brigade-ctt-pypi", "-p", "127.0.0.1:8099:8080", "pypiserver/pypiserver:v2.4.3", "run", "-a", ".", "-P", ".", "/data/packages"],
+    ["uv", "run", "--no-project", "python", "-c", "import time, urllib.request\nfor _ in range(60):\n    try:\n        urllib.request.urlopen('http://127.0.0.1:8099/simple/'); break\n    except OSError:\n        time.sleep(1)\nelse:\n    raise SystemExit('pypiserver did not start')"],
+    ["env", "UV_PUBLISH_URL=http://127.0.0.1:8099/", "UV_PUBLISH_CHECK_URL=http://127.0.0.1:8099/simple/", "UV_PUBLISH_USERNAME=ctt", "UV_PUBLISH_PASSWORD=ctt", "mise", "run", "uv:deploy"],
+    ["env", "UV_PUBLISH_URL=http://127.0.0.1:8099/", "UV_PUBLISH_CHECK_URL=http://127.0.0.1:8099/simple/", "UV_PUBLISH_USERNAME=ctt", "UV_PUBLISH_PASSWORD=ctt", "mise", "run", "uv:deploy"],
+    ["uv", "run", "--no-project", "python", "-c", "import urllib.request; page = urllib.request.urlopen('http://127.0.0.1:8099/simple/demo/').read().decode(); assert 'demo-0.1.0.tar.gz' in page and 'demo-0.1.0-py3-none-any.whl' in page, page"],
+    ["docker", "rm", "-f", "brigade-ctt-pypi"],
     # renovate:operate installs its tools (npm trust policy) and re2 (native build allowed).
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import subprocess; r = subprocess.run(['mise', 'run', 'renovate:operate', '--', '--platform=local', '--dry-run=extract'], capture_output=True, text=True); out = r.stdout + r.stderr; assert r.returncode == 0 and 'RE2 not usable' not in out, out[-3000:]"],
 ]
@@ -64,6 +72,8 @@ tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "act", "uv"]
 ci = "gitea"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false
+# The lint stage runs these commands, in order.
+lint_commands = ["mise run ruff:lint", "mise run typos:lint"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
