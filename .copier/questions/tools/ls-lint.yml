@@ -1,0 +1,12 @@
+---
+ls_lint_version:
+  type: str
+  help: ls-lint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ls-lint' in tools }}"
+
+ls_lint_lint_command:
+  type: str
+  help: Command of ls-lint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ls-lint' in tools }}"

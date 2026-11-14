@@ -1,0 +1,10 @@
+[tools]
+# renovate: datasource=pypi depName=cfn-lint
+"pipx:cfn-lint" = "{{ cfn_lint_version | default('1.60.1', true) }}"
+
+[tasks."cfn-lint:lint"]
+description = "Check CloudFormation templates with cfn-lint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Python globs on every OS, without hidden folders (.mise-data): YAML and JSON files holding
+# AWSTemplateFormatVersion are templates; none: nothing to check.
+run = '''{{ cfn_lint_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = [f for f in glob.glob('**/*.*', recursive=True) if f.endswith(('.yaml', '.yml', '.json', '.template')) and 'AWSTemplateFormatVersion' in open(f, encoding='utf-8', errors='replace').read()]; sys.exit(subprocess.call(['cfn-lint', *files]) if files else 0)\"", true) }}'''

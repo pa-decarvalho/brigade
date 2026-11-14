@@ -1,0 +1,18 @@
+---
+cspell_version:
+  type: str
+  help: cspell version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cspell' in tools }}"
+
+cspell_lint_command:
+  type: str
+  help: Command of cspell:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cspell' in tools }}"
+
+cspell_node_version:
+  type: str
+  help: Node.js version for cspell (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cspell' in tools }}"

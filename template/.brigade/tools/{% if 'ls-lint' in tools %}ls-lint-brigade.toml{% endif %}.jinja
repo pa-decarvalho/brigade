@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=loeffel-io/ls-lint
+ls-lint = "{{ ls_lint_version | default('2.3.2', true) }}"
+
+[tasks."ls-lint:lint"]
+description = "Check file and folder names with ls-lint"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Config: .brigade/configs/ls-lint.yml (the project's: its naming rules).
+run = '''{{ ls_lint_lint_command | default('ls-lint --config .brigade/configs/ls-lint.yml', true) }}'''

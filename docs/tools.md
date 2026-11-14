@@ -60,6 +60,8 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `vale` | `vale:lint` | `vale sync && vale .` (prose in Markdown, with Vale's built-in style), without `.mise-data/`, `.venv/` and `node_modules/` ([config](#tool-configs); `vale sync` downloads the style packages it lists) |
 | `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
 | `codespell` | `codespell:lint` | `codespell`, outside hidden folders ([config](#tool-configs)) |
+| `cspell` | `cspell:lint` | `cspell lint .`, outside hidden folders ([config](#tool-configs)). Checks every word against its dictionaries, unlike `typos` and `codespell`: add your project's words to the config's `words`, listed by `mise exec -- cspell lint --words-only --unique .` |
+| `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names ([config](#tool-configs): set your naming rules, none until then) |
 | `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
 | `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
 | `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS: lint and formatting), without `.mise-data/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
@@ -67,9 +69,11 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
+| `revive` | `revive:lint` | `revive -set_exit_status ./...` (Go, golint's rules; faster than `golangci-lint`, which can run revive too), outside hidden folders; `-config revive.toml` in your command for your rules |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
 | `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
 | `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
+| `cfn-lint` | `cfn-lint:lint` | `cfn-lint` on every YAML or JSON file holding `AWSTemplateFormatVersion` (CloudFormation and SAM templates, outside hidden folders); none: nothing to check |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
 | `stylua` | `stylua:lint` | `stylua --check .` (Lua) |
 | `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict` ([config](#tool-configs)) |
@@ -112,6 +116,8 @@ Tools that read a config file get one in `.brigade/configs/`, created with briga
 | `trivy` | `.brigade/configs/trivy.yaml` | `trivy.yaml`: not read |
 | `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
+| `cspell` | `.brigade/configs/cspell.yaml` | `cspell.json`, `.cspell.json`...: still read, both apply |
+| `ls-lint` | `.brigade/configs/ls-lint.yml` | `.ls-lint.yml`: not read |
 
 Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`, `.clang-format`...).
 

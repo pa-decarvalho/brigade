@@ -1,0 +1,12 @@
+---
+cfn_lint_version:
+  type: str
+  help: cfn-lint version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cfn-lint' in tools }}"
+
+cfn_lint_lint_command:
+  type: str
+  help: Command of cfn-lint:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'cfn-lint' in tools }}"
