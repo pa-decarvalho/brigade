@@ -6,10 +6,13 @@ every answer, new questions included, in the format of copier/data.yml.jinja: JS
 values (double quotes), lists indented under their key.
 """
 
+import importlib
 import json
 import pathlib
 
-import yaml  # ty: ignore[import-not-found]  # in Copier's env, not the project's
+# PyYAML is in Copier's env, not the project's: imported at run time, so that
+# type checkers do not look for it (found or not, depending on the machine).
+yaml = importlib.import_module("yaml")
 
 FOLDER = pathlib.Path(".brigade/copier")
 
