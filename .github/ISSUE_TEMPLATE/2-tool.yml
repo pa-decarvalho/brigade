@@ -1,0 +1,47 @@
+---
+name: "🔪 New tool for the station"
+description: Add a linter, formatter, test or deploy tool to the catalog.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔪 A new tool for the brigade
+
+        Each tool is one mise fragment with its tasks
+        ([catalog](https://pa-decarvalho.github.io/brigade/tools/)).
+        It must install with mise and run on its own: no project
+        dependency. Tools planned so far are in #138.
+  - type: input
+    id: tool
+    attributes:
+      label: 🧰 Tool
+      placeholder: "https://github.com/owner/tool"
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: 🍽️ Stage
+      options: [lint, build, test, release, deploy, operate]
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 🤔 Why this one
+      description: What it checks or does that the catalog does not.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 📟 Command you would run
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: ✅ Before sending
+      options:
+        - label: "It is not in the catalog nor in #138."
+          required: true

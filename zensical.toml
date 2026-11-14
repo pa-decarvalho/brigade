@@ -15,7 +15,7 @@ nav = [
     { "Mirrors" = "mirrors.md" },
     { "Updating" = "updating.md" },
     { "Custom tasks" = "custom-tasks.md" },
-    { "Development" = "development.md" },
+    { "Contributing" = "contributing.md" },
 ]
 
 [project.theme]

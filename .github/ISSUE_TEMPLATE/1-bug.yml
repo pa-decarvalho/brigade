@@ -1,0 +1,75 @@
+---
+name: "🔥 Something burned"
+description: A task, a generated file or the CI does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔥 Something burned in the kitchen
+
+        Sorry about that. Tell us what you cooked and what came out,
+        and we will find the culprit.
+
+        > [!TIP]
+        > First try `mise run brigade:update`: the fix may already be
+        > on the menu.
+  - type: input
+    id: version
+    attributes:
+      label: 🏷️ brigade version
+      description: "`_commit` in `.brigade/copier/answers.yml`."
+      placeholder: "0.16.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: ci
+    attributes:
+      label: 🚦 CI platform
+      options: [github, gitlab, gitea, none]
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: 💻 Where it burned
+      multiple: true
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - CI runner
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 🍳 What happened
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: 📟 Command and full output
+      description: "The `mise run ...` command and everything it printed."
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: 📋 Your answers
+      description: >-
+        `.brigade/copier/data.yml`, so we can cook the same project.
+        Remove anything private.
+      render: yaml
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: ✅ Before sending
+      options:
+        - label: I searched the existing issues.
+          required: true
+        - label: No secrets or tokens in this issue.
+          required: true
