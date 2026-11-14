@@ -1,3 +1,11 @@
+# [0.17.2](https://github.com/pa-decarvalho/brigade/compare/0.17.1...0.17.2) - 2026-11-14
+
+### 🐛 Bug Fixes
+
+- keep data.yml edits on interrupted updates, skip CHANGELOG.md in lychee (#191) [_(fe5e337)_](https://github.com/pa-decarvalho/brigade/commit/fe5e337dffa845f7795a35bef09a82b2445a9e4f)
+
+- biome skips what git ignores (#192) [_(16e6726)_](https://github.com/pa-decarvalho/brigade/commit/16e6726db596c04ada479a5edd2fcc8f24a47534)
+
 # [0.17.1](https://github.com/pa-decarvalho/brigade/compare/0.17.0...0.17.1) - 2026-11-14
 
 ### 🐛 Bug Fixes
