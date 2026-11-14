@@ -64,7 +64,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names ([config](#tool-configs): set your naming rules, none until then) |
 | `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
 | `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
-| `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS: lint and formatting), without `.mise-data/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
+| `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS, Markdown: lint and formatting), without what git ignores, `.mise-data/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
 | `clang-format` | `clang-format:lint` | `clang-format --dry-run --Werror` on every C and C++ file (outside hidden folders), with your `.clang-format` (else LLVM style); none: nothing to check |
 | `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
