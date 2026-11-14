@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.16.0
+_commit: 0.17.0
 _src_path: gh:pa-decarvalho/brigade
 brigade_lint_command: ''
 brigade_version: ''
@@ -20,6 +20,10 @@ gitleaks_lint_command: ''
 gitleaks_version: ''
 lint_commands: []
 lint_enabled: true
+ls_lint_lint_command: ''
+ls_lint_version: ''
+lychee_lint_command: ''
+lychee_version: ''
 operate_commands: []
 operate_enabled: true
 operate_schedule: 0 5 * * *
@@ -38,6 +42,8 @@ renovate_operate_command: ''
 renovate_version: ''
 ruff_lint_command: ''
 ruff_version: ''
+rumdl_lint_command: ''
+rumdl_version: ''
 taplo_lint_command: taplo fmt --check -c .brigade/configs/taplo.toml ".brigade/**/*.toml"
     .miserc.toml mise.toml ctt.toml zensical.toml releasaurus.toml "template/**/*.toml"
 taplo_version: ''
@@ -52,10 +58,18 @@ tools:
 - taplo
 - renovate
 - ruff
+- ty
+- rumdl
+- lychee
+- ls-lint
+- zizmor
 - zensical
 - ctt
 - releasaurus
 - pages
+ty_lint_command: ty check --config-file .brigade/configs/ty.toml .brigade/scripts
+    template/.brigade/scripts
+ty_version: ''
 typos_lint_command: ''
 typos_version: ''
 yamllint_lint_command: ''
@@ -63,3 +77,5 @@ yamllint_version: ''
 zensical_build_command: ''
 zensical_serve_command: ''
 zensical_version: ''
+zizmor_lint_command: zizmor --offline .github .brigade
+zizmor_version: ''

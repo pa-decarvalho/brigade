@@ -1,0 +1,8 @@
+[tools]
+# renovate: datasource=github-releases depName=zizmorcore/zizmor
+zizmor = "1.32.0"
+
+[tasks."zizmor:lint"]
+description = "Audit GitHub Actions workflows and actions for security issues with zizmor"
+dir = "{{config_root}}/../.."
+run = '''zizmor --offline .github .brigade'''

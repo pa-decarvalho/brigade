@@ -1,0 +1,5 @@
+# ty config (ty check --config-file .brigade/configs/ty.toml).
+# Yours: brigade created it once and never changes it. It replaces [tool.ty] in pyproject.toml.
+[src]
+# .mise-data is the GitLab CI tool cache.
+exclude = [".mise-data"]

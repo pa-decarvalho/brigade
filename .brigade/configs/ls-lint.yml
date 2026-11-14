@@ -1,0 +1,30 @@
+---
+# ls-lint config: ls-lint --config .brigade/configs/ls-lint.yml
+# Yours: brigade created it once and never changes it.
+# It replaces the project's .ls-lint.yml.
+# Paths are relative to the project root.
+# brigade's names: kebab-case, but README.md and the like.
+ls:
+  .md: SCREAMING_SNAKE_CASE | kebab-case
+  .toml: kebab-case
+  .yml: kebab-case
+  .py: kebab-case
+  docs:
+    .dir: kebab-case
+    .md: kebab-case
+    .png: kebab-case
+    .webp: kebab-case
+# ls-lint walks hidden folders too; CI folders have fixed names.
+# template/ names hold Jinja; .ctt and site are built.
+ignore:
+  - .git
+  - .brigade
+  - .github
+  - .gitea
+  - .gitlab
+  - .mise-data
+  - .venv
+  - node_modules
+  - .ctt
+  - template
+  - site
