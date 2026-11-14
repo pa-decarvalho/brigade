@@ -25,6 +25,8 @@ mise run test
 mise run zensical:serve   # preview the site
 ```
 
+PRs are squash-merged with their title as commit message: the pull request template (`.github/pull_request_template.md`) lists what to check before opening one.
+
 ### Repository
 
 - `copier.yml` includes `.copier/settings.yml` and `.copier/questions/`: `common.yml`, then one file per tool in `tools/`.

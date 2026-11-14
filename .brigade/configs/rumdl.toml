@@ -4,5 +4,6 @@
 # One sentence per line: no line length.
 disable = ["MD013"]
 # .mise-data is the GitLab CI tool cache; .ctt holds the rendered variants,
-# template/ the files they come from; CHANGELOG.md is written by Releasaurus.
-exclude = [".mise-data", ".ctt", "template", "CHANGELOG.md"]
+# template/ the files they come from; CHANGELOG.md is written by Releasaurus;
+# the PR template starts with a comment, not a heading.
+exclude = [".mise-data", ".ctt", "template", "CHANGELOG.md", ".github/pull_request_template.md"]
