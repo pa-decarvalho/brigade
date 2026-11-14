@@ -9,7 +9,7 @@ runs:
     # (mise's data dir), else a version that needs a newer Python than the
     # runner's is missing after a cache restore. zizmor: a fixed value.
     - shell: bash
-      run: >-  # zizmor: ignore[github-env]
+      run: >- # zizmor: ignore[github-env]
         echo "UV_PYTHON_INSTALL_DIR=$HOME/.local/share/mise/uv-python"
         >> "$GITHUB_ENV"
     - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
