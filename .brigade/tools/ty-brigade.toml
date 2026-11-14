@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=astral-sh/ty
+ty = "0.0.104"
+
+[tasks."ty:lint"]
+description = "Check Python types with ty"
+dir = "{{config_root}}/../.."
+# uv sync: ty reads the project's .venv for its dependencies. Config: .brigade/configs/ty.toml.
+run = '''ty check --config-file .brigade/configs/ty.toml .brigade/scripts template/.brigade/scripts'''

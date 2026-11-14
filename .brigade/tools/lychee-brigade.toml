@@ -1,0 +1,10 @@
+[tools]
+# renovate: datasource=crate depName=lychee
+"aqua:lycheeverse/lychee" = "0.24.2"
+
+[tasks."lychee:lint"]
+description = "Check links in Markdown, HTML and text files with lychee"
+dir = "{{config_root}}/../.."
+# Skips hidden folders (.mise-data, the GitLab CI tool cache) and reads the project's lychee.toml.
+# Checks external links too: a dead link fails the lint without a project change.
+run = '''lychee --no-progress .'''

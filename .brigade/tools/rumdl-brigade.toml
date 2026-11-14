@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=rvben/rumdl
+rumdl = "0.3.4"
+
+[tasks."rumdl:lint"]
+description = "Check Markdown files with rumdl"
+dir = "{{config_root}}/../.."
+# Config: .brigade/configs/rumdl.toml (the project's).
+run = '''rumdl check --no-cache --config .brigade/configs/rumdl.toml .'''

@@ -45,7 +45,6 @@ jobs:
       - uses: ./.brigade/ci/github/actions/test
 ```
 
-
 ## GitLab (`ci: gitlab`)
 
 | File | Role |
