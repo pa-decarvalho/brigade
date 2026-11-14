@@ -1,0 +1,21 @@
+---
+# ls-lint config: ls-lint --config .brigade/configs/ls-lint.yml
+# Yours: brigade created it once and never changes it.
+# It replaces the project's .ls-lint.yml.
+# Paths are relative to the project root.
+# The project's naming rules (https://ls-lint.org/), none until set:
+#   ls:
+#     .dir: kebab-case
+#     .py: snake_case
+#     .md: SCREAMING_SNAKE_CASE | kebab-case
+ls: {}
+# ls-lint walks hidden folders too; CI folders have fixed names.
+ignore:
+  - .git
+  - .brigade
+  - .github
+  - .gitea
+  - .gitlab
+  - .mise-data
+  - .venv
+  - node_modules

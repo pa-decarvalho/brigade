@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=mgechev/revive
+revive = "{{ revive_version | default('1.17.1', true) }}"
+
+[tasks."revive:lint"]
+description = "Check Go code with revive"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Skips hidden folders (.mise-data); reads a revive.toml given with -config.
+run = '''{{ revive_lint_command | default('revive -set_exit_status ./...', true) }}'''

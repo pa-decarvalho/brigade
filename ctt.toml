@@ -100,7 +100,7 @@ _post_tasks = [
 
 [output.".ctt/none-github"]
 # No test tool: the test stage does nothing. Adds optional lint tools.
-tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hadolint", "shellcheck", "shfmt", "rumdl", "osv-scanner", "golangci-lint", "tflint", "checkov", "dotenv-linter", "stylua", "vale", "lychee", "codespell", "markdownlint", "sqlfluff", "opentofu", "clang-format", "act"]
+tools = ["yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hadolint", "shellcheck", "shfmt", "rumdl", "osv-scanner", "golangci-lint", "revive", "tflint", "checkov", "cfn-lint", "dotenv-linter", "stylua", "vale", "lychee", "codespell", "cspell", "ls-lint", "markdownlint", "sqlfluff", "opentofu", "clang-format", "act"]
 ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
@@ -108,10 +108,10 @@ _post_tasks = [
     # reading brigade's (end_of_line = lf), which fails on Windows CRLF checkouts.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')"],
     # A file for each linter: Dockerfile (hadolint, checkov), shell script (shellcheck, shfmt), README (rumdl),
-    # Terraform (tflint, checkov), .env (dotenv-linter), Lua (stylua), SQL (sqlfluff), C (clang-format); the README for vale, lychee, codespell, markdownlint.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docker').mkdir(); pathlib.Path('docker/Dockerfile').write_text('FROM python:3.13-slim\\nUSER 65534\\nHEALTHCHECK NONE\\n'); pathlib.Path('infra').mkdir(); pathlib.Path('infra/main.tf').write_text('terraform {\\n  required_version = \">= 1.0\"\\n}\\n'); pathlib.Path('.env').write_text('FOO=bar\\n'); pathlib.Path('demo.lua').write_text('print(\"demo\")\\n'); pathlib.Path('docker/run.sh').write_text('#!/bin/sh\\necho \"$1\"\\n'); pathlib.Path('README.md').write_text('# Demo\\n\\nSee the [infrastructure](infra/main.tf).\\n'); pathlib.Path('db').mkdir(); pathlib.Path('db/demo.sql').write_text('SELECT 1 AS one\\n'); pathlib.Path('src').mkdir(); pathlib.Path('src/demo.c').write_text('int main(void) { return 0; }\\n')"],
-    # A Go module (golangci-lint), with Go pinned in the project's mise.toml.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('mise.toml').write_text('[tools]\\ngo = \"1.27.4\"\\n'); pathlib.Path('go.mod').write_text('module demo\\n\\ngo 1.27\\n'); pathlib.Path('main.go').write_text('package main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(\"demo\")\\n}\\n')"],
+    # Terraform (tflint, checkov), CloudFormation (cfn-lint), .env (dotenv-linter), Lua (stylua), SQL (sqlfluff), C (clang-format); the README for vale, lychee, codespell, cspell, markdownlint.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docker').mkdir(); pathlib.Path('docker/Dockerfile').write_text('FROM python:3.13-slim\\nUSER 65534\\nHEALTHCHECK NONE\\n'); pathlib.Path('infra').mkdir(); pathlib.Path('infra/main.tf').write_text('terraform {\\n  required_version = \">= 1.0\"\\n}\\n'); pathlib.Path('.env').write_text('FOO=bar\\n'); pathlib.Path('demo.lua').write_text('print(\"demo\")\\n'); pathlib.Path('docker/run.sh').write_text('#!/bin/sh\\necho \"$1\"\\n'); pathlib.Path('README.md').write_text('# Demo\\n\\nSee the [infrastructure](infra/main.tf).\\n'); pathlib.Path('db').mkdir(); pathlib.Path('db/demo.sql').write_text('SELECT 1 AS one\\n'); pathlib.Path('src').mkdir(); pathlib.Path('src/demo.c').write_text('int main(void) { return 0; }\\n'); pathlib.Path('infra/stack.yaml').write_text('---\\nAWSTemplateFormatVersion: \"2010-09-09\"\\nResources:\\n  Wait:\\n    Type: AWS::CloudFormation::WaitConditionHandle\\n')"],
+    # A Go module (golangci-lint, revive), with Go pinned in the project's mise.toml.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('mise.toml').write_text('[tools]\\ngo = \"1.27.4\"\\n'); pathlib.Path('go.mod').write_text('module demo\\n\\ngo 1.27\\n'); pathlib.Path('main.go').write_text('// Package main prints demo.\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(\"demo\")\\n}\\n')"],
     ["mise", "trust", "-q", "mise.toml"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "init"],

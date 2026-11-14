@@ -1,0 +1,16 @@
+---
+# cspell config: cspell lint -c .brigade/configs/cspell.yaml .
+# Yours: brigade created it once and never changes it.
+# The project's cspell.json is still read too.
+# Paths are relative to the project root.
+version: "0.2"
+ignorePaths:
+  - .mise-data
+  - .venv
+  - node_modules
+  - "*.lock"
+  - "*-lock.json"
+  - "*-lock.yaml"
+# The project's words (tool and package names, jargon). To list the
+# unknown ones: mise exec -- cspell lint --words-only --unique .
+words: []

@@ -1,0 +1,11 @@
+[tools]
+# renovate: datasource=node-version depName=node
+node = "{{ cspell_node_version | default('26.13.1', true) }}"
+# renovate: datasource=npm depName=cspell
+"npm:cspell" = "{{ cspell_version | default('10.5.0', true) }}"
+
+[tasks."cspell:lint"]
+description = "Check spelling with cspell"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Config: .brigade/configs/cspell.yaml (the project's: its words); skips hidden folders.
+run = '''{{ cspell_lint_command | default('cspell lint --no-progress --no-must-find-files -c .brigade/configs/cspell.yaml .', true) }}'''

@@ -52,6 +52,8 @@ tools:
     vale (lint): vale
     lychee (lint): lychee
     codespell (lint): codespell
+    cspell (lint): cspell
+    ls-lint (lint): ls-lint
     sqlfluff (lint): sqlfluff
     prettier (lint): prettier
     biome (lint): biome
@@ -59,9 +61,11 @@ tools:
     trivy (lint): trivy
     osv-scanner (lint): osv-scanner
     golangci-lint (lint): golangci-lint
+    revive (lint): revive
     tflint (lint): tflint
     opentofu (lint): opentofu
     checkov (lint): checkov
+    cfn-lint (lint): cfn-lint
     dotenv-linter (lint): dotenv-linter
     stylua (lint): stylua
     zizmor (lint):
