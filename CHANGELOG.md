@@ -1,3 +1,9 @@
+# [0.17.0](https://github.com/pa-decarvalho/brigade/compare/0.16.1...0.17.0) - 2026-11-14
+
+### 🚀 Features
+
+- add revive, cfn-lint, cspell and ls-lint to the tool catalog (#183) [_(2f048da)_](https://github.com/pa-decarvalho/brigade/commit/2f048dada6064d63fd817119741ac503237ed7a1)
+
 # [0.16.1](https://github.com/pa-decarvalho/brigade/compare/0.16.0...0.16.1) - 2026-11-14
 
 ### 🐛 Bug Fixes
