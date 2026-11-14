@@ -9,6 +9,15 @@ inputs:
   ansible-vault-password:
     description: Ansible vault password (ANSIBLE_VAULT_PASSWORD secret)
     default: ""
+  uv-publish-token:
+    description: Index token, uv:deploy (UV_PUBLISH_TOKEN secret)
+    default: ""
+  uv-publish-username:
+    description: Index user, uv:deploy (UV_PUBLISH_USERNAME secret)
+    default: ""
+  uv-publish-password:
+    description: Index password, uv:deploy (UV_PUBLISH_PASSWORD secret)
+    default: ""
 runs:
   using: composite
   steps:
@@ -18,6 +27,9 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
+        UV_PUBLISH_TOKEN: ${{ inputs.uv-publish-token }}
+        UV_PUBLISH_USERNAME: ${{ inputs.uv-publish-username }}
+        UV_PUBLISH_PASSWORD: ${{ inputs.uv-publish-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
       run: mise run deploy

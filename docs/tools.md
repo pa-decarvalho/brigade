@@ -20,7 +20,7 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 
 ## Presets
 
-The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's answer is its tool list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
+The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's tools never change: its answer is checked against the choices on each `brigade:update`, so a new list is a new preset. A preset's answer is its tool list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 
 | Preset | Tools |
 |---|---|
@@ -80,6 +80,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `hadolint` | `hadolint:lint` | `hadolint` on every `*Dockerfile*` and `*Containerfile*` (outside hidden folders); none: nothing to check |
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
+| | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
@@ -179,6 +180,8 @@ CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones R
 - **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
 
 Add `site/` and `.cache/` to your `.gitignore`.
+
+`uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the Python package built by uv (`uv build --clear && uv publish`), once per tag: the version is the one in `pyproject.toml`, which Releasaurus bumps in the release PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus, Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml` (`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD variable on GitLab): the index's token (on PyPI, an API token scoped to the project once it exists); or, for an index with a user and a password (Nexus...), `UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL (`https://pypi.org/simple/`), which skips the files already there.
 
 ## operate
 

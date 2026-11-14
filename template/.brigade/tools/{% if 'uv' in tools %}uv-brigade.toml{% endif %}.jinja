@@ -2,3 +2,13 @@
 description = "Build the Python package with uv (dist/)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 run = '''{{ uv_build_command | default('uv build', true) }}'''
+{%- if uv_publish %}
+
+[tasks."uv:deploy"]
+description = "Build the Python package with uv, then publish it to its index"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# --clear: dist/ holds this version only. The index: PyPI, or UV_PUBLISH_URL (Nexus,
+# Artifactory, GitLab...); its token: the UV_PUBLISH_TOKEN secret (or UV_PUBLISH_USERNAME
+# and UV_PUBLISH_PASSWORD); UV_PUBLISH_CHECK_URL skips the files already there.
+run = '''{{ uv_deploy_command | default('uv build --clear && uv publish', true) }}'''
+{%- endif %}
