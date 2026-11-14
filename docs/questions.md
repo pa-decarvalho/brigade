@@ -39,4 +39,4 @@ tools:
 - A key that is not a question (a typo), or a question not asked (tool versions need `customize_tools: true`), is dropped.
 - Your comments and formatting are not kept.
 
-When `data.yml` is your only change, `brigade:update` applies it without a commit first: review and commit the edit and the update together. With other uncommitted changes, Copier refuses to update: commit them first. Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.
+When `data.yml` is your only change, `brigade:update` applies it without a commit first: review and commit the edit and the update together. Your edits are kept if the update fails or is stopped; after a killed run, the next `brigade:update` puts them back first (they wait in `.git/brigade-data.yml`). With other uncommitted changes, Copier refuses to update: commit them first. Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.
