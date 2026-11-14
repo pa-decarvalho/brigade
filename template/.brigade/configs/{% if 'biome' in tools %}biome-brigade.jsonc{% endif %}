@@ -1,4 +1,5 @@
 // Biome config: biome ci --config-path .brigade/configs/biome-brigade.jsonc
 // Yours: brigade created it once and never changes it. It replaces the project's biome.json.
-// Skips the GitLab CI tool cache, .venv and brigade's files (node_modules is skipped already).
-{"files": {"includes": ["**", "!.mise-data", "!.venv", "!.brigade"]}}
+// Skips what git ignores (caches such as .pytest_cache hold their own .gitignore), the GitLab
+// CI tool cache, .venv and brigade's files (node_modules is skipped already).
+{"vcs": {"enabled": true, "clientKind": "git", "useIgnoreFile": true}, "files": {"includes": ["**", "!.mise-data", "!.venv", "!.brigade"]}}
