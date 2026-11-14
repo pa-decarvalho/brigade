@@ -1,6 +1,6 @@
 ---
 name: add-tool
-description: Add one or more tools (linters, formatters, test or deploy tools) to brigade's tool catalog — fragment, questions, choice, ctt test, docs, epic #138. Use when asked to add a tool, a linter, or the next tools of #138.
+description: Add one or more tools (linters, formatters, test or deploy tools) to brigade's tool catalog — fragment, questions, choice, ctt test, docs, epics. Use when asked to add a tool, a linter, or the next tools of an epic (#138 lint, #197 test, #198 build, #199 release, #200 deploy, #201 operate).
 ---
 
 # Add a tool to the catalog
@@ -46,5 +46,5 @@ Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint
 
 ## 4. Deliver
 
-- Ask before committing, pushing or opening the PR. Branch `feat/<tool>` (or `feat/linters` for a batch), title `feat: add <tool> to the tool catalog`, body "Part of #138", no AI attribution.
-- Once merged: tick the tool in #138 (`gh issue view 138 --json body -q .body > <scratchpad>/138.md`, edit, `gh issue edit 138 --body-file ...`) with the PR number.
+- Ask before committing, pushing or opening the PR. Branch `feat/<tool>` (or `feat/linters` for a batch), title `feat: add <tool> to the tool catalog`, body "Part of #<epic>" (the stage's epic: #138 lint, #197 test, #198 build, #199 release, #200 deploy, #201 operate), no AI attribution.
+- Once merged: tick the tool in its epic (`gh issue view <epic> --json body -q .body > <scratchpad>/<epic>.md`, edit, `gh issue edit <epic> --body-file ...`) with the PR number.
