@@ -7,4 +7,5 @@ description = "Check links in Markdown, HTML and text files with lychee"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Skips hidden folders (.mise-data, the GitLab CI tool cache) and reads the project's lychee.toml.
 # Checks external links too: a dead link fails the lint without a project change.
-run = '''{{ lychee_lint_command | default('lychee --no-progress .', true) }}'''
+# Skips CHANGELOG.md: a release PR links to the compare page of a tag not made yet.
+run = '''{{ lychee_lint_command | default('lychee --no-progress --exclude-path CHANGELOG.md .', true) }}'''

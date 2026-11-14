@@ -58,7 +58,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown; [config](#tool-configs)) |
 | `markdownlint` | `markdownlint:lint` | `markdownlint-cli2 "**/*.md"`, without `.mise-data/`, `.venv/` and `node_modules/`; reads your `.markdownlint-cli2.*` or `.markdownlint.*`. Same rules as `rumdl`: pick one |
 | `vale` | `vale:lint` | `vale sync && vale .` (prose in Markdown, with Vale's built-in style), without `.mise-data/`, `.venv/` and `node_modules/` ([config](#tool-configs); `vale sync` downloads the style packages it lists) |
-| `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
+| `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders and `CHANGELOG.md`, whose release PR links to a tag not made yet); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
 | `codespell` | `codespell:lint` | `codespell`, outside hidden folders ([config](#tool-configs)) |
 | `cspell` | `cspell:lint` | `cspell lint .`, outside hidden folders ([config](#tool-configs)). Checks every word against its dictionaries, unlike `typos` and `codespell`: add your project's words to the config's `words`, listed by `mise exec -- cspell lint --words-only --unique .` |
 | `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names ([config](#tool-configs): set your naming rules, none until then) |
