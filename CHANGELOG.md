@@ -1,3 +1,11 @@
+# [0.18.0](https://github.com/pa-decarvalho/brigade/compare/0.17.2...0.18.0) - 2026-11-14
+
+### 🚀 Features
+
+- add go and goreleaser, and a Go recipe (#205) [_(02debbc)_](https://github.com/pa-decarvalho/brigade/commit/02debbc9f164e52d925ac343930cbc4cedbbed59)
+
+- publish Python packages with uv:deploy and add a Python recipe (#203) [_(943af52)_](https://github.com/pa-decarvalho/brigade/commit/943af524f690c86c6c3c7212ea97ac7902e904f4)
+
 # [0.17.2](https://github.com/pa-decarvalho/brigade/compare/0.17.1...0.17.2) - 2026-11-14
 
 ### 🐛 Bug Fixes
