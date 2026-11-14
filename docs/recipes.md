@@ -51,3 +51,45 @@ tools:
 Your part: the code in `src/`, the tests in `tests/`, the docs in `docs/` with a `zensical.toml`, an `.editorconfig`, and these secrets: `UV_PUBLISH_TOKEN` (a PyPI token; another index: `UV_PUBLISH_URL`), `RENOVATE_TOKEN`, and optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). In Settings → Pages, deploy from the `gh-pages` branch.
 
 The test publishes to a local PyPI (pypiserver in Docker) twice: the second run skips the files already there.
+
+## Go command
+
+A command with its tests, released by Releasaurus, its binaries for Linux, macOS and Windows attached to each release by GoReleaser. Tested as the `go-github` variant (GoReleaser in snapshot mode: it builds every archive without publishing).
+
+```sh
+mkdir my-command && cd my-command && git init
+uvx copier@9.19.1 copy gh:pa-decarvalho/brigade .
+mise exec -- go mod init example.com/my-command
+```
+
+In `.brigade/copier/data.yml`:
+
+```yaml
+ci: "github"
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "zizmor"
+  - "golangci-lint"
+  - "revive"
+  - "osv-scanner"
+  - "go"
+  - "act"
+  - "goreleaser"
+  - "releasaurus"
+  - "renovate"
+```
+
+| Stage | What runs |
+|---|---|
+| `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), Go (`golangci-lint`, `revive`), vulnerable modules (`osv-scanner`) |
+| `build` | `go build ./...` (Go installed by the `go` tool) |
+| `test` | `go test ./...`, then the pull request workflows replayed in Docker (`act`) |
+| `release` | the release PR, then the tag (`releasaurus`) |
+| `deploy` | the binaries and their checksums attached to the release (`goreleaser`) |
+| `operate` | dependency updates (`renovate`) |
+
+Your part: the Go code and its tests, a `.gitignore` with `dist/` and the binary `go build` writes, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). GoReleaser uses the workflow token; its settings are in `.brigade/configs/goreleaser.yaml`.

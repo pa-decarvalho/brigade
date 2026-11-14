@@ -38,6 +38,28 @@ _post_tasks = [
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import subprocess; r = subprocess.run(['mise', 'run', 'renovate:operate', '--', '--platform=local', '--dry-run=extract'], capture_output=True, text=True); out = r.stdout + r.stderr; assert r.returncode == 0 and 'RE2 not usable' not in out, out[-3000:]"],
 ]
 
+[output.".ctt/go-github"]
+# The Go example: a command with its tests, its binaries attached to each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "golangci-lint", "revive", "osv-scanner", "go", "act", "goreleaser", "releasaurus", "renovate"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The project's files: a command, its test, .gitignore (go:build's binary, goreleaser's dist/), .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('go.mod').write_text('module demo\\n\\ngo 1.27\\n')\npathlib.Path('main.go').write_text('// Package main prints a greeting.\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(hello())\\n}\\n\\nfunc hello() string {\\n\\treturn \"demo\"\\n}\\n')\npathlib.Path('main_test.go').write_text('package main\\n\\nimport \"testing\"\\n\\nfunc TestHello(t *testing.T) {\\n\\tif got := hello(); got != \"demo\" {\\n\\t\\tt.Fatalf(\"hello() = %q\", got)\\n\\t}\\n}\\n')\npathlib.Path('.gitignore').write_text('dist/\\ndemo\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo command.\\n')\n"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # goreleaser:deploy without publishing: a snapshot builds every archive and the checksums.
+    ["mise", "exec", "--", "goreleaser", "release", "--snapshot", "--clean", "-f", ".brigade/configs/goreleaser.yaml"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib\nnames = [p.name for p in pathlib.Path('dist').iterdir()]\nassert any('linux_amd64' in n for n in names) and any('windows_amd64' in n for n in names) and any(n.endswith('checksums.txt') for n in names), names"],
+]
+
 [output.".ctt/python-gitlab"]
 tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "gitlab-ci-local", "zensical", "pages"]
 ci = "gitlab"

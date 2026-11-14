@@ -1,0 +1,14 @@
+[tools]
+# renovate: datasource=golang-version depName=go
+go = "{{ go_version | default('1.27.4', true) }}"
+
+[tasks."go:build"]
+description = "Build the Go packages"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# A main package at the root writes its binary there: ignore it in .gitignore.
+run = '''{{ go_build_command | default('go build ./...', true) }}'''
+
+[tasks."go:test"]
+description = "Run the Go tests"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ go_test_command | default('go test ./...', true) }}'''

@@ -1,0 +1,12 @@
+---
+goreleaser_version:
+  type: str
+  help: goreleaser version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'goreleaser' in tools }}"
+
+goreleaser_deploy_command:
+  type: str
+  help: Command of goreleaser:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'goreleaser' in tools }}"

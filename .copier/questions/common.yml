@@ -73,12 +73,18 @@ tools:
       validator: "{% if ci != 'github' %}needs GitHub{% endif %}"
     ansible-lint (lint): ansible-lint
     uv (build): uv
+    go (build, test): go
     zensical (build, serve): zensical
     pytest (test): pytest
     molecule (test): molecule
     ctt (test): ctt
     releasaurus (release): releasaurus
     ansible (deploy, operate): ansible
+    goreleaser (deploy):
+      value: goreleaser
+      validator: >-
+        {% if ci not in ['github', 'gitlab'] %}needs GitHub
+        or GitLab{% endif %}
     pages (deploy):
       value: pages
       validator: >-
