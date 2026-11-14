@@ -1,0 +1,13 @@
+---
+# GoReleaser config: goreleaser release -f .brigade/configs/goreleaser.yaml
+# Yours: brigade created it once and never changes it.
+# It replaces the project's .goreleaser.yaml.
+# Paths are relative to the project root.
+version: 2
+builds:
+  # Static binaries, for each OS (and goreleaser's default architectures).
+  - env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+# Releasaurus writes the changelog and the release notes.
+changelog:
+  disable: true

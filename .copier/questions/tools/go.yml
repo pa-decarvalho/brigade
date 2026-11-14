@@ -1,0 +1,18 @@
+---
+go_version:
+  type: str
+  help: Go version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'go' in tools }}"
+
+go_build_command:
+  type: str
+  help: Command of go:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'go' in tools }}"
+
+go_test_command:
+  type: str
+  help: Command of go:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'go' in tools }}"

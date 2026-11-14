@@ -68,7 +68,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `clang-format` | `clang-format:lint` | `clang-format --dry-run --Werror` on every C and C++ file (outside hidden folders), with your `.clang-format` (else LLVM style); none: nothing to check |
 | `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
 | `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
-| `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: pin `go` in your `mise.toml`) |
+| `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: the `go` tool, or `go` pinned in your `mise.toml`) |
 | `revive` | `revive:lint` | `revive -set_exit_status ./...` (Go, golint's rules; faster than `golangci-lint`, which can run revive too), outside hidden folders; `-config revive.toml` in your command for your rules |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
 | `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
@@ -79,6 +79,8 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `ansible-lint` | `ansible-lint:lint` | `ansible-lint --strict` ([config](#tool-configs)) |
 | `hadolint` | `hadolint:lint` | `hadolint` on every `*Dockerfile*` and `*Containerfile*` (outside hidden folders); none: nothing to check |
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
+| `go` | `go:build` | Installs Go; `go build ./...` (a main package at the root writes its binary there: ignore it) |
+| | `go:test` | `go test ./...` |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -90,6 +92,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | | `molecule:login` | `molecule login`, a shell in the instance |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
+| `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
@@ -117,6 +120,7 @@ Tools that read a config file get one in `.brigade/configs/`, created with briga
 | `trivy` | `.brigade/configs/trivy.yaml` | `trivy.yaml`: not read |
 | `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
+| `goreleaser` | `.brigade/configs/goreleaser.yaml` | `.goreleaser.yaml`: not read |
 | `cspell` | `.brigade/configs/cspell.yaml` | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | `.ls-lint.yml`: not read |
 
@@ -180,6 +184,8 @@ CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones R
 - **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
 
 Add `site/` and `.cache/` to your `.gitignore`.
+
+`goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches the archives and their checksums to the release Releasaurus made for the tag (it needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a `GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your `.gitignore`. A manual run needs a tag at the checked out commit.
 
 `uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the Python package built by uv (`uv build --clear && uv publish`), once per tag: the version is the one in `pyproject.toml`, which Releasaurus bumps in the release PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus, Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml` (`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD variable on GitLab): the index's token (on PyPI, an API token scoped to the project once it exists); or, for an index with a user and a password (Nexus...), `UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL (`https://pypi.org/simple/`), which skips the files already there.
 
