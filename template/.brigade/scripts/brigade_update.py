@@ -1,10 +1,10 @@
 """brigade:update: run copier update with the answers of .brigade/copier/data.yml.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Usage: brigade-update.py uvx copier@<version> update ... (from mise.toml, which pins
+Usage: brigade_update.py uvx copier@<version> update ... (from mise.toml, which pins
 Copier), then the task's extra arguments. Copier refuses a dirty tree: when data.yml
 is the only change, its edits are set aside in .git/brigade-data.yml, data.yml is
-restored, and Copier reads the edits from there. Then brigade-data.py writes all the
+restored, and Copier reads the edits from there. Then brigade_data.py writes all the
 answers back to data.yml, so the edits and the update end up in one diff. On
 failure or Ctrl+C, the edits are put back; after a killed run, the next run puts
 them back first.
@@ -66,7 +66,7 @@ def update(command: list[str], data: str) -> int:
         return code
     # PyYAML from the same Copier: uvx --from copier@<version> python.
     return subprocess.call(
-        ["uvx", "--from", command[1], "python", ".brigade/scripts/brigade-data.py"]
+        ["uvx", "--from", command[1], "python", ".brigade/scripts/brigade_data.py"]
     )
 
 

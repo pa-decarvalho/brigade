@@ -8,7 +8,8 @@
 [tasks."molecule:test"]
 description = "Test Ansible roles and playbooks with Molecule, in Docker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''mise exec {{ molecule }} -- {{ molecule_test_command | default('molecule test --all', true) }}'''
+# BRIGADE_UNIT (a CI job of molecule_matrix): that scenario only.
+run = '''mise exec {{ molecule }} -- {{ molecule_test_command | default('molecule test {% if get_env(name="BRIGADE_UNIT", default="") %}-s {{ get_env(name="BRIGADE_UNIT") }}{% else %}--all{% endif %}', true) }}'''
 
 # Not stage names: stay out of the pipeline. Arguments go to the command (mise run molecule:converge -- -s <scenario>).
 [tasks."molecule:converge"]

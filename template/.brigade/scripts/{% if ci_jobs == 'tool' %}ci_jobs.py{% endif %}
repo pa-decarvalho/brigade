@@ -1,0 +1,65 @@
+"""ci-jobs: the CI jobs of a stage, one per task (ci_jobs: tool).
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+Usage: ci_jobs.py <stage> [--gitlab <file>]. Lists the stage's tasks as mise runs them
+(mise tasks ls: every *:<stage> task, the project's included), one job per task, or one
+per unit for a task with units (.brigade/ci-jobs.json, from the <tool>_matrix answers:
+the job sets BRIGADE_UNIT). A stage with <stage>_commands stays one job. Prints a JSON
+list for a GitHub/Gitea matrix, or with --gitlab writes a child pipeline to <file>
+(JSON is YAML).
+"""
+
+import json
+import pathlib
+import subprocess
+import sys
+
+CONFIG = pathlib.Path(".brigade/ci-jobs.json")
+
+
+def jobs(stage: str) -> list[dict[str, str]]:
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    if stage in config["whole"]:
+        return [{"name": stage, "task": stage, "unit": ""}]
+    listed = subprocess.run(
+        ["mise", "tasks", "ls", "--json"], check=True, capture_output=True, text=True
+    ).stdout
+    tasks = sorted(
+        t["name"] for t in json.loads(listed) if t["name"].endswith(f":{stage}")
+    )
+    return [
+        {"name": f"{task} ({unit})" if unit else task, "task": task, "unit": unit}
+        for task in tasks
+        for unit in config["units"].get(task) or [""]
+    ]
+
+
+def gitlab(stage: str, listed: list[dict[str, str]]) -> dict:
+    """A child pipeline: brigade's GitLab defaults, then one job per task or unit."""
+    pipeline: dict = {"include": [{"local": ".brigade/ci/gitlab/default.yml"}]}
+    for job in listed:
+        pipeline[job["name"]] = {
+            "stage": "test",
+            "variables": {"BRIGADE_UNIT": job["unit"]},
+            "script": [f"mise run {job['task']}"],
+        }
+    if not listed:
+        # GitLab refuses an empty pipeline.
+        pipeline[f"{stage}: no task"] = {"stage": "test", "script": ["true"]}
+    return pipeline
+
+
+def main() -> int:
+    stage = sys.argv[1]
+    listed = jobs(stage)
+    if "--gitlab" in sys.argv:
+        path = pathlib.Path(sys.argv[sys.argv.index("--gitlab") + 1])
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(gitlab(stage, listed)), encoding="utf-8")
+    else:
+        print(json.dumps(listed))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

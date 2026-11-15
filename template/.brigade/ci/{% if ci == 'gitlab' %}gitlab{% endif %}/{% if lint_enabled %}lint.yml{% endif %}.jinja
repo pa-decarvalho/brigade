@@ -1,0 +1,36 @@
+---
+# Runs in merge request pipelines, next to the other stages.
+{%- if ci_jobs == 'tool' %}
+# ci_jobs tool: lint-plan writes one job per task, lint runs them
+# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
+# GitLab tool cache, which the linters skip).
+lint-plan:
+  stage: lint
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - mise trust
+  script:
+    - >-
+      mise exec uv -- uv run --no-project python
+      .brigade/scripts/ci_jobs.py lint --gitlab .mise-data/lint-jobs.yml
+  artifacts:
+    paths:
+      - .mise-data/lint-jobs.yml
+{%- endif %}
+lint:
+  stage: lint
+  needs: {% if ci_jobs == 'tool' %}[lint-plan]{% else %}[]{% endif %}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+{%- if ci_jobs == 'tool' %}
+  trigger:
+    include:
+      - artifact: .mise-data/lint-jobs.yml
+        job: lint-plan
+    strategy: depend
+{%- else %}
+  script:
+    - mise run lint
+{%- endif %}

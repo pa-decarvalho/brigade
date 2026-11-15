@@ -1,0 +1,4 @@
+{
+  "whole": {{ ([] + (['lint'] if lint_commands else []) + (['build'] if build_commands else []) + (['test'] if test_commands else []) + (['release'] if release_commands else []) + (['deploy'] if deploy_commands else []) + (['operate'] if operate_commands else [])) | tojson }},
+  "units": {{ {'molecule:test': molecule_matrix | default([], true), 'ctt:test': ctt_matrix | default([], true)} | tojson }}
+}

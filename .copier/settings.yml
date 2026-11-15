@@ -7,3 +7,6 @@ _skip_if_exists:
   - .brigade/copier/data.yml
   # Tool configs: the project's (docs/tools.md).
   - .brigade/configs/*
+# Jinja snippets included by the CI files, not files of the project.
+_exclude:
+  - .brigade/ci/~*
