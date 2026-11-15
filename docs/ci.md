@@ -80,7 +80,7 @@ molecule_matrix:
 Each stage then runs in three steps:
 
 1. `plan` lists the stage's tasks, as mise runs them (`*:<stage>`, your own `mise.toml` tasks included), with `.brigade/scripts/ci_jobs.py`.
-2. One job per task runs `mise run <task>`. A task with units gets one job per unit: `molecule_matrix` (molecule scenarios) and `ctt_matrix` (ctt variants) list them, and the job sets `BRIGADE_UNIT` (`molecule test -s <scenario>`, `ctt -t <variant>`).
+2. One job per task runs `mise run <task>`. A task with units gets one job per unit: `molecule_matrix` (molecule scenarios) and `ctt_matrix` (ctt variants) list them (rendered as `BRIGADE_MATRIX` in the task's `env`, so `plan` reads everything from mise), and the job sets `BRIGADE_UNIT` (`molecule test -s <scenario>`, `ctt -t <variant>`).
 3. A last job, named after the stage, passes when they all pass: the check to require in branch protection.
 
 - **GitHub, Gitea**: a matrix built from `plan`'s output.
