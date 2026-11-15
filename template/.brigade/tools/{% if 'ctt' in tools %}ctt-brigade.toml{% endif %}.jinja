@@ -5,4 +5,5 @@
 [tasks."ctt:test"]
 description = "Render every ctt.toml variant of this Copier template"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ ctt_test_command | default('ctt', true) }}'''
+# BRIGADE_UNIT (a CI job of ctt_matrix): that variant only.
+run = '''{{ ctt_test_command | default('ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t {{ get_env(name="BRIGADE_UNIT") }}{% endif %}', true) }}'''

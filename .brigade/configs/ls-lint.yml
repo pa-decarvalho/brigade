@@ -8,7 +8,7 @@ ls:
   .md: SCREAMING_SNAKE_CASE | kebab-case
   .toml: kebab-case
   .yml: kebab-case
-  .py: kebab-case
+  .py: snake_case
   docs:
     .dir: kebab-case
     .md: kebab-case

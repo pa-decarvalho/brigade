@@ -1,0 +1,15 @@
+  # The stage's check (branch protection): its jobs passed, or there were none.
+  {{ stage }}:
+    if: always()
+    needs: [plan, run]
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - shell: bash
+        env:
+          PLAN: {% raw %}${{ needs.plan.result }}{% endraw %}
+          RUN: {% raw %}${{ needs.run.result }}{% endraw %}
+        run: >-
+          test "$PLAN" = success
+          && { test "$RUN" = success || test "$RUN" = skipped; }

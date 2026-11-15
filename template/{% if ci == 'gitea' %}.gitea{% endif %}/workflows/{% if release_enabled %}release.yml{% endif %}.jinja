@@ -1,4 +1,4 @@
----
+{% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 # Runs on pushes to main (the default branch): mise run release.
 name: Release
@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+{% endraw %}{% with stage = 'release' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  release:
+{% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
@@ -25,6 +25,9 @@ jobs:
         with:
           persist-credentials: true # releasaurus's git operations
       - uses: ./.brigade/ci/gitea/actions/release
-        with:
-          # Optional bot token, else the workflow token.
+{% endraw %}{% raw %}        with:
+{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}          task: ${{ matrix.task }}
+          unit: ${{ matrix.unit }}
+{% endraw %}{% endif %}{% raw %}          # Optional bot token, else the workflow token.
           token: ${{ secrets.RELEASAURUS_GITEA_TOKEN }}
+{% endraw %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

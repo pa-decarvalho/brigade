@@ -22,7 +22,7 @@ GitHub only reads workflows in `.github/workflows/`: everything else lives in `.
 
 ### Stages
 
-Each stage is one workflow with one job, on Linux, running its action. To remove a stage or change its commands, see [Stages](tools.md#stages).
+Each stage is one workflow with one job, on Linux, running its action, or one job per task: see [One job per task](#one-job-per-task-ci_jobs-tool). To remove a stage or change its commands, see [Stages](tools.md#stages).
 
 ### Your own jobs
 
@@ -64,6 +64,31 @@ extra:
 ```
 
 `gitlab-ci:lint` checks these files against the GitLab CI schema.
+
+## One job per task (`ci_jobs: tool`)
+
+By default (`ci_jobs: stage`), each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. With `ci_jobs: tool`, each task of the stage gets its own CI job, in parallel on separate runners: a long task (ctt variants, molecule scenarios) no longer waits for the others, and each task has its own check.
+
+```yaml
+# .brigade/copier/data.yml
+ci_jobs: "tool"
+molecule_matrix:
+  - "default"
+  - "ubuntu"
+```
+
+Each stage then runs in three steps:
+
+1. `plan` lists the stage's tasks, as mise runs them (`*:<stage>`, your own `mise.toml` tasks included), with `.brigade/scripts/ci_jobs.py`.
+2. One job per task runs `mise run <task>`. A task with units gets one job per unit: `molecule_matrix` (molecule scenarios) and `ctt_matrix` (ctt variants) list them, and the job sets `BRIGADE_UNIT` (`molecule test -s <scenario>`, `ctt -t <variant>`).
+3. A last job, named after the stage, passes when they all pass: the check to require in branch protection.
+
+- **GitHub, Gitea**: a matrix built from `plan`'s output.
+- **GitLab**: `<stage>-plan` writes a child pipeline, which the `<stage>` job runs (`trigger`, `strategy: depend`). `deploy` stays one job when it publishes `pages`.
+- A stage with `<stage>_commands` stays one job.
+- Locally nothing changes: `mise run test` runs every task and unit; `BRIGADE_UNIT=ubuntu mise run molecule:test` runs one CI job's unit.
+
+Each job installs mise and its tools: for short tasks, `ci_jobs: tool` is slower and uses more CI minutes than one job per stage. Use it when one task is long.
 
 ## Manual run
 

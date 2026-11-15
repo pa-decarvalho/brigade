@@ -1,0 +1,45 @@
+---
+# Releasaurus needs a RELEASAURUS_GITLAB_TOKEN CI/CD variable
+# (api, write_repository).
+{%- if ci_jobs == 'tool' %}
+# ci_jobs tool: release-plan writes one job per task, release runs them
+# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
+# GitLab tool cache, which the linters skip).
+release-plan:
+  stage: release
+  rules:
+    - if: >-
+        $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        && $CI_PIPELINE_SOURCE == "push"
+  before_script:
+    - mise trust
+  script:
+    - >-
+      mise exec uv -- uv run --no-project python
+      .brigade/scripts/ci_jobs.py release --gitlab .mise-data/release-jobs.yml
+  artifacts:
+    paths:
+      - .mise-data/release-jobs.yml
+{%- endif %}
+release:
+  stage: release
+{%- if ci_jobs == 'tool' %}
+  needs: [release-plan]
+{%- endif %}
+  rules:
+    - if: >-
+        $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        && $CI_PIPELINE_SOURCE == "push"
+  variables:
+    RELEASAURUS_FORGE: gitlab
+    RELEASAURUS_REPO: $CI_PROJECT_URL
+{%- if ci_jobs == 'tool' %}
+  trigger:
+    include:
+      - artifact: .mise-data/release-jobs.yml
+        job: release-plan
+    strategy: depend
+{%- else %}
+  script:
+    - mise run release
+{%- endif %}

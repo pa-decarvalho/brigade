@@ -3,6 +3,12 @@
 name: deploy
 description: mise run deploy, with the project's tools
 inputs:
+  task:
+    description: The task to run (ci_jobs tool), else the stage
+    default: deploy
+  unit:
+    description: BRIGADE_UNIT, the unit of the task (ci_jobs tool)
+    default: ""
   ansible-private-key:
     description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
     default: ""
@@ -48,4 +54,6 @@ runs:
         DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-      run: mise run deploy
+        TASK: ${{ inputs.task }}
+        BRIGADE_UNIT: ${{ inputs.unit }}
+      run: mise run "$TASK"

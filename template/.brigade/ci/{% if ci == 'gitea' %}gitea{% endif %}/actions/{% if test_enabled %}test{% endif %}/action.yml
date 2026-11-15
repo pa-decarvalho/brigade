@@ -2,6 +2,13 @@
 # brigade-owned: updated by mise run brigade:update, do not edit.
 name: test
 description: mise run test, with the project's tools
+inputs:
+  task:
+    description: The task to run (ci_jobs tool), else the stage
+    default: test
+  unit:
+    description: BRIGADE_UNIT, the unit of the task (ci_jobs tool)
+    default: ""
 runs:
   using: composite
   steps:
@@ -9,4 +16,6 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      run: mise run test
+        TASK: ${{ inputs.task }}
+        BRIGADE_UNIT: ${{ inputs.unit }}
+      run: mise run "$TASK"

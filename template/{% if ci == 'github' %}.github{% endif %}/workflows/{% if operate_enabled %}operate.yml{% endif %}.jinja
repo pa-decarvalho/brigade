@@ -11,13 +11,12 @@ on:
 {%- endif %}
   workflow_dispatch:
 
-{% raw -%}
-permissions:
+{% raw %}permissions:
   contents: read
 
 jobs:
-  operate:
-    runs-on: ubuntu-latest
+{% endraw %}{% with stage = 'operate' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  operate:
+{% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -26,7 +25,9 @@ jobs:
       - name: mise run operate # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/operate
         with:
-          renovate-token: ${{ secrets.RENOVATE_TOKEN }}
+{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}          task: ${{ matrix.task }}
+          unit: ${{ matrix.unit }}
+{% endraw %}{% endif %}{% raw %}          renovate-token: ${{ secrets.RENOVATE_TOKEN }}
           ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-{%- endraw %}
+{% endraw %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

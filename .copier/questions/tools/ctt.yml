@@ -1,4 +1,12 @@
 ---
+ctt_matrix:
+  type: yaml
+  help: >-
+    ctt variants with a CI job each (BRIGADE_UNIT, ctt -t;
+    empty: one job for all)
+  default: []
+  when: "{{ ci_jobs == 'tool' and 'ctt' in tools }}"
+
 ctt_version:
   type: str
   help: copier-template-tester version (empty for brigade's)

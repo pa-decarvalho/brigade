@@ -1,4 +1,4 @@
----
+{% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 # Runs on X.Y.Z tags: mise run deploy.
 name: Deploy
@@ -18,8 +18,8 @@ concurrency:
 permissions: {}
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+{% endraw %}{% with stage = 'deploy' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  deploy:
+{% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: write # pages:deploy pushes the gh-pages branch
@@ -31,7 +31,9 @@ jobs:
       - name: mise run deploy # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/deploy
         with:
-          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
+{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}          task: ${{ matrix.task }}
+          unit: ${{ matrix.unit }}
+{% endraw %}{% endif %}{% raw %}          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           uv-publish-token: ${{ secrets.UV_PUBLISH_TOKEN }}
           uv-publish-username: ${{ secrets.UV_PUBLISH_USERNAME }}
@@ -39,3 +41,4 @@ jobs:
           npm-token: ${{ secrets.NPM_TOKEN }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
+{% endraw %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

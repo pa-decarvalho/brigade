@@ -8,11 +8,11 @@
 [tasks."ansible:deploy"]
 description = "Deploy with Ansible (playbooks/deploy.yml)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ ansible_deploy_command | default('ansible-playbook -i inventory playbooks/deploy.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible-vault-password.py{% endif %}{% endraw %}'''
+run = '''{{ ansible_deploy_command | default('ansible-playbook -i inventory playbooks/deploy.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible_vault_password.py{% endif %}{% endraw %}'''
 env = { ANSIBLE_SSH_AGENT = "{% raw %}{% if get_env(name='ANSIBLE_PRIVATE_KEY', default='') %}auto{% else %}{{ get_env(name='ANSIBLE_SSH_AGENT', default='none') }}{% endif %}{% endraw %}" }
 
 [tasks."ansible:operate"]
 description = "Operate with Ansible (playbooks/operate.yml)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ ansible_operate_command | default('ansible-playbook -i inventory playbooks/operate.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible-vault-password.py{% endif %}{% endraw %}'''
+run = '''{{ ansible_operate_command | default('ansible-playbook -i inventory playbooks/operate.yml', true) }}{% raw %}{% if get_env(name="ANSIBLE_VAULT_PASSWORD", default="") %} --vault-password-file .brigade/scripts/ansible_vault_password.py{% endif %}{% endraw %}'''
 env = { ANSIBLE_SSH_AGENT = "{% raw %}{% if get_env(name='ANSIBLE_PRIVATE_KEY', default='') %}auto{% else %}{{ get_env(name='ANSIBLE_SSH_AGENT', default='none') }}{% endif %}{% endraw %}" }

@@ -1,35 +1,10 @@
-"""Write all the answers to .brigade/copier/data.yml (run by brigade-update.py).
+"""Runs brigade_data.py: kept for the first brigade:update from brigade 0.19 or earlier.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Runs after copier update, in Copier's environment (PyYAML), so that data.yml holds
-every answer, new questions included, in the format of copier/data.yml.jinja: JSON
-values (double quotes), lists indented under their key.
+That update runs the old brigade-update.py, which calls this name once Copier is done.
+To remove in a later release.
 """
 
-import importlib
-import json
-import pathlib
+import runpy
 
-# PyYAML is in Copier's env, not the project's: imported at run time, so that
-# type checkers do not look for it (found or not, depending on the machine).
-yaml = importlib.import_module("yaml")
-
-FOLDER = pathlib.Path(".brigade/copier")
-
-
-def main() -> None:
-    answers = yaml.safe_load((FOLDER / "answers.yml").read_text(encoding="utf-8"))
-    lines = ["# Your answers: edit them, then run mise run brigade:update."]
-    for key, value in sorted(answers.items()):
-        if key.startswith("_"):
-            continue
-        if isinstance(value, list) and value:
-            lines.append(f"{key}:")
-            lines += [f"  - {json.dumps(item, ensure_ascii=False)}" for item in value]
-        else:
-            lines.append(f"{key}: {json.dumps(value, ensure_ascii=False)}")
-    (FOLDER / "data.yml").write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-if __name__ == "__main__":
-    main()
+runpy.run_path(".brigade/scripts/brigade_data.py", run_name="__main__")

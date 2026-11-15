@@ -1,0 +1,9 @@
+  # One job per task (or unit) of the stage, in parallel.
+  run:
+    name: {% raw %}${{ matrix.name }}{% endraw %}
+    needs: plan
+    if: needs.plan.outputs.jobs != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: {% raw %}${{ fromJSON(needs.plan.outputs.jobs) }}{% endraw %}
