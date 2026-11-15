@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-{% endraw %}{% with stage = 'lint' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  lint:
+{% endraw %}{% with stage = 'lint' %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~matrix.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  lint:
 {% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
       - name: mise run lint # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/lint
-{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}        with:
+{% endraw %}{% if stage in split_stages %}{% raw %}        with:
           task: ${{ matrix.task }}
           unit: ${{ matrix.unit }}
-{% endraw %}{% endif %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}
+{% endraw %}{% endif %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

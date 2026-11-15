@@ -1,15 +1,15 @@
   # The stage's check (branch protection): its jobs passed, or there were none.
   {{ stage }}:
     if: always()
-    needs: [plan, run]
+    needs: [matrix, run]
     runs-on: ubuntu-latest
     permissions: {}
     timeout-minutes: 5
     steps:
       - shell: bash
         env:
-          PLAN: {% raw %}${{ needs.plan.result }}{% endraw %}
+          MATRIX: {% raw %}${{ needs.matrix.result }}{% endraw %}
           RUN: {% raw %}${{ needs.run.result }}{% endraw %}
         run: >-
-          test "$PLAN" = success
+          test "$MATRIX" = success
           && { test "$RUN" = success || test "$RUN" = skipped; }

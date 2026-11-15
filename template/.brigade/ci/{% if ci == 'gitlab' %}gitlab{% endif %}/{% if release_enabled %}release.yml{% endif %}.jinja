@@ -1,11 +1,11 @@
 ---
 # Releasaurus needs a RELEASAURUS_GITLAB_TOKEN CI/CD variable
 # (api, write_repository).
-{%- if ci_jobs == 'tool' %}
-# ci_jobs tool: release-plan writes one job per task, release runs them
-# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
-# GitLab tool cache, which the linters skip).
-release-plan:
+{%- if 'release' in split_stages %}
+# A split stage (a tool's matrix): release-matrix writes one job per task
+# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
+# the linters skip), and release runs them as a child pipeline.
+release-matrix:
   stage: release
   rules:
     - if: >-
@@ -23,8 +23,8 @@ release-plan:
 {%- endif %}
 release:
   stage: release
-{%- if ci_jobs == 'tool' %}
-  needs: [release-plan]
+{%- if 'release' in split_stages %}
+  needs: [release-matrix]
 {%- endif %}
   rules:
     - if: >-
@@ -33,11 +33,11 @@ release:
   variables:
     RELEASAURUS_FORGE: gitlab
     RELEASAURUS_REPO: $CI_PROJECT_URL
-{%- if ci_jobs == 'tool' %}
+{%- if 'release' in split_stages %}
   trigger:
     include:
       - artifact: .mise-data/release-jobs.yml
-        job: release-plan
+        job: release-matrix
     strategy: depend
 {%- else %}
   script:

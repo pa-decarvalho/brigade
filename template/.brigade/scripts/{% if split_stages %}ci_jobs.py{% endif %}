@@ -1,12 +1,12 @@
-"""ci-jobs: the CI jobs of a stage, one per task (ci_jobs: tool).
+"""ci_jobs: the CI jobs of a split stage, one per task (a tool has a matrix).
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Usage: ci_jobs.py <stage> [--gitlab <file>]. Lists the stage's tasks as mise runs them
-(mise tasks ls: every *:<stage> task, the project's included), one job per task, or one
-per unit for a task with units (.brigade/ci-jobs.json, from the <tool>_matrix answers:
-the job sets BRIGADE_UNIT). A stage with <stage>_commands stays one job. Prints a JSON
-list for a GitHub/Gitea matrix, or with --gitlab writes a child pipeline to <file>
-(JSON is YAML).
+Usage: ci_jobs.py <stage> [--gitlab <file>]. Everything comes from mise (mise tasks ls):
+the stage's tasks are its *:<stage> tasks, the project's included, one job each; a task
+with BRIGADE_MATRIX in its env (a JSON list, from the <tool>_matrix answer) gets one job
+per unit, which sets BRIGADE_UNIT; a stage with its own commands (<stage>_commands) stays
+one job. Prints a JSON list for a GitHub/Gitea matrix, or with --gitlab writes a child
+pipeline to <file> (JSON is YAML).
 """
 
 import json
@@ -14,24 +14,29 @@ import pathlib
 import subprocess
 import sys
 
-CONFIG = pathlib.Path(".brigade/ci-jobs.json")
-
 
 def jobs(stage: str) -> list[dict[str, str]]:
-    config = json.loads(CONFIG.read_text(encoding="utf-8"))
-    if stage in config["whole"]:
-        return [{"name": stage, "task": stage, "unit": ""}]
     listed = subprocess.run(
         ["mise", "tasks", "ls", "--json"], check=True, capture_output=True, text=True
     ).stdout
-    tasks = sorted(
-        t["name"] for t in json.loads(listed) if t["name"].endswith(f":{stage}")
-    )
+    tasks = {task["name"]: task for task in json.loads(listed)}
+    if tasks.get(stage, {}).get("run"):
+        return [{"name": stage, "task": stage, "unit": ""}]
     return [
-        {"name": f"{task} ({unit})" if unit else task, "task": task, "unit": unit}
-        for task in tasks
-        for unit in config["units"].get(task) or [""]
+        {"name": f"{name} ({unit})" if unit else name, "task": name, "unit": unit}
+        for name in sorted(tasks)
+        if name.endswith(f":{stage}")
+        for unit in matrix(tasks[name]) or [""]
     ]
+
+
+def matrix(task: dict) -> list[str]:
+    """The task's units: BRIGADE_MATRIX in its env (mise lists it as KEY=value)."""
+    for variable in task.get("env") or []:
+        key, _, value = variable.partition("=")
+        if key == "BRIGADE_MATRIX":
+            return json.loads(value)
+    return []
 
 
 def gitlab(stage: str, listed: list[dict[str, str]]) -> dict:

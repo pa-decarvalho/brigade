@@ -1,10 +1,10 @@
 ---
 # Runs in merge request pipelines, next to the other stages.
-{%- if ci_jobs == 'tool' %}
-# ci_jobs tool: build-plan writes one job per task, build runs them
-# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
-# GitLab tool cache, which the linters skip).
-build-plan:
+{%- if 'build' in split_stages %}
+# A split stage (a tool's matrix): build-matrix writes one job per task
+# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
+# the linters skip), and build runs them as a child pipeline.
+build-matrix:
   stage: build
   needs: []
   rules:
@@ -21,14 +21,14 @@ build-plan:
 {%- endif %}
 build:
   stage: build
-  needs: {% if ci_jobs == 'tool' %}[build-plan]{% else %}[]{% endif %}
+  needs: {% if 'build' in split_stages %}[build-matrix]{% else %}[]{% endif %}
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-{%- if ci_jobs == 'tool' %}
+{%- if 'build' in split_stages %}
   trigger:
     include:
       - artifact: .mise-data/build-jobs.yml
-        job: build-plan
+        job: build-matrix
     strategy: depend
 {%- else %}
   script:

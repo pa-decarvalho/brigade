@@ -149,8 +149,6 @@ _post_tasks = [
 [output.".ctt/python-gitlab"]
 tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "zensical", "pages"]
 ci = "gitlab"
-# One CI job per task (child pipelines); deploy stays one job (pages).
-ci_jobs = "tool"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false
 # Custom version and command for a tool.
@@ -177,26 +175,42 @@ _post_tasks = [
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; assert pathlib.Path('site/index.html').is_file()"],
 ]
 
-[output.".ctt/yaml-gitlab"]
-# GitLab with one CI job per task: few tools, so that the gitlab-ci-local replay of the
-# child pipelines stays short (each job imports the tool cache).
-tools = ["yamllint", "typos", "gitlab-ci-local"]
+[output.".ctt/template-gitlab"]
+# A Copier template project on GitLab: ctt_matrix splits the test stage into child
+# pipeline jobs, replayed by gitlab-ci-local (few tools: each job imports the tool cache).
+tools = ["yamllint", "gitleaks", "typos", "ctt", "gitlab-ci-local"]
 ci = "gitlab"
-ci_jobs = "tool"
+ctt_matrix = [".out"]
 _post_tasks = [
     ["git", "init", "-q"],
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('README.md').write_text('# Demo\\n')"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "test"],
+]
+
+[output.".ctt/template-gitea"]
+# A Copier template project on Gitea: ctt_matrix splits the test stage, replayed by act.
+tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
+ci = "gitea"
+ctt_matrix = [".out"]
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],
     ["mise", "run", "test"],
 ]
 
 [output.".ctt/python-gitea"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv", "act"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv"]
 ci = "gitea"
-# One CI job per task, replayed by act; lint stays one job (lint_commands).
-ci_jobs = "tool"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false
 # The lint stage runs these commands, in order.
@@ -262,8 +276,8 @@ _post_tasks = [
 # A Copier template project.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "github"
-# One CI job per task, one per ctt variant, replayed by act.
-ci_jobs = "tool"
+# ctt_matrix splits the test stage: one CI job per task, one per ctt variant,
+# replayed by act.
 ctt_matrix = [".out"]
 _post_tasks = [
     ["git", "init", "-q"],
@@ -284,8 +298,7 @@ _post_tasks = [
 # playbooks/ on inventory/ (localhost); deploy.yml needs the vault password.
 tools = ["yamllint", "gitleaks", "typos", "ansible-lint", "molecule", "ansible"]
 ci = "github"
-# One CI job per task, one per molecule scenario.
-ci_jobs = "tool"
+# molecule_matrix splits the test stage: one CI job per task, one per scenario.
 molecule_matrix = ["default"]
 _post_tasks = [
     ["git", "init", "-q"],
@@ -303,6 +316,6 @@ _post_tasks = [
     # deploy decrypts the vault variable with ANSIBLE_VAULT_PASSWORD; operate needs no secret.
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, subprocess; subprocess.run(['mise', 'run', 'deploy'], env={**os.environ, 'ANSIBLE_VAULT_PASSWORD': 'ctt'}, check=True)"],
     ["mise", "run", "operate"],
-    # ci_jobs tool: a CI job per molecule scenario (BRIGADE_UNIT: molecule test -s).
+    # The split test stage: a CI job per molecule scenario (BRIGADE_UNIT: molecule test -s).
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import json, os, subprocess\njobs = json.loads(subprocess.run(['uv', 'run', '--no-project', 'python', '.brigade/scripts/ci_jobs.py', 'test'], check=True, capture_output=True, text=True).stdout)\nassert {'name': 'molecule:test (default)', 'task': 'molecule:test', 'unit': 'default'} in jobs, jobs\nout = subprocess.run(['mise', 'run', '--dry-run', 'molecule:test'], check=True, capture_output=True, text=True, env={**os.environ, 'BRIGADE_UNIT': 'default'})\nassert 'molecule test -s default' in out.stdout + out.stderr, out.stderr"],
 ]
