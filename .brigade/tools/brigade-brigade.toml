@@ -7,4 +7,4 @@
 [tasks."brigade:lint"]
 description = "Check that brigade-owned files match the template"
 dir = "{{config_root}}/../.."
-run = '''uv run --no-project python .brigade/scripts/brigade-lint.py'''
+run = '''uv run --no-project python .brigade/scripts/brigade_lint.py'''

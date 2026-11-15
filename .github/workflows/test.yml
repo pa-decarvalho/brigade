@@ -15,7 +15,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  # A split stage: its jobs, one per task or unit (.brigade/scripts/ci_jobs.py).
+  matrix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    outputs:
+      jobs: ${{ steps.jobs.outputs.jobs }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # mise only: no tools, no cache (deploy publishes).
+      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+        with:
+          version: 2026.11.8
+          install: false
+          cache: false
+      - id: jobs
+        shell: bash
+        run: >-
+          echo "jobs=$(mise exec uv -- uv run --no-project python
+          .brigade/scripts/ci_jobs.py test)" >> "$GITHUB_OUTPUT"
+  # One job per task (or unit) of the stage, in parallel.
+  run:
+    name: ${{ matrix.name }}
+    needs: matrix
+    if: needs.matrix.outputs.jobs != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.matrix.outputs.jobs) }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -24,3 +55,21 @@ jobs:
           persist-credentials: false
       - name: mise run test # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/test
+        with:
+          task: ${{ matrix.task }}
+          unit: ${{ matrix.unit }}
+  # The stage's check (branch protection): its jobs passed, or there were none.
+  test:
+    if: always()
+    needs: [matrix, run]
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - shell: bash
+        env:
+          MATRIX: ${{ needs.matrix.result }}
+          RUN: ${{ needs.run.result }}
+        run: >-
+          test "$MATRIX" = success
+          && { test "$RUN" = success || test "$RUN" = skipped; }

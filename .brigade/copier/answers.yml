@@ -1,14 +1,29 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.19.0
+_commit: 0.20.1
 _src_path: gh:pa-decarvalho/brigade
 brigade_lint_command: ''
 brigade_version: ''
 build_commands: []
 build_enabled: true
 ci: github
+ctt_matrix:
+- .ctt/python-github
+- .ctt/go-github
+- .ctt/python-docker-github
+- .ctt/node-github
+- .ctt/react-github
+- .ctt/python-gitlab
+- .ctt/template-gitlab
+- .ctt/template-gitea
+- .ctt/python-gitea
+- .ctt/python-mirror
+- .ctt/none-github
+- .ctt/template-github
+- .ctt/ansible-github
 ctt_test_command: uv run --no-project python -c "import shutil; shutil.rmtree('.ctt',
-    ignore_errors=True)" && ctt
+    ignore_errors=True)" && ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t
+    {{ get_env(name="BRIGADE_UNIT") }}{% endif %}
 ctt_version: ''
 customize_tools: true
 deploy_commands: []

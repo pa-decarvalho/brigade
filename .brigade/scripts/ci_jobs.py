@@ -1,0 +1,70 @@
+"""ci_jobs: the CI jobs of a split stage, one per task (a tool has a matrix).
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+Usage: ci_jobs.py <stage> [--gitlab <file>]. Everything comes from mise (mise tasks ls):
+the stage's tasks are its *:<stage> tasks, the project's included, one job each; a task
+with BRIGADE_MATRIX in its env (a JSON list, from the <tool>_matrix answer) gets one job
+per unit, which sets BRIGADE_UNIT; a stage with its own commands (<stage>_commands) stays
+one job. Prints a JSON list for a GitHub/Gitea matrix, or with --gitlab writes a child
+pipeline to <file> (JSON is YAML).
+"""
+
+import json
+import pathlib
+import subprocess
+import sys
+
+
+def jobs(stage: str) -> list[dict[str, str]]:
+    listed = subprocess.run(
+        ["mise", "tasks", "ls", "--json"], check=True, capture_output=True, text=True
+    ).stdout
+    tasks = {task["name"]: task for task in json.loads(listed)}
+    if tasks.get(stage, {}).get("run"):
+        return [{"name": stage, "task": stage, "unit": ""}]
+    return [
+        {"name": f"{name} ({unit})" if unit else name, "task": name, "unit": unit}
+        for name in sorted(tasks)
+        if name.endswith(f":{stage}")
+        for unit in matrix(tasks[name]) or [""]
+    ]
+
+
+def matrix(task: dict) -> list[str]:
+    """The task's units: BRIGADE_MATRIX in its env (mise lists it as KEY=value)."""
+    for variable in task.get("env") or []:
+        key, _, value = variable.partition("=")
+        if key == "BRIGADE_MATRIX":
+            return json.loads(value)
+    return []
+
+
+def gitlab(stage: str, listed: list[dict[str, str]]) -> dict:
+    """A child pipeline: brigade's GitLab defaults, then one job per task or unit."""
+    pipeline: dict = {"include": [{"local": ".brigade/ci/gitlab/default.yml"}]}
+    for job in listed:
+        pipeline[job["name"]] = {
+            "stage": "test",
+            "variables": {"BRIGADE_UNIT": job["unit"]},
+            "script": [f"mise run {job['task']}"],
+        }
+    if not listed:
+        # GitLab refuses an empty pipeline.
+        pipeline[f"{stage}: no task"] = {"stage": "test", "script": ["true"]}
+    return pipeline
+
+
+def main() -> int:
+    stage = sys.argv[1]
+    listed = jobs(stage)
+    if "--gitlab" in sys.argv:
+        path = pathlib.Path(sys.argv[sys.argv.index("--gitlab") + 1])
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(gitlab(stage, listed)), encoding="utf-8")
+    else:
+        print(json.dumps(listed))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

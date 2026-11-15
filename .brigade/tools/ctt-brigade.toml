@@ -3,6 +3,9 @@
 "pipx:copier-template-tester" = { version = "3.0.0", uvx_args = "--with copier==9.19.1" }
 
 [tasks."ctt:test"]
+# One CI job per unit (ctt_matrix): .brigade/scripts/ci_jobs.py reads them here.
+env = { BRIGADE_MATRIX = '[".ctt/python-github", ".ctt/go-github", ".ctt/python-docker-github", ".ctt/node-github", ".ctt/react-github", ".ctt/python-gitlab", ".ctt/template-gitlab", ".ctt/template-gitea", ".ctt/python-gitea", ".ctt/python-mirror", ".ctt/none-github", ".ctt/template-github", ".ctt/ansible-github"]' }
 description = "Render every ctt.toml variant of this Copier template"
 dir = "{{config_root}}/../.."
-run = '''uv run --no-project python -c "import shutil; shutil.rmtree('.ctt', ignore_errors=True)" && ctt'''
+# BRIGADE_UNIT (a CI job of ctt_matrix): that variant only.
+run = '''uv run --no-project python -c "import shutil; shutil.rmtree('.ctt', ignore_errors=True)" && ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t {{ get_env(name="BRIGADE_UNIT") }}{% endif %}'''
