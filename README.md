@@ -1,13 +1,27 @@
-![brigade: mise-en-place, ready for service](docs/assets/banner.webp)
+<p align="center"><img src="docs/assets/logo.png" alt="brigade logo" width="120"></p>
 
-# brigade
+<h1 align="center">brigade</h1>
 
-*Mise-en-place, ready for service.*
+<p align="center"><strong>Mise-en-place, ready for service.</strong></p>
 
-[![Release](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fpa-decarvalho%2Fbrigade%2Freleases%2Flatest&query=%24.tag_name&label=release&color=orange)](https://github.com/pa-decarvalho/brigade/releases/latest) [![Release workflow](https://img.shields.io/github/actions/workflow/status/pa-decarvalho/brigade/release.yml?branch=main&label=release%20workflow)](https://github.com/pa-decarvalho/brigade/actions/workflows/release.yml) [![License: MIT](https://img.shields.io/github/license/pa-decarvalho/brigade)](https://github.com/pa-decarvalho/brigade/blob/main/LICENSE) [![Docs](https://img.shields.io/badge/docs-pa--decarvalho.github.io%2Fbrigade-blue)](https://pa-decarvalho.github.io/brigade/) [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier) [![Built with brigade](https://img.shields.io/badge/built%20with-brigade-orange)](https://pa-decarvalho.github.io/brigade/) [![Built with mise](https://img.shields.io/badge/built%20with-mise-blue)](https://mise.jdx.dev/) [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://docs.renovatebot.com/) [![CI: GitHub | GitLab | Gitea](https://img.shields.io/badge/CI-GitHub%20%7C%20GitLab%20%7C%20Gitea-informational)](https://pa-decarvalho.github.io/brigade/ci/)
+<p align="center">A <a href="https://copier.readthedocs.io/">Copier</a> template that adds <a href="https://mise.jdx.dev/">mise</a> tooling and CI to an existing project.</p>
 
-[Copier](https://copier.readthedocs.io/) template that adds [mise](https://mise.jdx.dev/) tooling and CI to a project.
-It does not create the project: do that with the ecosystem's own tool, then apply brigade.
+<p align="center">
+  <a href="https://github.com/pa-decarvalho/brigade/releases/latest"><img src="https://img.shields.io/github/v/release/pa-decarvalho/brigade?color=orange" alt="Release"></a>
+  <a href="https://github.com/pa-decarvalho/brigade/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/pa-decarvalho/brigade/test.yml?event=pull_request&label=test" alt="Test"></a>
+  <a href="https://github.com/pa-decarvalho/brigade/blob/main/LICENSE"><img src="https://img.shields.io/github/license/pa-decarvalho/brigade" alt="License: MIT"></a>
+  <a href="https://github.com/copier-org/copier"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json" alt="Copier"></a>
+</p>
+
+<p align="center"><code>lint · build · test · release · deploy · operate</code><br>on GitHub · GitLab · Gitea · your laptop</p>
+
+<p align="center"><a href="https://pa-decarvalho.github.io/brigade/"><strong>Documentation</strong></a> · <a href="https://pa-decarvalho.github.io/brigade/getting-started/">Getting started</a> · <a href="https://pa-decarvalho.github.io/brigade/recipes/">Recipes</a> · <a href="https://github.com/pa-decarvalho/brigade/blob/main/CHANGELOG.md">Changelog</a></p>
+
+<p align="center"><img src="docs/assets/banner.webp" alt="brigade: mise-en-place, ready for service"></p>
+
+## Getting started
+
+brigade does not create the project: do that with the ecosystem's own tool, then apply brigade.
 
 ```sh
 uv init my-project
