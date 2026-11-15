@@ -7,3 +7,8 @@ disable = ["MD013"]
 # template/ the files they come from; CHANGELOG.md is written by Releasaurus;
 # the PR template starts with a comment, not a heading.
 exclude = [".mise-data", ".ctt", "template", "CHANGELOG.md", ".github/pull_request_template.md"]
+
+# The README and the docs home page open with a centered HTML header.
+[per-file-ignores]
+"README.md" = ["MD033", "MD041"]
+"docs/index.md" = ["MD033", "MD041"]
