@@ -35,7 +35,7 @@ _post_tasks = [
     ["uv", "run", "--no-project", "python", "-c", "import urllib.request; page = urllib.request.urlopen('http://127.0.0.1:8099/simple/demo/').read().decode(); assert 'demo-0.1.0.tar.gz' in page and 'demo-0.1.0-py3-none-any.whl' in page, page"],
     ["docker", "rm", "-f", "brigade-ctt-pypi"],
     # renovate:operate installs its tools (npm trust policy) and re2 (native build allowed).
-    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import subprocess; r = subprocess.run(['mise', 'run', 'renovate:operate', '--', '--platform=local', '--dry-run=extract'], capture_output=True, text=True); out = r.stdout + r.stderr; assert r.returncode == 0 and 'RE2 not usable' not in out, (r.returncode, [line for line in out.splitlines() if 'WARN' in line or 'ERROR' in line or 'RE2' in line][:20], out[-1000:])"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, subprocess; r = subprocess.run(['mise', 'run', 'renovate:operate', '--', '--platform=local', '--dry-run=extract'], capture_output=True, text=True, env={**os.environ, 'LOG_LEVEL': 'debug'}); out = r.stdout + r.stderr; assert r.returncode == 0 and 'RE2 not usable' not in out, (r.returncode, subprocess.run(['mise', 'exec', '--', 'node', '-p', 'process.execPath + \" \" + process.version + \" \" + process.versions.modules'], capture_output=True, text=True).stdout, subprocess.run(['mise', 'ls', '--current'], capture_output=True, text=True).stdout, [line for line in out.splitlines() if 'WARN' in line or 'ERROR' in line or 're2' in line.lower() or 'node' in line.lower()][:40], out[-1000:])"],
 ]
 
 [output.".ctt/go-github"]
