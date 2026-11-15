@@ -24,6 +24,7 @@ operate_commands: []
 operate_enabled: true
 operate_schedule: "0 5 * * *"
 pages_deploy_command: ""
+pages_dir: "site"
 pages_version: ""
 presets: []
 pypi_index: ""
