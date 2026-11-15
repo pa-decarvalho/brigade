@@ -1,3 +1,11 @@
+# [0.19.0](https://github.com/pa-decarvalho/brigade/compare/0.18.0...0.19.0) - 2026-11-15
+
+### 🚀 Features
+
+- add the node tool, with TypeScript and React recipes (#210) [_(a753b63)_](https://github.com/pa-decarvalho/brigade/commit/a753b63b217be9d32edeae6cd1567ace9e101d77)
+
+- add docker and container-structure-test, with Docker recipes (#207) [_(67a8bb7)_](https://github.com/pa-decarvalho/brigade/commit/67a8bb7fea702b73c9f301d2036b5faae06d3a65)
+
 # [0.18.0](https://github.com/pa-decarvalho/brigade/compare/0.17.2...0.18.0) - 2026-11-14
 
 ### 🚀 Features
