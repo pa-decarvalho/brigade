@@ -5,5 +5,6 @@
 [tasks."container-structure-test:test"]
 description = "Build the Docker image and check its content with container-structure-test"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Tests: .brigade/configs/container-structure-test.yaml (the project's). Needs Docker.
-run = '''{{ container_structure_test_test_command | default('docker build --tag=brigade-structure-test . && container-structure-test test --image brigade-structure-test --config .brigade/configs/container-structure-test.yaml', true) }}'''
+# Tests: .brigade/configs/container-structure-test.yaml (the project's). Needs Docker. The image
+# by its ID, not a tag: two projects tested at once do not test each other's image.
+run = '''{{ container_structure_test_test_command | default("uv run --no-project python -c \"import subprocess; image = subprocess.run(['docker', 'build', '--quiet', '.'], check=True, capture_output=True, text=True).stdout.strip(); raise SystemExit(subprocess.call(['container-structure-test', 'test', '--image', image, '--config', '.brigade/configs/container-structure-test.yaml']))\"", true) }}'''
