@@ -74,6 +74,7 @@ tools:
     ansible-lint (lint): ansible-lint
     uv (build): uv
     go (build, test): go
+    node (lint, build, test): node
     docker (build, deploy):
       value: docker
       validator: >-

@@ -192,3 +192,96 @@ ENTRYPOINT ["/app/.venv/bin/my-app"]
 ```
 
 Your part: the code in `src/`, the tests in `tests/`, the `Dockerfile` and a `.dockerignore` (at least `.git`, `.venv`, `.mise-data`: a local `.venv` must not end up in the image), your image's tests in `.brigade/configs/container-structure-test.yaml`, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
+
+## TypeScript library
+
+A library with its tests, released by Releasaurus and published to npm on each release. JavaScript works the same: the `node` tool runs your `package.json` scripts, and a missing `build` script does nothing. Tested as the `node-github` variant, which publishes to a local npm registry (Verdaccio in Docker).
+
+```sh
+mkdir my-lib && cd my-lib && git init && npm init -y
+uvx copier@9.19.1 copy gh:pa-decarvalho/brigade .
+```
+
+In `.brigade/copier/data.yml`:
+
+```yaml
+ci: "github"
+npm_publish: true
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "zizmor"
+  - "biome"
+  - "osv-scanner"
+  - "node"
+  - "act"
+  - "releasaurus"
+  - "renovate"
+```
+
+| Stage | What runs |
+|---|---|
+| `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), TypeScript and JSON (`biome`: lint and formatting), vulnerable dependencies in `package-lock.json` (`osv-scanner`) |
+| `build` | `npm ci`, then your `build` script (`tsc`; Node.js installed by the `node` tool) |
+| `test` | `npm ci`, then your `test` script (`node --test`: Node runs `.ts` files), then the pull request workflows replayed in Docker (`act`) |
+| `release` | the release PR (it bumps `package.json`), then the tag (`releasaurus`) |
+| `deploy` | the package to npm (`node`, with `npm_publish: true`) |
+| `operate` | dependency updates, `package-lock.json` included (`renovate`) |
+
+The scripts in `package.json`:
+
+```json
+"scripts": {
+	"build": "tsc",
+	"test": "node --test",
+	"prepublishOnly": "npm run build"
+}
+```
+
+Your part: the code in `src/`, the tests, `package.json` with its scripts and a committed `package-lock.json`, a `tsconfig.json`, a `.gitignore` with `node_modules/` and `dist/`, an `.editorconfig`, the line `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` in `.npmrc`, and the secrets `NPM_TOKEN`, `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
+
+## React app
+
+A Vite React app in TypeScript, linted by ESLint, tested by Vitest, published to GitHub Pages on each release. Tested as the `react-github` variant.
+
+```sh
+npm create vite@latest my-app -- --template react-ts
+uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-app
+```
+
+In `.brigade/copier/data.yml`:
+
+```yaml
+ci: "github"
+pages_dir: "dist"
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "zizmor"
+  - "node"
+  - "act"
+  - "pages"
+  - "releasaurus"
+  - "renovate"
+```
+
+| Stage | What runs |
+|---|---|
+| `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), your `lint` script (`eslint .`, with its plugins as dependencies) |
+| `build` | `npm ci`, then your `build` script (`tsc && vite build`, into `dist/`) |
+| `test` | `npm ci`, then your `test` script, then the pull request workflows replayed in Docker (`act`) |
+| `release` | the release PR, then the tag (`releasaurus`) |
+| `deploy` | `dist/` to GitHub Pages (`pages`, with `pages_dir: dist`) |
+| `operate` | dependency updates, `package-lock.json` included (`renovate`) |
+
+Your `test` script must run once and exit: `"test": "vitest run"` (`vitest` alone watches the files and waits, except in CI). A Pages site at `https://<owner>.github.io/<repo>/` needs Vite's `base: "/<repo>/"`. Shipping the app as an image (nginx serving `dist/`) instead: the `docker` tool, as in [Docker image](#docker-image).
+
+`osv-scanner` checks `package-lock.json` too; with many dependencies, expect a new advisory to fail an unchanged project until Renovate or you update the package.
+
+**Angular** works the same way: `npm run build` (`ng build`, into `dist/<app>/browser/`: set `pages_dir` to it), `npm run lint` (`ng lint`, with angular-eslint), and a `test` script that runs once: `ng test --watch=false` (Karma also needs a headless Chrome: `--browsers=ChromeHeadless`). The Angular CLI is a dependency of the project, installed by `npm ci`.

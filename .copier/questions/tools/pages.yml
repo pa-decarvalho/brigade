@@ -1,4 +1,10 @@
 ---
+pages_dir:
+  type: str
+  help: "Folder your build writes the site to (zensical: site, Vite: dist)"
+  default: site
+  when: "{{ 'pages' in tools }}"
+
 pages_version:
   type: str
   help: ghp-import version (empty for brigade's)

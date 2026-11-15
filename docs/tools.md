@@ -83,6 +83,10 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | | `go:test` | `go test ./...` |
 | `docker` | `docker:build` | GitHub, Gitea, none: `docker build .` (Docker from the machine or the runner) |
 | | `docker:deploy` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [deploy](#deploy) |
+| `node` | `node:lint` | Installs Node.js; `npm ci && npm run lint --if-present`, for linters that are project dependencies (ESLint and its plugins) |
+| | `node:build` | `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
+| | `node:test` | `npm ci && npm test --if-present` |
+| | `node:deploy` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -96,7 +100,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
-| `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
+| `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
@@ -182,14 +186,16 @@ On GitHub and Gitea, it works with the CI's own token, but the release pull requ
 
 CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
 
-`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes `site/`: `zensical`, or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
+`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app: `pages_dir: dist`), or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
 
 - **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages, choose "Deploy from a branch" and `gh-pages`.
-- **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
+- **GitLab**: the job publishes the `pages_dir` folder with `pages.publish` (GitLab 17.10 or later).
 
 Add `site/` and `.cache/` to your `.gitignore`.
 
 `goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches the archives and their checksums to the release Releasaurus made for the tag (it needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a `GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your `.gitignore`. A manual run needs a tag at the checked out commit.
+
+`node:deploy` (the `node` tool, with the `npm_publish: true` answer) publishes the package with `npm publish`, once per tag: the version is the one in `package.json`, which Releasaurus bumps in the release PR. Build it in a `prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret (CI/CD variable on GitLab), and give npm the line that reads it in your `.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its host, and `publishConfig.registry` in `package.json`). A scoped public package needs `"publishConfig": {"access": "public"}`. A version already published fails: a manual run on the same tag does nothing new.
 
 `docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest` (`.brigade/scripts/docker-deploy.py`). The image is `DOCKER_IMAGE` (`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token (the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It needs Docker in CI, which brigade's GitLab image does not have: `docker` and `container-structure-test` are not offered on GitLab yet. A manual run needs a tag at the checked out commit.
 
