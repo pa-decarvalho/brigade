@@ -192,3 +192,53 @@ ENTRYPOINT ["/app/.venv/bin/my-app"]
 ```
 
 Your part: the code in `src/`, the tests in `tests/`, the `Dockerfile` and a `.dockerignore` (at least `.git`, `.venv`, `.mise-data`: a local `.venv` must not end up in the image), your image's tests in `.brigade/configs/container-structure-test.yaml`, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
+
+## TypeScript library
+
+A library with its tests, released by Releasaurus and published to npm on each release. JavaScript works the same: the `node` tool runs your `package.json` scripts, and a missing `build` script does nothing. Tested as the `node-github` variant, which publishes to a local npm registry (Verdaccio in Docker).
+
+```sh
+mkdir my-lib && cd my-lib && git init && npm init -y
+uvx copier@9.19.1 copy gh:pa-decarvalho/brigade .
+```
+
+In `.brigade/copier/data.yml`:
+
+```yaml
+ci: "github"
+npm_publish: true
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "zizmor"
+  - "biome"
+  - "osv-scanner"
+  - "node"
+  - "act"
+  - "releasaurus"
+  - "renovate"
+```
+
+| Stage | What runs |
+|---|---|
+| `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), TypeScript and JSON (`biome`: lint and formatting), vulnerable dependencies in `package-lock.json` (`osv-scanner`) |
+| `build` | `npm ci`, then your `build` script (`tsc`; Node.js installed by the `node` tool) |
+| `test` | `npm ci`, then your `test` script (`node --test`: Node runs `.ts` files), then the pull request workflows replayed in Docker (`act`) |
+| `release` | the release PR (it bumps `package.json`), then the tag (`releasaurus`) |
+| `deploy` | the package to npm (`node`, with `npm_publish: true`) |
+| `operate` | dependency updates, `package-lock.json` included (`renovate`) |
+
+The scripts in `package.json`:
+
+```json
+"scripts": {
+	"build": "tsc",
+	"test": "node --test",
+	"prepublishOnly": "npm run build"
+}
+```
+
+Your part: the code in `src/`, the tests, `package.json` with its scripts and a committed `package-lock.json`, a `tsconfig.json`, a `.gitignore` with `node_modules/` and `dist/`, an `.editorconfig`, the line `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` in `.npmrc`, and the secrets `NPM_TOKEN`, `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.

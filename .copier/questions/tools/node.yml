@@ -1,0 +1,30 @@
+---
+npm_publish:
+  type: bool
+  help: Publish the package to its npm registry on each release (node:deploy)?
+  default: false
+  when: "{{ 'node' in tools }}"
+
+node_version:
+  type: str
+  help: Node.js version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'node' in tools }}"
+
+node_build_command:
+  type: str
+  help: Command of node:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'node' in tools }}"
+
+node_test_command:
+  type: str
+  help: Command of node:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'node' in tools }}"
+
+node_deploy_command:
+  type: str
+  help: Command of node:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'node' in tools and npm_publish }}"
