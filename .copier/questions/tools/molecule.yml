@@ -2,10 +2,10 @@
 molecule_matrix:
   type: yaml
   help: >-
-    molecule scenarios with a CI job each (BRIGADE_UNIT, molecule -s;
-    empty: one job for all)
+    molecule scenarios with a CI job each, which splits the test stage into one
+    job per task (BRIGADE_UNIT, molecule -s; empty: one test job)
   default: []
-  when: "{{ ci_jobs == 'tool' and 'molecule' in tools }}"
+  when: "{{ ci != 'none' and 'molecule' in tools }}"
 
 molecule_version:
   type: str

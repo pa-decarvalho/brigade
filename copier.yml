@@ -4,3 +4,5 @@
 !include .copier/questions/common.yml
 ---
 !include .copier/questions/tools/*.yml
+---
+!include .copier/questions/computed.yml

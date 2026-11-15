@@ -6,8 +6,8 @@
 
 # mise exec puts Molecule's ansible-playbook first in PATH: the ansible tool's has no docker library.
 [tasks."molecule:test"]
-{%- if ci_jobs == 'tool' and molecule_matrix %}
-# One CI job per unit (ci_jobs: tool, molecule_matrix): .brigade/scripts/ci_jobs.py reads them here.
+{%- if molecule_matrix %}
+# One CI job per unit (molecule_matrix): .brigade/scripts/ci_jobs.py reads them here.
 env = { BRIGADE_MATRIX = '{{ molecule_matrix | tojson }}' }
 {%- endif %}
 description = "Test Ansible roles and playbooks with Molecule, in Docker"

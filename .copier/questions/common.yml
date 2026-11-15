@@ -198,17 +198,6 @@ operate_schedule:
 
 # Asks a version and a command per selected tool (questions/tools/).
 # An empty answer takes brigade's default, which is in the tool's Jinja file.
-ci_jobs:
-  type: str
-  help: >-
-    CI jobs of a stage: one running the stage (mise runs its tasks in parallel),
-    or one per task, in parallel on separate runners
-  choices:
-    one per stage: stage
-    one per task: tool
-  default: stage
-  when: "{{ ci != 'none' }}"
-
 customize_tools:
   type: bool
   help: Customize tool versions and commands?

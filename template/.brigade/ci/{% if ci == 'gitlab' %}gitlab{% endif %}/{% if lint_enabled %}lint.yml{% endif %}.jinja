@@ -1,10 +1,10 @@
 ---
 # Runs in merge request pipelines, next to the other stages.
-{%- if ci_jobs == 'tool' %}
-# ci_jobs tool: lint-plan writes one job per task, lint runs them
-# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
-# GitLab tool cache, which the linters skip).
-lint-plan:
+{%- if 'lint' in split_stages %}
+# A split stage (a tool's matrix): lint-matrix writes one job per task
+# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
+# the linters skip), and lint runs them as a child pipeline.
+lint-matrix:
   stage: lint
   needs: []
   rules:
@@ -21,14 +21,14 @@ lint-plan:
 {%- endif %}
 lint:
   stage: lint
-  needs: {% if ci_jobs == 'tool' %}[lint-plan]{% else %}[]{% endif %}
+  needs: {% if 'lint' in split_stages %}[lint-matrix]{% else %}[]{% endif %}
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-{%- if ci_jobs == 'tool' %}
+{%- if 'lint' in split_stages %}
   trigger:
     include:
       - artifact: .mise-data/lint-jobs.yml
-        job: lint-plan
+        job: lint-matrix
     strategy: depend
 {%- else %}
   script:

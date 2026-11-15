@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-{% endraw %}{% with stage = 'deploy' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  deploy:
+{% endraw %}{% with stage = 'deploy' %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~matrix.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  deploy:
 {% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -26,7 +26,7 @@ jobs:
           persist-credentials: true # pages:deploy pushes with git
       - uses: ./.brigade/ci/gitea/actions/deploy
 {% endraw %}{% raw %}        with:
-{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}          task: ${{ matrix.task }}
+{% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
           unit: ${{ matrix.unit }}
 {% endraw %}{% endif %}{% raw %}          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
@@ -36,4 +36,4 @@ jobs:
           npm-token: ${{ secrets.NPM_TOKEN }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
-{% endraw %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}
+{% endraw %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

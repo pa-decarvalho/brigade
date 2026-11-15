@@ -4,10 +4,10 @@ name: test
 description: mise run test, with the project's tools
 inputs:
   task:
-    description: The task to run (ci_jobs tool), else the stage
+    description: The task to run (a split stage), else the stage
     default: test
   unit:
-    description: BRIGADE_UNIT, the unit of the task (ci_jobs tool)
+    description: BRIGADE_UNIT, the unit of the task (a split stage)
     default: ""
 runs:
   using: composite

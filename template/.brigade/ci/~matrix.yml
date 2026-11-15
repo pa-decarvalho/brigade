@@ -1,11 +1,11 @@
-  # ci_jobs tool: the stage's jobs, one per task (.brigade/scripts/ci_jobs.py).
-  plan:
+  # A split stage: its jobs, one per task or unit (.brigade/scripts/ci_jobs.py).
+  matrix:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     timeout-minutes: 10
     outputs:
-      jobs: {% raw %}${{ steps.plan.outputs.jobs }}{% endraw %}
+      jobs: {% raw %}${{ steps.jobs.outputs.jobs }}{% endraw %}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -20,7 +20,7 @@
 {%- else %}
       - uses: ./.brigade/ci/{{ ci }}/actions/mise
 {%- endif %}
-      - id: plan
+      - id: jobs
         shell: bash
         run: >-
           echo "jobs=$(mise exec uv -- uv run --no-project python

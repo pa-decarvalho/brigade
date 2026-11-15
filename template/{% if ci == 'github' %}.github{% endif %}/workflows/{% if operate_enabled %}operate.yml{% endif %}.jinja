@@ -15,7 +15,7 @@ on:
   contents: read
 
 jobs:
-{% endraw %}{% with stage = 'operate' %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~plan.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  operate:
+{% endraw %}{% with stage = 'operate' %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~matrix.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  operate:
 {% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -25,9 +25,9 @@ jobs:
       - name: mise run operate # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/operate
         with:
-{% endraw %}{% if ci_jobs == 'tool' %}{% raw %}          task: ${{ matrix.task }}
+{% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
           unit: ${{ matrix.unit }}
 {% endraw %}{% endif %}{% raw %}          renovate-token: ${{ secrets.RENOVATE_TOKEN }}
           ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-{% endraw %}{% if ci_jobs == 'tool' %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}
+{% endraw %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}

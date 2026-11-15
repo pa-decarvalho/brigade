@@ -1,11 +1,11 @@
 ---
 # Scheduled pipelines only (CI/CD > Schedules, "Play" to run it now):
 # mise run operate, e.g. Renovate with a RENOVATE_TOKEN CI/CD variable.
-{%- if ci_jobs == 'tool' %}
-# ci_jobs tool: operate-plan writes one job per task, operate runs them
-# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
-# GitLab tool cache, which the linters skip).
-operate-plan:
+{%- if 'operate' in split_stages %}
+# A split stage (a tool's matrix): operate-matrix writes one job per task
+# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
+# the linters skip), and operate runs them as a child pipeline.
+operate-matrix:
   stage: operate
   needs: []
   rules:
@@ -22,7 +22,7 @@ operate-plan:
 {%- endif %}
 operate:
   stage: operate
-  needs: {% if ci_jobs == 'tool' %}[operate-plan]{% else %}[]{% endif %}
+  needs: {% if 'operate' in split_stages %}[operate-matrix]{% else %}[]{% endif %}
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   variables:
@@ -30,11 +30,11 @@ operate:
     RENOVATE_ENDPOINT: $CI_API_V4_URL
     RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
     RENOVATE_ONBOARDING: "false"
-{%- if ci_jobs == 'tool' %}
+{%- if 'operate' in split_stages %}
   trigger:
     include:
       - artifact: .mise-data/operate-jobs.yml
-        job: operate-plan
+        job: operate-matrix
     strategy: depend
 {%- else %}
   script:

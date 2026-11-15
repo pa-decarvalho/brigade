@@ -1,9 +1,9 @@
 ---
-{%- if ci_jobs == 'tool' and 'pages' not in tools %}
-# ci_jobs tool: deploy-plan writes one job per task, deploy runs them
-# as a child pipeline (.brigade/scripts/ci_jobs.py; in .mise-data/, the
-# GitLab tool cache, which the linters skip).
-deploy-plan:
+{%- if 'deploy' in split_stages and 'pages' not in tools %}
+# A split stage (a tool's matrix): deploy-matrix writes one job per task
+# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
+# the linters skip), and deploy runs them as a child pipeline.
+deploy-matrix:
   stage: deploy
   rules:
     - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/
@@ -21,18 +21,18 @@ deploy-plan:
 {%- endif %}
 deploy:
   stage: deploy
-{%- if ci_jobs == 'tool' and 'pages' not in tools %}
-  needs: [deploy-plan]
+{%- if 'deploy' in split_stages and 'pages' not in tools %}
+  needs: [deploy-matrix]
 {%- endif %}
   rules:
     - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/
     # "Run pipeline": deploy without a release, e.g. a typo in the docs.
     - if: $CI_PIPELINE_SOURCE == "web"
-{%- if ci_jobs == 'tool' and 'pages' not in tools %}
+{%- if 'deploy' in split_stages and 'pages' not in tools %}
   trigger:
     include:
       - artifact: .mise-data/deploy-jobs.yml
-        job: deploy-plan
+        job: deploy-matrix
     strategy: depend
 {%- else %}
   script:

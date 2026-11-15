@@ -2,10 +2,10 @@
 ctt_matrix:
   type: yaml
   help: >-
-    ctt variants with a CI job each (BRIGADE_UNIT, ctt -t;
-    empty: one job for all)
+    ctt variants with a CI job each, which splits the test stage into one
+    job per task (BRIGADE_UNIT, ctt -t; empty: one test job)
   default: []
-  when: "{{ ci_jobs == 'tool' and 'ctt' in tools }}"
+  when: "{{ ci != 'none' and 'ctt' in tools }}"
 
 ctt_version:
   type: str

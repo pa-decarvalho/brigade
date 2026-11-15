@@ -1,4 +1,4 @@
-"""ci_jobs: the CI jobs of a stage, one per task (ci_jobs: tool).
+"""ci_jobs: the CI jobs of a split stage, one per task (a tool has a matrix).
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 Usage: ci_jobs.py <stage> [--gitlab <file>]. Everything comes from mise (mise tasks ls):
