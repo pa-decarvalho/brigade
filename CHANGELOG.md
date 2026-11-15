@@ -1,3 +1,13 @@
+# [0.20.0](https://github.com/pa-decarvalho/brigade/compare/0.19.0...0.20.0) - 2026-11-15
+
+### 🚀 Features
+
+- one CI job per task (ci_jobs: tool), with molecule and ctt matrices (#216) [_(30ff278)_](https://github.com/pa-decarvalho/brigade/commit/30ff278fe5bf9007e6a2ff5f57b9909b8508278e)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update dependency cspell to v10.5.1 (#214) [_(e6ac67c)_](https://github.com/pa-decarvalho/brigade/commit/e6ac67cd3b5ecbac68a8cd5a3282647f06ab8fc8)
+
 # [0.19.0](https://github.com/pa-decarvalho/brigade/compare/0.18.0...0.19.0) - 2026-11-15
 
 ### 🚀 Features
