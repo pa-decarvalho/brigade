@@ -31,7 +31,6 @@ tools:
   - "ty"
   - "osv-scanner"
   - "pytest"
-  - "act"
   - "uv"
   - "zensical"
   - "pages"
@@ -43,7 +42,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, TOML, Markdown, spelling, `.editorconfig`, secrets, workflows (`zizmor`), Python (`ruff`, `ty`), vulnerable dependencies in `uv.lock` (`osv-scanner`) |
 | `build` | the package (`uv build`) and the docs site (`zensical`) |
-| `test` | `pytest`, then the pull request workflows replayed in Docker (`act`) |
+| `test` | `pytest` |
 | `release` | the release PR, then the tag (`releasaurus`) |
 | `deploy` | the docs to GitHub Pages (`pages`), the package to PyPI (`uv`, with `uv_publish: true`) |
 | `operate` | dependency updates (`renovate`) |
@@ -77,7 +76,6 @@ tools:
   - "revive"
   - "osv-scanner"
   - "go"
-  - "act"
   - "goreleaser"
   - "releasaurus"
   - "renovate"
@@ -87,7 +85,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), Go (`golangci-lint`, `revive`), vulnerable modules (`osv-scanner`) |
 | `build` | `go build ./...` (Go installed by the `go` tool) |
-| `test` | `go test ./...`, then the pull request workflows replayed in Docker (`act`) |
+| `test` | `go test ./...` |
 | `release` | the release PR, then the tag (`releasaurus`) |
 | `deploy` | the binaries and their checksums attached to the release (`goreleaser`) |
 | `operate` | dependency updates (`renovate`) |
@@ -96,7 +94,7 @@ Your part: the Go code and its tests, a `.gitignore` with `dist/` and the binary
 
 ## Docker image
 
-An image with its structure tests, released by Releasaurus and pushed to a registry on each release (`ghcr.io` on GitHub). Tested as the `docker-github` variant, which pushes to a local registry in Docker.
+An image with its structure tests, released by Releasaurus and pushed to a registry on each release (`ghcr.io` on GitHub). Tested through the [Python app in Docker](#python-app-in-docker) variant, which builds, checks and pushes its image the same way.
 
 ```sh
 mkdir my-image && cd my-image && git init
@@ -119,7 +117,6 @@ tools:
   - "checkov"
   - "docker"
   - "container-structure-test"
-  - "act"
   - "releasaurus"
   - "renovate"
 ```
@@ -128,7 +125,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), the Dockerfile (`hadolint`, `checkov`), vulnerable dependencies and secrets (`trivy`) |
 | `build` | `docker build .` |
-| `test` | the image's content (`container-structure-test`), then the pull request workflows replayed in Docker (`act`) |
+| `test` | the image's content (`container-structure-test`) |
 | `release` | the release PR, then the tag (`releasaurus`) |
 | `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, the `FROM` images included (`renovate`) |
@@ -163,7 +160,6 @@ tools:
   - "pytest"
   - "docker"
   - "container-structure-test"
-  - "act"
   - "releasaurus"
   - "renovate"
 ```
@@ -172,7 +168,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), Python (`ruff`, `ty`), vulnerable dependencies in `uv.lock` (`osv-scanner`), the Dockerfile (`hadolint`, `checkov`) |
 | `build` | `docker build .` |
-| `test` | `pytest`, the image's content (`container-structure-test`), then the pull request workflows replayed in Docker (`act`) |
+| `test` | `pytest`, the image's content (`container-structure-test`) |
 | `release` | the release PR (it bumps `pyproject.toml`), then the tag (`releasaurus`) |
 | `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, `uv.lock` and the `FROM` image included (`renovate`) |
@@ -217,7 +213,6 @@ tools:
   - "biome"
   - "osv-scanner"
   - "node"
-  - "act"
   - "releasaurus"
   - "renovate"
 ```
@@ -226,7 +221,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), TypeScript and JSON (`biome`: lint and formatting), vulnerable dependencies in `package-lock.json` (`osv-scanner`) |
 | `build` | `npm ci`, then your `build` script (`tsc`; Node.js installed by the `node` tool) |
-| `test` | `npm ci`, then your `test` script (`node --test`: Node runs `.ts` files), then the pull request workflows replayed in Docker (`act`) |
+| `test` | `npm ci`, then your `test` script (`node --test`: Node runs `.ts` files) |
 | `release` | the release PR (it bumps `package.json`), then the tag (`releasaurus`) |
 | `deploy` | the package to npm (`node`, with `npm_publish: true`) |
 | `operate` | dependency updates, `package-lock.json` included (`renovate`) |
@@ -265,7 +260,6 @@ tools:
   - "editorconfig-checker"
   - "zizmor"
   - "node"
-  - "act"
   - "pages"
   - "releasaurus"
   - "renovate"
@@ -275,7 +269,7 @@ tools:
 |---|---|
 | `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), your `lint` script (`eslint .`, with its plugins as dependencies) |
 | `build` | `npm ci`, then your `build` script (`tsc && vite build`, into `dist/`) |
-| `test` | `npm ci`, then your `test` script, then the pull request workflows replayed in Docker (`act`) |
+| `test` | `npm ci`, then your `test` script |
 | `release` | the release PR, then the tag (`releasaurus`) |
 | `deploy` | `dist/` to GitHub Pages (`pages`, with `pages_dir: dist`) |
 | `operate` | dependency updates, `package-lock.json` included (`renovate`) |
