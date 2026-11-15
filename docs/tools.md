@@ -83,7 +83,8 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | | `go:test` | `go test ./...` |
 | `docker` | `docker:build` | GitHub, Gitea, none: `docker build .` (Docker from the machine or the runner) |
 | | `docker:deploy` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [deploy](#deploy) |
-| `node` | `node:build` | Installs Node.js; `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
+| `node` | `node:lint` | Installs Node.js; `npm ci && npm run lint --if-present`, for linters that are project dependencies (ESLint and its plugins) |
+| | `node:build` | `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
 | | `node:test` | `npm ci && npm test --if-present` |
 | | `node:deploy` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
@@ -99,7 +100,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
-| `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes `site/`. GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
+| `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
@@ -185,10 +186,10 @@ On GitHub and Gitea, it works with the CI's own token, but the release pull requ
 
 CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
 
-`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes `site/`: `zensical`, or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
+`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app: `pages_dir: dist`), or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
 
 - **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages, choose "Deploy from a branch" and `gh-pages`.
-- **GitLab**: the job publishes `site/` with `pages.publish` (GitLab 17.10 or later).
+- **GitLab**: the job publishes the `pages_dir` folder with `pages.publish` (GitLab 17.10 or later).
 
 Add `site/` and `.cache/` to your `.gitignore`.
 

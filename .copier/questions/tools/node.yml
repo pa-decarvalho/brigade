@@ -11,6 +11,12 @@ node_version:
   default: ""
   when: "{{ customize_tools and 'node' in tools }}"
 
+node_lint_command:
+  type: str
+  help: Command of node:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'node' in tools }}"
+
 node_build_command:
   type: str
   help: Command of node:build (empty for brigade's)

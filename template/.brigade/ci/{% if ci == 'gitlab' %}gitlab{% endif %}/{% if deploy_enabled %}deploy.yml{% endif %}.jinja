@@ -9,5 +9,5 @@ deploy:
     - mise run deploy
 {%- if 'pages' in tools %}
   pages:
-    publish: site
+    publish: {{ pages_dir }}
 {%- endif %}

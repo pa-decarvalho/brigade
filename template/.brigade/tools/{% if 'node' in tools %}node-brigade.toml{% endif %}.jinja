@@ -5,6 +5,12 @@ node = "{{ node_version | default('26.13.1', true) }}"
 # npm installs the project's dependencies from package-lock.json (npm ci), then runs its
 # package.json scripts; a missing script does nothing (--if-present).
 
+[tasks."node:lint"]
+description = "Install the dependencies and run the lint script (ESLint...)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# For linters whose config and plugins are project dependencies (ESLint).
+run = '''{{ node_lint_command | default('npm ci && npm run lint --if-present', true) }}'''
+
 [tasks."node:build"]
 description = "Install the dependencies and run the build script"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
