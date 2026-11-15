@@ -1,3 +1,9 @@
+# [0.20.1](https://github.com/pa-decarvalho/brigade/compare/0.20.0...0.20.1) - 2026-11-15
+
+### 🐛 Bug Fixes
+
+- split the test stage only for tools with a matrix, read the jobs from mise (#218) [_(8c76e9c)_](https://github.com/pa-decarvalho/brigade/commit/8c76e9c993c50d64a394dd3a13410280f566c1c2)
+
 # [0.20.0](https://github.com/pa-decarvalho/brigade/compare/0.19.0...0.20.0) - 2026-11-15
 
 ### 🚀 Features
