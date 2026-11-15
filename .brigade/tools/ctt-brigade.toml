@@ -8,4 +8,4 @@ env = { BRIGADE_MATRIX = '[".ctt/python-github", ".ctt/go-github", ".ctt/python-
 description = "Render every ctt.toml variant of this Copier template"
 dir = "{{config_root}}/../.."
 # BRIGADE_UNIT (a CI job of ctt_matrix): that variant only.
-run = '''uv run --no-project python -c "import shutil; shutil.rmtree('.ctt', ignore_errors=True)" && ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t {{ get_env(name="BRIGADE_UNIT") }}{% endif %}'''
+run = '''uv run --no-project python -c "import os, shutil, subprocess, sys; shutil.rmtree('.ctt', ignore_errors=True); unit = os.environ.pop('BRIGADE_UNIT', ''); sys.exit(subprocess.call(['ctt', *(['-t', unit] if unit else [])]))"'''

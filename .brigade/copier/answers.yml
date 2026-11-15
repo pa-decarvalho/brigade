@@ -21,9 +21,9 @@ ctt_matrix:
 - .ctt/none-github
 - .ctt/template-github
 - .ctt/ansible-github
-ctt_test_command: uv run --no-project python -c "import shutil; shutil.rmtree('.ctt',
-    ignore_errors=True)" && ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t
-    {{ get_env(name="BRIGADE_UNIT") }}{% endif %}
+ctt_test_command: uv run --no-project python -c "import os, shutil, subprocess, sys;
+    shutil.rmtree('.ctt', ignore_errors=True); unit = os.environ.pop('BRIGADE_UNIT',
+    ''); sys.exit(subprocess.call(['ctt', *(['-t', unit] if unit else [])]))"
 ctt_version: ''
 customize_tools: true
 deploy_commands: []
