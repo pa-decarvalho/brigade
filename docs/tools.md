@@ -81,10 +81,13 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
 | `go` | `go:build` | Installs Go; `go build ./...` (a main package at the root writes its binary there: ignore it) |
 | | `go:test` | `go test ./...` |
+| `docker` | `docker:build` | GitHub, Gitea, none: `docker build .` (Docker from the machine or the runner) |
+| | `docker:deploy` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [deploy](#deploy) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
+| `container-structure-test` | `container-structure-test:test` | GitHub, Gitea, none: builds the image, then checks its content with your tests ([config](#tool-configs): a placeholder test until you write yours) |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `molecule` | `molecule:test` | `molecule test --all`, with the Docker driver (needs your `molecule/<scenario>/molecule.yml` and Docker: see [Molecule](#molecule)) |
 | | `molecule:converge`, `molecule:verify`, `molecule:destroy` | `molecule converge`, `verify`, `destroy`, while writing a role |
@@ -121,6 +124,7 @@ Tools that read a config file get one in `.brigade/configs/`, created with briga
 | `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
 | `goreleaser` | `.brigade/configs/goreleaser.yaml` | `.goreleaser.yaml`: not read |
+| `container-structure-test` | `.brigade/configs/container-structure-test.yaml` | none: your image's tests |
 | `cspell` | `.brigade/configs/cspell.yaml` | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | `.ls-lint.yml`: not read |
 
@@ -135,7 +139,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 - `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
 - `ansible-lint`, `molecule`, `ansible`: Ansible does not run on Windows (use WSL).
-- `act`, `gitlab-ci-local`: need Docker with Linux containers (Docker Desktop, WSL 2).
+- `act`, `gitlab-ci-local`, `docker`, `container-structure-test`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
 
@@ -186,6 +190,8 @@ CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones R
 Add `site/` and `.cache/` to your `.gitignore`.
 
 `goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches the archives and their checksums to the release Releasaurus made for the tag (it needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a `GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your `.gitignore`. A manual run needs a tag at the checked out commit.
+
+`docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest` (`.brigade/scripts/docker-deploy.py`). The image is `DOCKER_IMAGE` (`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token (the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It needs Docker in CI, which brigade's GitLab image does not have: `docker` and `container-structure-test` are not offered on GitLab yet. A manual run needs a tag at the checked out commit.
 
 `uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the Python package built by uv (`uv build --clear && uv publish`), once per tag: the version is the one in `pyproject.toml`, which Releasaurus bumps in the release PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus, Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml` (`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD variable on GitLab): the index's token (on PyPI, an API token scoped to the project once it exists); or, for an index with a user and a password (Nexus...), `UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL (`https://pypi.org/simple/`), which skips the files already there.
 

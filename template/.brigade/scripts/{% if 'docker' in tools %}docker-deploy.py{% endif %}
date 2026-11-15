@@ -1,0 +1,63 @@
+"""docker:deploy: build the image of the tagged commit and push it to its registry.
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+The image is DOCKER_IMAGE (registry/owner/name), else the CI's repository: ghcr.io on
+GitHub, the server itself on Gitea. It is tagged with the git tag (X.Y.Z) and latest.
+Login: DOCKER_USERNAME and DOCKER_PASSWORD, else the workflow token for ghcr.io; none
+for a registry that needs none.
+"""
+
+import os
+import subprocess
+import sys
+import urllib.parse
+
+
+def main() -> int:
+    tag = subprocess.run(
+        ["git", "describe", "--tags", "--exact-match"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if tag.returncode:
+        print(
+            "docker:deploy: no tag on this commit (deploy runs on X.Y.Z tags)",
+            file=sys.stderr,
+        )
+        return 1
+    version = tag.stdout.strip()
+    image = os.environ.get("DOCKER_IMAGE") or ci_image()
+    if not image:
+        print("docker:deploy: set DOCKER_IMAGE (registry/owner/name)", file=sys.stderr)
+        return 1
+    registry = image.split("/")[0]
+    user = os.environ.get("DOCKER_USERNAME", "")
+    password = os.environ.get("DOCKER_PASSWORD", "")
+    if not password and registry == "ghcr.io":
+        user, password = (
+            os.environ.get("GITHUB_ACTOR", ""),
+            os.environ.get("GITHUB_TOKEN", ""),
+        )
+    if password:
+        login = ["docker", "login", registry, "-u", user, "--password-stdin"]
+        subprocess.run(login, input=password, text=True, check=True)
+    tags = [f"{image}:{version}", f"{image}:latest"]
+    subprocess.run(["docker", "build", *(f"--tag={t}" for t in tags), "."], check=True)
+    for t in tags:
+        subprocess.run(["docker", "push", t], check=True)
+    return 0
+
+
+def ci_image() -> str:
+    """The CI's repository as an image name (GitHub and Gitea set these variables)."""
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    if not repository:
+        return ""
+    server = urllib.parse.urlparse(os.environ.get("GITHUB_SERVER_URL", "")).netloc
+    host = "ghcr.io" if server in ("", "github.com") else server
+    return f"{host}/{repository}".lower()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

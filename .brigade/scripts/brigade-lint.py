@@ -47,8 +47,14 @@ def main() -> int:
         return match.group(1).strip().strip("'\"")
 
     src = answer("_src_path")
+    here = pathlib.Path(src).is_dir()
+    if not here and not re.search(r"^_commit:", text, re.MULTILINE):
+        # A template copied without git (brigade's own tests), not reachable here: a CI
+        # replay in Docker. A template from a git URL always has a _commit.
+        print(f"brigade:lint: template {src} not found here, skipped")
+        return 0
     # A local template (brigade's own tests) is rendered as it is now, as Copier did.
-    ref = "HEAD" if pathlib.Path(src).is_dir() else answer("_commit")
+    ref = "HEAD" if here else answer("_commit")
     # Copier clones the template with git: drop this repository's git variables, which
     # a git hook sets (a relative GIT_INDEX_FILE breaks the clone).
     local = subprocess.run(
