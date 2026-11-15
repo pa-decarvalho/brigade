@@ -60,6 +60,64 @@ _post_tasks = [
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\nnames = [p.name for p in pathlib.Path('dist').iterdir()]\nassert any('linux_amd64' in n for n in names) and any('windows_amd64' in n for n in names) and any(n.endswith('checksums.txt') for n in names), names"],
 ]
 
+[output.".ctt/docker-github"]
+# The Docker example: an image with its structure tests, pushed to a registry on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hadolint", "trivy", "checkov", "docker", "container-structure-test", "act", "releasaurus", "renovate"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The project's files: a Dockerfile, its structure tests (the brigade-created file, now the project's), .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('Dockerfile').write_text('FROM busybox:1.37\\nUSER 65534\\nHEALTHCHECK NONE\\nCMD [\"echo\", \"demo\"]\\n')\npathlib.Path('.dockerignore').write_text('.git\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo image.\\n')\npathlib.Path('.brigade/configs/container-structure-test.yaml').write_text('---\\nschemaVersion: 2.0.0\\nmetadataTest:\\n  user: \"65534\"\\n  cmd: [\"echo\", \"demo\"]\\ncommandTests:\\n  - name: echo\\n    command: echo\\n    args: [demo]\\n    expectedOutput: [demo]\\n')\n"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # docker:deploy on a tag, to a local registry (registry in Docker, on 127.0.0.1 only): X.Y.Z and latest.
+    ["docker", "rm", "-f", "brigade-ctt-registry"],
+    ["docker", "run", "-d", "--name", "brigade-ctt-registry", "-p", "127.0.0.1:5099:5000", "registry:3.0.0"],
+    ["uv", "run", "--no-project", "python", "-c", "import time, urllib.request\nfor _ in range(60):\n    try:\n        urllib.request.urlopen('http://127.0.0.1:5099/v2/'); break\n    except OSError:\n        time.sleep(1)\nelse:\n    raise SystemExit('registry did not start')"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.1.0"],
+    ["env", "DOCKER_IMAGE=127.0.0.1:5099/demo", "mise", "run", "docker:deploy"],
+    ["uv", "run", "--no-project", "python", "-c", "import json, urllib.request\ntags = json.load(urllib.request.urlopen('http://127.0.0.1:5099/v2/demo/tags/list'))['tags']\nassert sorted(tags) == ['0.1.0', 'latest'], tags"],
+    ["docker", "rm", "-f", "brigade-ctt-registry"],
+    ["docker", "rmi", "127.0.0.1:5099/demo:0.1.0", "127.0.0.1:5099/demo:latest", "brigade-structure-test"],
+]
+
+[output.".ctt/python-docker-github"]
+# The Python app example: an app shipped as a Docker image, tested as code and as an image.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ruff", "ty", "osv-scanner", "hadolint", "checkov", "pytest", "docker", "container-structure-test", "act", "releasaurus", "renovate"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    ["uv", "init", "--package", "--vcs", "none", "--name", "demo"],
+    ["uv", "add", "--dev", "pytest==9.2.0"],
+    # The project's files: a Dockerfile installing the app with uv, its .dockerignore, a test, the image's structure tests, .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('tests').mkdir()\npathlib.Path('Dockerfile').write_text('FROM ghcr.io/astral-sh/uv:0.13.8-python3.14-trixie-slim\\nWORKDIR /app\\nENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_NO_CACHE=1\\nCOPY pyproject.toml uv.lock README.md ./\\nCOPY src ./src\\nRUN uv sync --frozen --no-dev\\nUSER 65534\\nHEALTHCHECK NONE\\nENTRYPOINT [\"/app/.venv/bin/demo\"]\\n')\npathlib.Path('.dockerignore').write_text('.git\\n.venv\\n.mise-data\\n.ruff_cache\\n.pytest_cache\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo app, shipped as a Docker image.\\n')\npathlib.Path('tests/test_main.py').write_text('import demo\\n\\n\\ndef test_main(capsys):\\n    demo.main()\\n    assert capsys.readouterr().out == \"Hello from demo!\\\\n\"\\n')\npathlib.Path('.brigade/configs/container-structure-test.yaml').write_text('---\\nschemaVersion: 2.0.0\\nmetadataTest:\\n  user: \"65534\"\\n  entrypoint: [\"/app/.venv/bin/demo\"]\\ncommandTests:\\n  - name: the app runs\\n    command: /app/.venv/bin/demo\\n    expectedOutput: [\"Hello from demo!\"]\\n')\n"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # docker:deploy on a tag, to a local registry (registry in Docker, on 127.0.0.1 only): X.Y.Z and latest.
+    ["docker", "rm", "-f", "brigade-ctt-registry"],
+    ["docker", "run", "-d", "--name", "brigade-ctt-registry", "-p", "127.0.0.1:5099:5000", "registry:3.0.0"],
+    ["uv", "run", "--no-project", "python", "-c", "import time, urllib.request\nfor _ in range(60):\n    try:\n        urllib.request.urlopen('http://127.0.0.1:5099/v2/'); break\n    except OSError:\n        time.sleep(1)\nelse:\n    raise SystemExit('registry did not start')"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.1.0"],
+    ["env", "DOCKER_IMAGE=127.0.0.1:5099/demo", "mise", "run", "docker:deploy"],
+    ["uv", "run", "--no-project", "python", "-c", "import json, urllib.request\ntags = json.load(urllib.request.urlopen('http://127.0.0.1:5099/v2/demo/tags/list'))['tags']\nassert sorted(tags) == ['0.1.0', 'latest'], tags"],
+    ["docker", "rm", "-f", "brigade-ctt-registry"],
+    ["docker", "rmi", "127.0.0.1:5099/demo:0.1.0", "127.0.0.1:5099/demo:latest", "brigade-structure-test"],
+]
+
 [output.".ctt/python-gitlab"]
 tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "gitlab-ci-local", "zensical", "pages"]
 ci = "gitlab"

@@ -1,0 +1,14 @@
+# Docker itself (the CLI and its daemon) comes from the machine or the CI runner.
+
+[tasks."docker:build"]
+description = "Build the Docker image"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ docker_build_command | default('docker build .', true) }}'''
+
+[tasks."docker:deploy"]
+description = "Build the image of the tagged commit and push it to its registry"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Tags X.Y.Z and latest. The image: DOCKER_IMAGE, else the CI's repository on ghcr.io
+# (GitHub) or on the Gitea server; login: DOCKER_USERNAME and DOCKER_PASSWORD, else
+# GitHub's workflow token for ghcr.io.
+run = '''{{ docker_deploy_command | default('uv run --no-project python .brigade/scripts/docker-deploy.py', true) }}'''

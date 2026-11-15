@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=GoogleContainerTools/container-structure-test
+"aqua:GoogleContainerTools/container-structure-test" = "{{ container_structure_test_version | default('1.22.1', true) }}"
+
+[tasks."container-structure-test:test"]
+description = "Build the Docker image and check its content with container-structure-test"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Tests: .brigade/configs/container-structure-test.yaml (the project's). Needs Docker.
+run = '''{{ container_structure_test_test_command | default('docker build --tag=brigade-structure-test . && container-structure-test test --image brigade-structure-test --config .brigade/configs/container-structure-test.yaml', true) }}'''

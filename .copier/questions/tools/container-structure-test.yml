@@ -1,0 +1,12 @@
+---
+container_structure_test_version:
+  type: str
+  help: container-structure-test version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'container-structure-test' in tools }}"
+
+container_structure_test_test_command:
+  type: str
+  help: Command of container-structure-test:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'container-structure-test' in tools }}"

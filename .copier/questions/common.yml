@@ -74,9 +74,19 @@ tools:
     ansible-lint (lint): ansible-lint
     uv (build): uv
     go (build, test): go
+    docker (build, deploy):
+      value: docker
+      validator: >-
+        {% if ci == 'gitlab' %}needs a Docker daemon in CI: not on
+        GitLab yet{% endif %}
     zensical (build, serve): zensical
     pytest (test): pytest
     molecule (test): molecule
+    container-structure-test (test):
+      value: container-structure-test
+      validator: >-
+        {% if ci == 'gitlab' %}needs a Docker daemon in CI: not on
+        GitLab yet{% endif %}
     ctt (test): ctt
     releasaurus (release): releasaurus
     ansible (deploy, operate): ansible

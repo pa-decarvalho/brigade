@@ -32,3 +32,6 @@ jobs:
         with:
           ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          uv-publish-token: ${{ secrets.UV_PUBLISH_TOKEN }}
+          uv-publish-username: ${{ secrets.UV_PUBLISH_USERNAME }}
+          uv-publish-password: ${{ secrets.UV_PUBLISH_PASSWORD }}

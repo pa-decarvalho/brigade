@@ -1,0 +1,18 @@
+---
+# container-structure-test tests:
+# container-structure-test test --config .brigade/configs/container-structure-test.yaml
+# Yours: brigade created it once and never changes it.
+# Write your image's tests here (https://github.com/GoogleContainerTools/container-structure-test):
+#   metadataTest:
+#     user: "65534"
+#   commandTests:
+#     - name: version
+#       command: my-app
+#       args: [--version]
+schemaVersion: 2.0.0
+# A placeholder that passes on any image (container-structure-test needs one test):
+# replace it with yours.
+fileExistenceTests:
+  - name: root
+    path: /
+    shouldExist: true

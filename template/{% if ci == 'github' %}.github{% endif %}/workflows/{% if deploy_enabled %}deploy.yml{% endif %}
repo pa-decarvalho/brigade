@@ -23,6 +23,7 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write # pages:deploy pushes the gh-pages branch
+      packages: write # docker:deploy pushes to ghcr.io
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,3 +36,5 @@ jobs:
           uv-publish-token: ${{ secrets.UV_PUBLISH_TOKEN }}
           uv-publish-username: ${{ secrets.UV_PUBLISH_USERNAME }}
           uv-publish-password: ${{ secrets.UV_PUBLISH_PASSWORD }}
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
