@@ -15,7 +15,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  # One job per command of the stage (<stage>_jobs: the <stage>-<n>
+  # tasks), in parallel.
+  run:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "mise run ctt:test -- -t .ctt/python-github"
+            task: test-1
+          - name: "mise run ctt:test -- -t .ctt/go-github"
+            task: test-2
+          - name: "mise run ctt:test -- -t .ctt/python-docker-github"
+            task: test-3
+          - name: "mise run ctt:test -- -t .ctt/node-github"
+            task: test-4
+          - name: "mise run ctt:test -- -t .ctt/react-github"
+            task: test-5
+          - name: "mise run ctt:test -- -t .ctt/python-gitlab"
+            task: test-6
+          - name: "mise run ctt:test -- -t .ctt/template-gitlab"
+            task: test-7
+          - name: "mise run ctt:test -- -t .ctt/template-gitea"
+            task: test-8
+          - name: "mise run ctt:test -- -t .ctt/python-gitea"
+            task: test-9
+          - name: "mise run ctt:test -- -t .ctt/python-mirror"
+            task: test-10
+          - name: "mise run ctt:test -- -t .ctt/none-github"
+            task: test-11
+          - name: "mise run ctt:test -- -t .ctt/template-github"
+            task: test-12
+          - name: "mise run ctt:test -- -t .ctt/ansible-github"
+            task: test-13
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -24,3 +57,17 @@ jobs:
           persist-credentials: false
       - name: mise run test # zizmor: ignore[self-repository]
         uses: ./.brigade/ci/github/actions/test
+        with:
+          task: ${{ matrix.task }}
+  # The stage's check (branch protection): all its jobs passed.
+  test:
+    if: always()
+    needs: [run]
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - shell: bash
+        env:
+          RUN: ${{ needs.run.result }}
+        run: test "$RUN" = success

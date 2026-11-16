@@ -1,5 +1,6 @@
-# Pipeline stages, in order. Each stage runs its commands if it has some, otherwise every
-# "<tool>:<stage>" task; tools have one file each in tools/.
+# Pipeline stages, in order. Each stage runs its jobs or its commands if it has some (in
+# order), otherwise every "<tool>:<stage>" task; tools have one file each in tools/. A job
+# is also a "<stage>-<n>" task, which CI runs as a job of its own.
 # Tasks run at the project root: dir is relative to this file's folder.
 
 [tasks.lint]
@@ -15,7 +16,85 @@ depends = [{ task = "*:build", optional = true }]
 [tasks.test]
 description = "Stage: tests"
 dir = "{{config_root}}/.."
-depends = [{ task = "*:test", optional = true }]
+run = ["mise run ctt:test -- -t .ctt/python-github", "mise run ctt:test -- -t .ctt/go-github", "mise run ctt:test -- -t .ctt/python-docker-github", "mise run ctt:test -- -t .ctt/node-github", "mise run ctt:test -- -t .ctt/react-github", "mise run ctt:test -- -t .ctt/python-gitlab", "mise run ctt:test -- -t .ctt/template-gitlab", "mise run ctt:test -- -t .ctt/template-gitea", "mise run ctt:test -- -t .ctt/python-gitea", "mise run ctt:test -- -t .ctt/python-mirror", "mise run ctt:test -- -t .ctt/none-github", "mise run ctt:test -- -t .ctt/template-github", "mise run ctt:test -- -t .ctt/ansible-github"]
+
+[tasks."test-1"]
+description = "Job 1 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/python-github"
+
+[tasks."test-2"]
+description = "Job 2 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/go-github"
+
+[tasks."test-3"]
+description = "Job 3 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/python-docker-github"
+
+[tasks."test-4"]
+description = "Job 4 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/node-github"
+
+[tasks."test-5"]
+description = "Job 5 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/react-github"
+
+[tasks."test-6"]
+description = "Job 6 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/python-gitlab"
+
+[tasks."test-7"]
+description = "Job 7 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/template-gitlab"
+
+[tasks."test-8"]
+description = "Job 8 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/template-gitea"
+
+[tasks."test-9"]
+description = "Job 9 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/python-gitea"
+
+[tasks."test-10"]
+description = "Job 10 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/python-mirror"
+
+[tasks."test-11"]
+description = "Job 11 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/none-github"
+
+[tasks."test-12"]
+description = "Job 12 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/template-github"
+
+[tasks."test-13"]
+description = "Job 13 of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = "mise run ctt:test -- -t .ctt/ansible-github"
 
 [tasks.release]
 description = "Stage: release (CI runs it on pushes to the default branch)"

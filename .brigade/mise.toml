@@ -10,4 +10,4 @@ uv = "0.13.8"
 description = "Update brigade files from the template"
 dir = "{{config_root}}/.."
 # Applies data.yml, even uncommitted (see the script); extra arguments go to Copier.
-run = "uv run --no-project python .brigade/scripts/brigade-update.py uvx copier@9.19.1 update -a .brigade/copier/answers.yml"
+run = "uv run --no-project python .brigade/scripts/brigade_update.py uvx copier@9.19.1 update -a .brigade/copier/answers.yml"
