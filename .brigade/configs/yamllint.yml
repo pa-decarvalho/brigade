@@ -9,6 +9,7 @@ ignore: |
   .venv/
   node_modules/
   .mise-data/
+  .mise/
   .brigade/copier/
 rules:
   truthy:
