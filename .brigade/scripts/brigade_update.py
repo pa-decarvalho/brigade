@@ -6,7 +6,7 @@ Copier), then the task's extra arguments. Copier refuses a dirty tree: when data
 is the only change, its edits are set aside in .git/brigade-data.yml, data.yml is
 restored, and Copier reads the edits from there. Then brigade_data.py writes all the
 answers back to data.yml, so the edits and the update end up in one diff, and mise
-lock writes the tools' pins and checksums to .brigade/mise.lock. On
+-C .brigade lock writes the tools' pins and checksums to .brigade/mise.lock. On
 failure or Ctrl+C, the edits are put back; after a killed run, the next run puts
 them back first.
 """
@@ -72,9 +72,13 @@ def update(command: list[str], data: str) -> int:
     if code:
         return code
     # The tools' new pins and checksums, in .brigade/mise.lock: not a failure of
-    # the update (offline, conflict markers left by Copier...).
-    if subprocess.call(["mise", "lock"]):
-        print("brigade:update: mise lock failed, run it again", file=sys.stderr)
+    # the update (offline, conflict markers left by Copier...). From .brigade/: from
+    # the root, mise locks only the project's mise.toml when there is one.
+    if subprocess.call(["mise", "-C", ".brigade", "lock"]):
+        print(
+            "brigade:update: mise -C .brigade lock failed, run it again",
+            file=sys.stderr,
+        )
     return 0
 
 
