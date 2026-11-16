@@ -176,11 +176,14 @@ _post_tasks = [
 ]
 
 [output.".ctt/template-gitlab"]
-# A Copier template project on GitLab: test_jobs splits the test stage into parallel
+# A Copier template project on GitLab: jobs splits the test stage into parallel
 # matrix jobs, replayed by gitlab-ci-local (few tools: each job imports the tool cache).
 tools = ["yamllint", "gitleaks", "typos", "ctt", "gitlab-ci-local"]
 ci = "gitlab"
-test_jobs = ["mise run ctt:test -- -t .out", "mise run gitlab-ci-local:test"]
+jobs = { test = [
+    { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
+    { name = "replay", run = ["mise run gitlab-ci-local:test"] },
+] }
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
@@ -193,10 +196,13 @@ _post_tasks = [
 ]
 
 [output.".ctt/template-gitea"]
-# A Copier template project on Gitea: test_jobs splits the test stage, replayed by act.
+# A Copier template project on Gitea: jobs splits the test stage, replayed by act.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "gitea"
-test_jobs = ["mise run ctt:test -- -t .out", "mise run act:test"]
+jobs = { test = [
+    { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
+    { name = "replay", run = ["mise run act:test"] },
+] }
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
@@ -276,8 +282,11 @@ _post_tasks = [
 # A Copier template project.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "github"
-# test_jobs splits the test stage: one CI job per command, replayed by act.
-test_jobs = ["mise run ctt:test -- -t .out", "mise run act:test"]
+# jobs splits the test stage into named CI jobs (one runs two commands), replayed by act.
+jobs = { test = [
+    { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
+    { name = "replay", run = ["mise run act:test"] },
+] }
 _post_tasks = [
     ["git", "init", "-q"],
     # A one-file Copier template and its ctt variant.

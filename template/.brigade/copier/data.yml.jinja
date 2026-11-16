@@ -1,10 +1,25 @@
+{#- One line per key: JSON values; lists and mappings (jobs) as YAML blocks, keys sorted.
+    .brigade/scripts/brigade_data.py writes the same format. -#}
+{%- macro entry(key, value, indent) -%}
+{%- if value is mapping and value -%}
+{{ ' ' * indent }}{{ key }}:
+{% for k, v in value | dictsort(true) %}{{ entry(k, v, indent + 2) }}{% endfor %}
+{%- elif value is sequence and value is not string and value -%}
+{{ ' ' * indent }}{{ key }}:
+{% for item in value %}{{ list_item(item, indent + 2) }}{% endfor %}
+{%- else -%}
+{{ ' ' * indent }}{{ key }}: {{ value | to_json(ensure_ascii=False) }}
+{% endif -%}
+{%- endmacro -%}
+{%- macro list_item(item, indent) -%}
+{%- if item is mapping and item -%}
+{%- set block %}{% for k, v in item | dictsort(true) %}{{ entry(k, v, indent + 2) }}{% endfor %}{% endset -%}
+{{ ' ' * indent }}- {{ block[indent + 2:] }}
+{%- else -%}
+{{ ' ' * indent }}- {{ item | to_json(ensure_ascii=False) }}
+{% endif -%}
+{%- endmacro -%}
 # Your answers: edit them, then run mise run brigade:update.
 {% for key, value in _copier_answers | dictsort(true) if not key.startswith('_') -%}
-{% if value is sequence and value is not string and value -%}
-{{ key }}:
-{% for item in value %}  - {{ item | to_json(ensure_ascii=False) }}
-{% endfor -%}
-{% else -%}
-{{ key }}: {{ value | to_json(ensure_ascii=False) }}
-{% endif -%}
-{% endfor -%}
+{{ entry(key, value, 0) }}
+{%- endfor -%}

@@ -1,7 +1,4 @@
-{%- set jobs = {
-  'lint': lint_jobs, 'build': build_jobs, 'test': test_jobs,
-  'release': release_jobs, 'deploy': deploy_jobs, 'operate': operate_jobs,
-}[stage] %}  # One job per command of the stage (<stage>_jobs: the <stage>-<n>
+{%- set stage_jobs = jobs[stage] %}  # One CI job per job of the stage (the jobs answer: the <stage>-<name>
   # tasks), in parallel.
   run:
     name: {% raw %}${{ matrix.name }}{% endraw %}
@@ -9,7 +6,7 @@
       fail-fast: false
       matrix:
         include:
-{%- for job in jobs %}
-          - name: {{ job | tojson }}
-            task: {{ stage }}-{{ loop.index }}
+{%- for job in stage_jobs %}
+          - name: {{ job.name }}
+            task: {{ stage }}-{{ job.name }}
 {%- endfor %}

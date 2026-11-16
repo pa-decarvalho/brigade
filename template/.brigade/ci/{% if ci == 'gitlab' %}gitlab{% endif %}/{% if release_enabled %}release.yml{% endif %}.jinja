@@ -11,10 +11,10 @@ release:
     RELEASAURUS_FORGE: gitlab
     RELEASAURUS_REPO: $CI_PROJECT_URL
 {%- if 'release' in split_stages %}
-  # One job per command of the stage (release_jobs: the release-<n> tasks).
+  # One job per command of the stage (the jobs answer: the release-<name> tasks).
   parallel:
     matrix:
-      - TASK: [{% for job in release_jobs %}release-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+      - TASK: [{% for job in jobs['release'] %}release-{{ job.name }}{{ ', ' if not loop.last else '' }}{% endfor %}]
   script:
     - mise run "$TASK"
 {%- else %}

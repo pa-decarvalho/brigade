@@ -2,12 +2,10 @@
 # Computed values, never asked nor saved (when: false): included last, so
 # that they can use every answer.
 
-# The stages run as one CI job per command (<stage>_jobs).
+# The stages run as one CI job per job of the jobs answer.
 split_stages:
   type: yaml
   default: >-
-    {{ (['lint'] if lint_jobs else []) + (['build'] if build_jobs else [])
-    + (['test'] if test_jobs else []) + (['release'] if release_jobs else [])
-    + (['deploy'] if deploy_jobs else [])
-    + (['operate'] if operate_jobs else []) }}
+    {{ jobs | dictsort | selectattr(1) | map(attribute=0) | list
+    if jobs is mapping else [] }}
   when: false

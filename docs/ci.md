@@ -22,7 +22,7 @@ GitHub only reads workflows in `.github/workflows/`: everything else lives in `.
 
 ### Stages
 
-Each stage is one workflow with one job, on Linux, running its action, or one job per command when you list them: see [A job per command](#a-job-per-command). To remove a stage or change its commands, see [Stages](tools.md#stages).
+Each stage is one workflow with one job, on Linux, running its action, or one job per named job when you list them: see [Named CI jobs](#named-ci-jobs). To remove a stage or change its commands, see [Stages](tools.md#stages).
 
 ### Your own jobs
 
@@ -65,23 +65,33 @@ extra:
 
 `gitlab-ci:lint` checks these files against the GitLab CI schema.
 
-## A job per command
+## Named CI jobs
 
-Each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. When a stage is long, list its commands in `<stage>_jobs`: each one gets its own CI job, in parallel on separate runners.
+Each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. When a stage is long, split it with the `jobs` answer: each job gets its own CI job, in parallel on separate runners, and runs its commands in order.
 
 ```yaml
 # .brigade/copier/data.yml
-test_jobs:
-  - "mise run pytest:test"
-  - "mise run ctt:test -- -t .ctt/python"
-  - "mise run ctt:test -- -t .ctt/go"
+jobs:
+  test:
+    - name: unit
+      run:
+        - "mise run pytest:test"
+    - name: python
+      run:
+        - "mise run ctt:test -- -t .ctt/python"
+    - name: go
+      run:
+        - "mise run typos:lint"
+        - "mise run ctt:test -- -t .ctt/go"
 ```
 
-- Each command becomes a hidden `test-<n>` task in `.brigade/stages.toml`, which its CI job runs (`mise run test-1`...).
-- A last job, named after the stage, passes when they all pass: the check to require in branch protection (GitHub, Gitea). On GitLab, the stage's job runs them as a `parallel:matrix`.
-- Locally, `mise run test` runs the commands one after the other, as `<stage>_commands` does; `mise run test-2` runs one CI job.
-- The list replaces the stage's tools (and `<stage>_commands`): a tool missing from it does not run. Add a command when you add a tool or a ctt variant.
-- Empty (the default), the stage stays one job.
+- The keys are stages (`lint`, `build`, `test`, `release`, `deploy`, `operate`); a job has a `name` (letters, digits, `.`, `_`, `-`; unique in its stage) and a `run` list.
+- Each job becomes a hidden `<stage>-<name>` task in `.brigade/stages.toml`, which its CI job runs (`mise run test-unit`...); the check shows its name.
+- A last job, named after the stage, passes when they all pass: the check to require in branch protection (GitHub, Gitea). On GitLab, the stage's job runs them as a `parallel:matrix` (`test: [test-unit]`...).
+- Locally, `mise run test` runs every job's commands one after the other; `mise run test-unit` runs one CI job.
+- The jobs replace the stage's tools (and `<stage>_commands`): a tool missing from them does not run. Add a job or a command when you add a tool or a ctt variant.
+- A stage missing from `jobs` stays one job.
+- From brigade 0.21: `<stage>_jobs` is gone; move its commands to `jobs` (one job each, with a name).
 
 ## Manual run
 
