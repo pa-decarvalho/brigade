@@ -6,10 +6,10 @@ test:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 {%- if 'test' in split_stages %}
-  # One job per command of the stage (test_jobs: the test-<n> tasks).
+  # One job per command of the stage (the jobs answer: the test-<name> tasks).
   parallel:
     matrix:
-      - TASK: [{% for job in test_jobs %}test-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+      - TASK: [{% for job in jobs['test'] %}test-{{ job.name }}{{ ', ' if not loop.last else '' }}{% endfor %}]
   script:
     - mise run "$TASK"
 {%- else %}

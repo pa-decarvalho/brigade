@@ -10,7 +10,7 @@ Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Cha
 | `tools` | tools of the [catalog](tools.md) | `brigade`, `yamllint`, `gitleaks`, `typos` | One `.brigade/tools/<tool>-brigade.toml` each, with its tasks. Stages follow from the tools. |
 | `<stage>_enabled` | yes / no | yes | Keeps the stage: its mise task and its CI job. See [Stages](tools.md#stages). |
 | `<stage>_commands` | list of commands | empty | Commands of the stage, run in order, locally and in CI. Empty runs all its tools. |
-| `<stage>_jobs` | list of commands | empty | Commands of the stage run as one CI job each, in parallel (locally, in order). Replaces `<stage>_commands`. See [A job per command](ci.md#a-job-per-command). |
+| `jobs` | stages to lists of `{name, run}` | empty | CI jobs per stage, in parallel, each running its commands in order (locally, all in order). Replaces the stage's tools and `<stage>_commands`. See [Named CI jobs](ci.md#named-ci-jobs). |
 | `operate_schedule` | cron expression, e.g. `0 5 * * 1` | empty | GitHub, Gitea: when the Operate workflow runs, besides manual runs. Empty: manual runs only. On GitLab, set a pipeline schedule instead. |
 | `pages_dir` | folder | `site` | With the `pages` tool: the folder your build writes the site to (`dist` for Vite). |
 | `uv_publish` | yes / no | no | With the `uv` tool: publish the package on each release (`uv:deploy`, see [deploy](tools.md#deploy)). |

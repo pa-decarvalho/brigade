@@ -1,32 +1,35 @@
-# Pipeline stages, in order. Each stage runs its jobs or its commands if it has some (in
-# order), otherwise every "<tool>:<stage>" task; tools have one file each in tools/. A job
-# is also a "<stage>-<n>" task, which CI runs as a job of its own.
+# Pipeline stages, in order. Each stage runs its jobs' commands or its commands if it has
+# some (in order), otherwise every "<tool>:<stage>" task; tools have one file each in tools/.
+# A job is also a "<stage>-<name>" task, which CI runs as a job of its own.
 # Tasks run at the project root: dir is relative to this file's folder.
-{%- for stage, description, enabled, commands, jobs in [
-  ('lint', 'static checks', lint_enabled, lint_commands, lint_jobs),
-  ('build', 'build', build_enabled, build_commands, build_jobs),
-  ('test', 'tests', test_enabled, test_commands, test_jobs),
-  ('release', 'release (CI runs it on pushes to the default branch)', release_enabled, release_commands, release_jobs),
-  ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands, deploy_jobs),
-  ('operate', 'operate (CI runs it on manual runs, or GitLab schedules)', operate_enabled, operate_commands, operate_jobs),
+{%- for stage, description, enabled, commands in [
+  ('lint', 'static checks', lint_enabled, lint_commands),
+  ('build', 'build', build_enabled, build_commands),
+  ('test', 'tests', test_enabled, test_commands),
+  ('release', 'release (CI runs it on pushes to the default branch)', release_enabled, release_commands),
+  ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands),
+  ('operate', 'operate (CI runs it on manual runs, or GitLab schedules)', operate_enabled, operate_commands),
 ] %}
 {%- if enabled %}
+{%- set stage_jobs = (jobs[stage] if jobs is mapping and stage in jobs else []) or [] %}
+{%- set ns = namespace(run=[]) %}
+{%- for job in stage_jobs %}{% set ns.run = ns.run + job.run %}{% endfor %}
 
 [tasks.{{ stage }}]
 description = "Stage: {{ description }}"
 {% raw %}dir = "{{config_root}}/.."{% endraw %}
-{%- if jobs or commands %}
-run = {{ (jobs or commands) | tojson }}
+{%- if ns.run or commands %}
+run = {{ (ns.run or commands) | tojson }}
 {%- else %}
 depends = [{ task = "*:{{ stage }}", optional = true }]
 {%- endif %}
-{%- for job in jobs %}
+{%- for job in stage_jobs %}
 
-[tasks."{{ stage }}-{{ loop.index }}"]
-description = "Job {{ loop.index }} of the {{ stage }} stage (CI)"
+[tasks."{{ stage }}-{{ job.name }}"]
+description = "Job {{ job.name }} of the {{ stage }} stage (CI)"
 hide = true
 {% raw %}dir = "{{config_root}}/.."{% endraw %}
-run = {{ job | tojson }}
+run = {{ job.run | tojson }}
 {%- endfor %}
 {%- endif %}
 {%- endfor %}

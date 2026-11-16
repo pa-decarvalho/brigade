@@ -133,14 +133,6 @@ lint_commands:
   default: []
   when: "{{ lint_enabled }}"
 
-lint_jobs:
-  type: yaml
-  help: >-
-    Commands of the lint stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ lint_enabled and ci != 'none' }}"
-
 build_enabled:
   type: bool
   help: Add the build stage?
@@ -151,14 +143,6 @@ build_commands:
   help: Commands of the build stage, run in order (empty for all its tools)
   default: []
   when: "{{ build_enabled }}"
-
-build_jobs:
-  type: yaml
-  help: >-
-    Commands of the build stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ build_enabled and ci != 'none' }}"
 
 test_enabled:
   type: bool
@@ -171,14 +155,6 @@ test_commands:
   default: []
   when: "{{ test_enabled }}"
 
-test_jobs:
-  type: yaml
-  help: >-
-    Commands of the test stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ test_enabled and ci != 'none' }}"
-
 release_enabled:
   type: bool
   help: Add the release stage?
@@ -189,14 +165,6 @@ release_commands:
   help: Commands of the release stage, run in order (empty for all its tools)
   default: []
   when: "{{ release_enabled }}"
-
-release_jobs:
-  type: yaml
-  help: >-
-    Commands of the release stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ release_enabled and ci != 'none' }}"
 
 deploy_enabled:
   type: bool
@@ -209,14 +177,6 @@ deploy_commands:
   default: []
   when: "{{ deploy_enabled }}"
 
-deploy_jobs:
-  type: yaml
-  help: >-
-    Commands of the deploy stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ deploy_enabled and ci != 'none' }}"
-
 operate_enabled:
   type: bool
   help: Add the operate stage?
@@ -228,14 +188,6 @@ operate_commands:
   default: []
   when: "{{ operate_enabled }}"
 
-operate_jobs:
-  type: yaml
-  help: >-
-    Commands of the operate stage run as one CI job each, in parallel (empty for
-    one job running the stage)
-  default: []
-  when: "{{ operate_enabled and ci != 'none' }}"
-
 operate_schedule:
   type: str
   help: >-
@@ -246,6 +198,42 @@ operate_schedule:
 
 # Asks a version and a command per selected tool (questions/tools/).
 # An empty answer takes brigade's default, which is in the tool's Jinja file.
+# Named CI jobs per stage: a stage listed here runs as one CI job per job,
+# in parallel, each running its commands in order.
+jobs:
+  type: yaml
+  help: >-
+    CI jobs per stage, e.g. {test: [{name: unit, run: [mise run pytest:test]}]}
+    (empty: one job per stage)
+  default: {}
+  when: "{{ ci != 'none' }}"
+  validator: >-
+    {%- set stages = ['lint', 'build', 'test', 'release', 'deploy',
+      'operate'] -%}
+    {%- if jobs is not mapping -%}
+    a mapping of stages to lists of jobs
+    {%- else -%}
+    {%- for stage, list in jobs.items() -%}
+    {%- if stage not in stages -%}
+    {{ stage }}: not a stage ({{ stages | join(', ') }}).
+    {%- elif list is string or list is not sequence -%}
+    {{ stage }}: a list of jobs.
+    {%- else -%}
+    {%- for job in list -%}
+    {%- if job is not mapping or job.name is not string
+      or not (job.name | regex_search('^[A-Za-z0-9._-]+$'))
+      or job.run is string or job.run is not sequence or not job.run -%}
+    {{ stage }}: each job needs a name (letters, digits, . _ -) and a run list.
+    {%- endif -%}
+    {%- endfor -%}
+    {%- if list | select('mapping') | map(attribute='name') | unique | list
+      | length != list | length -%}
+    {{ stage }}: job names must be unique.
+    {%- endif -%}
+    {%- endif -%}
+    {%- endfor -%}
+    {%- endif -%}
+
 customize_tools:
   type: bool
   help: Customize tool versions and commands?

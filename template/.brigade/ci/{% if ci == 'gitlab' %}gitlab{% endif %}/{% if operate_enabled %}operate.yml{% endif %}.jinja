@@ -12,10 +12,10 @@ operate:
     RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
     RENOVATE_ONBOARDING: "false"
 {%- if 'operate' in split_stages %}
-  # One job per command of the stage (operate_jobs: the operate-<n> tasks).
+  # One job per command of the stage (the jobs answer: the operate-<name> tasks).
   parallel:
     matrix:
-      - TASK: [{% for job in operate_jobs %}operate-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+      - TASK: [{% for job in jobs['operate'] %}operate-{{ job.name }}{{ ', ' if not loop.last else '' }}{% endfor %}]
   script:
     - mise run "$TASK"
 {%- else %}

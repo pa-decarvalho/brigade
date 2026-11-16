@@ -6,10 +6,10 @@ lint:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 {%- if 'lint' in split_stages %}
-  # One job per command of the stage (lint_jobs: the lint-<n> tasks).
+  # One job per command of the stage (the jobs answer: the lint-<name> tasks).
   parallel:
     matrix:
-      - TASK: [{% for job in lint_jobs %}lint-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+      - TASK: [{% for job in jobs['lint'] %}lint-{{ job.name }}{{ ', ' if not loop.last else '' }}{% endfor %}]
   script:
     - mise run "$TASK"
 {%- else %}
