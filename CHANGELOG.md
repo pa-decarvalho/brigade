@@ -1,3 +1,11 @@
+# [0.21.1](https://github.com/pa-decarvalho/brigade/compare/0.21.0...0.21.1) - 2026-11-16
+
+### 🐛 Bug Fixes
+
+- remove the brigade-data.py relay (#227) [_(05a4b61)_](https://github.com/pa-decarvalho/brigade/commit/05a4b6142c6f8ba885ac95f847880e39046ff2a3)
+
+- _(deps)_ update template (#228) [_(b1db984)_](https://github.com/pa-decarvalho/brigade/commit/b1db9840596e1a394d4119a86d3fb6f3dae22ca1)
+
 # [0.21.0](https://github.com/pa-decarvalho/brigade/compare/0.20.1...0.21.0) - 2026-11-16
 
 ### 🚀 Features
