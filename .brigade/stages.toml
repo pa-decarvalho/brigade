@@ -1,5 +1,5 @@
 # Pipeline stages, in order. Each stage runs its jobs' commands or its commands if it has
-# some (in order), otherwise every "<tool>:<stage>" task; tools have one file each in tools/.
+# some (in order), otherwise every "<tool>:<stage>" task; tools have one file each in conf.d/.
 # A job is also a "<stage>-<name>" task, which CI runs as a job of its own.
 # Tasks run at the project root: dir is relative to this file's folder.
 
