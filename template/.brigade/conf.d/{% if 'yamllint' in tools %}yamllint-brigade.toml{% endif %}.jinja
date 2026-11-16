@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=yamllint
-"pipx:yamllint" = "{{ yamllint_version | default('1.38.0', true) }}"
+"pipx:yamllint" = { version = "{{ yamllint_version | default('1.38.0', true) }}", python = "3.14" }
 
 [tasks."yamllint:lint"]
 description = "Check YAML files with yamllint"

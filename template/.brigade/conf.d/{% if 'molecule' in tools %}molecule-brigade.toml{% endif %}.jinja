@@ -2,7 +2,7 @@
 # The docker driver, and ansible-core's executables (ansible-playbook, ansible-galaxy), which Molecule runs.
 # renovate: datasource=pypi depName=molecule
 {% set molecule = 'pipx:molecule@' ~ (molecule_version | default('26.11.0', true)) -%}
-"pipx:molecule" = { version = "{{ molecule.split('@')[1] }}", uvx_args = "--with molecule-plugins[docker]==26.11.0 --with ansible-core==2.22.0 --with-executables-from ansible-core" }
+"pipx:molecule" = { version = "{{ molecule.split('@')[1] }}", python = "3.14", uvx_args = "--with molecule-plugins[docker]==26.11.0 --with ansible-core==2.22.0 --with-executables-from ansible-core" }
 
 # mise exec puts Molecule's ansible-playbook first in PATH: the ansible tool's has no docker library.
 [tasks."molecule:test"]

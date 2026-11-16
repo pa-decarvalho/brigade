@@ -6,4 +6,4 @@ taplo = "{{ taplo_version | default('0.10.0', true) }}"
 description = "Check TOML formatting with taplo"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # brigade's TOML files only. Config: .brigade/configs/taplo.toml (the project's).
-run = '''{{ taplo_lint_command | default('taplo fmt --check -c .brigade/configs/taplo.toml ".brigade/**/*.toml" .miserc.toml', true) }}'''
+run = '''{{ taplo_lint_command | default('taplo fmt --check -c .brigade/configs/taplo.toml ".brigade/*.toml" ".brigade/*/*.toml" .miserc.toml', true) }}'''

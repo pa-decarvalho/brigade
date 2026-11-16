@@ -8,12 +8,12 @@ override_config_filenames = [
     ".brigade/mirror.toml",
 {%- endif %}
 {%- if ci in ['github', 'gitea'] %}
-    ".brigade/tools/jactionlint-brigade.toml",
+    ".brigade/conf.d/jactionlint-brigade.toml",
 {%- elif ci == 'gitlab' %}
-    ".brigade/tools/gitlab-ci-brigade.toml",
+    ".brigade/conf.d/gitlab-ci-brigade.toml",
 {%- endif %}
 {%- for tool in tools %}
-    ".brigade/tools/{{ tool }}-brigade.toml",
+    ".brigade/conf.d/{{ tool }}-brigade.toml",
 {%- endfor %}
     "mise.toml",
     "mise.local.toml",

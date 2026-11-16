@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=codespell
-"pipx:codespell" = "{{ codespell_version | default('2.4.3', true) }}"
+"pipx:codespell" = { version = "{{ codespell_version | default('2.4.3', true) }}", python = "3.14" }
 
 [tasks."codespell:lint"]
 description = "Check spelling with codespell"

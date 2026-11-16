@@ -13,7 +13,7 @@
     // Template files have Jinja names, which the default file patterns do not match.
     mise: {
         // Tool fragments are Jinja: a customManagers entry reads their pins.
-        managerFilePatterns: ["/^template/\\.brigade/(tools/)?[^/]*(\\.toml|\\{% endif %\\})$/"],
+        managerFilePatterns: ["/^template/\\.brigade/(conf\\.d/)?[^/]*(\\.toml|\\{% endif %\\})$/"],
     },
     "github-actions": {
         managerFilePatterns: ["/^template/.*/workflows/[^/]*(\\.yml|\\{% endif %\\})(\\.jinja)?$/", "/^template/.*/actions/[^/]+/action\\.yml$/"],
@@ -25,7 +25,7 @@
         {
             // Python tools pinned inside commands
             customType: "regex",
-            managerFilePatterns: ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/tools/.*(ctt|molecule)-brigade.*\\.jinja$/"],
+            managerFilePatterns: ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/conf\\.d/.*(ctt|molecule)-brigade.*\\.jinja$/"],
             matchStrings: ["(?<depName>copier-template-tester|copier|molecule-plugins|ansible-core)(?:\\[\\w+\\])?(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
             datasourceTemplate: "pypi",
         },
@@ -41,7 +41,7 @@
         {
             // Tool fragments: the version is brigade's default in the Jinja file.
             customType: "regex",
-            managerFilePatterns: ["/^template/\\.brigade/tools/.+\\.jinja$/"],
+            managerFilePatterns: ["/^template/\\.brigade/conf\\.d/.+\\.jinja$/"],
             matchStrings: ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
             extractVersionTemplate: "^v?(?<version>.*)$",
         },

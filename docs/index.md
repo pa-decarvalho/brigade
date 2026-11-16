@@ -42,7 +42,7 @@ In a restaurant, the *brigade* is the kitchen team: each cook runs one station, 
 | In the kitchen | In brigade |
 |---|---|
 | Mise en place | `mise install`: every tool pinned and ready before you start |
-| One station per cook | One file per tool, `.brigade/tools/<tool>-brigade.toml`, with its tasks |
+| One station per cook | One file per tool, `.brigade/conf.d/<tool>-brigade.toml`, with its tasks |
 | The service, course after course | The stages: `lint`, `build`, `test`, `release`, `deploy`, `operate` |
 | The chef calling the orders | `mise run <stage>`: every station's task for that stage |
 | The pass, where each plate is checked | CI, running the same stages on every pull request |
