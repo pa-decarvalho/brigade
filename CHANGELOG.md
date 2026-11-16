@@ -1,3 +1,9 @@
+# [0.22.0](https://github.com/pa-decarvalho/brigade/compare/0.21.1...0.22.0) - 2026-11-16
+
+### 🚀 Features
+
+- named CI jobs with the jobs answer (#230) [_(811425c)_](https://github.com/pa-decarvalho/brigade/commit/811425ca924c3e8313a5e757e6bf7e12bd371023)
+
 # [0.21.1](https://github.com/pa-decarvalho/brigade/compare/0.21.0...0.21.1) - 2026-11-16
 
 ### 🐛 Bug Fixes
