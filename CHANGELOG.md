@@ -1,3 +1,9 @@
+# [0.21.0](https://github.com/pa-decarvalho/brigade/compare/0.20.1...0.21.0) - 2026-11-16
+
+### 🚀 Features
+
+- one CI job per command with <stage>_jobs (#222) [_(6aa1326)_](https://github.com/pa-decarvalho/brigade/commit/6aa13263304edfe49acb9e06b811bbb4e50ef167)
+
 # [0.20.1](https://github.com/pa-decarvalho/brigade/compare/0.20.0...0.20.1) - 2026-11-15
 
 ### 🐛 Bug Fixes
