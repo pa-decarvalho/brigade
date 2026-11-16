@@ -35,6 +35,9 @@ jobs:
     -   name: react-github
         run:
         - mise run ctt:test -- -t .ctt/react-github
+    -   name: rust-github
+        run:
+        - mise run ctt:test -- -t .ctt/rust-github
     -   name: python-gitlab
         run:
         - mise run ctt:test -- -t .ctt/python-gitlab

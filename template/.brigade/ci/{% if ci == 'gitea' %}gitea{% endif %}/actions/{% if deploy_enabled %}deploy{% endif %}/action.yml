@@ -24,6 +24,9 @@ inputs:
   npm-token:
     description: npm registry token, node:deploy (NPM_TOKEN secret)
     default: ""
+  cargo-registry-token:
+    description: Crate registry token, rust:deploy (CARGO_REGISTRY_TOKEN secret)
+    default: ""
   docker-username:
     description: Registry user, docker:deploy (DOCKER_USERNAME secret)
     default: ""
@@ -43,6 +46,7 @@ runs:
         UV_PUBLISH_USERNAME: ${{ inputs.uv-publish-username }}
         UV_PUBLISH_PASSWORD: ${{ inputs.uv-publish-password }}
         NPM_TOKEN: ${{ inputs.npm-token }}
+        CARGO_REGISTRY_TOKEN: ${{ inputs.cargo-registry-token }}
         DOCKER_USERNAME: ${{ inputs.docker-username }}
         DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
