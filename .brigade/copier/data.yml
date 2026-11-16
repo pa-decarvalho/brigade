@@ -3,29 +3,66 @@ brigade_lint_command: ""
 brigade_version: ""
 build_commands: []
 build_enabled: true
-build_jobs: []
 ci: "github"
 ctt_test_command: "uv run --no-project python -c \"import shutil; shutil.rmtree('.ctt', ignore_errors=True)\" && ctt"
 ctt_version: ""
 customize_tools: true
 deploy_commands: []
 deploy_enabled: true
-deploy_jobs: []
 editorconfig_checker_lint_command: ""
 editorconfig_checker_version: ""
 github_mirror: ""
 gitleaks_lint_command: ""
 gitleaks_version: ""
+jobs:
+  test:
+    - name: "python-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/python-github"
+    - name: "go-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/go-github"
+    - name: "python-docker-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/python-docker-github"
+    - name: "node-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/node-github"
+    - name: "react-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/react-github"
+    - name: "python-gitlab"
+      run:
+        - "mise run ctt:test -- -t .ctt/python-gitlab"
+    - name: "template-gitlab"
+      run:
+        - "mise run ctt:test -- -t .ctt/template-gitlab"
+    - name: "template-gitea"
+      run:
+        - "mise run ctt:test -- -t .ctt/template-gitea"
+    - name: "python-gitea"
+      run:
+        - "mise run ctt:test -- -t .ctt/python-gitea"
+    - name: "python-mirror"
+      run:
+        - "mise run ctt:test -- -t .ctt/python-mirror"
+    - name: "none-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/none-github"
+    - name: "template-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/template-github"
+    - name: "ansible-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/ansible-github"
 lint_commands: []
 lint_enabled: true
-lint_jobs: []
 ls_lint_lint_command: ""
 ls_lint_version: ""
 lychee_lint_command: ""
 lychee_version: ""
 operate_commands: []
 operate_enabled: true
-operate_jobs: []
 operate_schedule: "0 5 * * *"
 pages_deploy_command: ""
 pages_dir: "site"
@@ -36,7 +73,6 @@ releasaurus_release_command: ""
 releasaurus_version: ""
 release_commands: []
 release_enabled: true
-release_jobs: []
 renovate_cli_version: ""
 renovate_lint_command: "check-jsonschema --builtin-schema vendor.renovate .github/renovate.json5"
 renovate_node_version: ""
@@ -50,20 +86,6 @@ taplo_lint_command: "taplo fmt --check -c .brigade/configs/taplo.toml \".brigade
 taplo_version: ""
 test_commands: []
 test_enabled: true
-test_jobs:
-  - "mise run ctt:test -- -t .ctt/python-github"
-  - "mise run ctt:test -- -t .ctt/go-github"
-  - "mise run ctt:test -- -t .ctt/python-docker-github"
-  - "mise run ctt:test -- -t .ctt/node-github"
-  - "mise run ctt:test -- -t .ctt/react-github"
-  - "mise run ctt:test -- -t .ctt/python-gitlab"
-  - "mise run ctt:test -- -t .ctt/template-gitlab"
-  - "mise run ctt:test -- -t .ctt/template-gitea"
-  - "mise run ctt:test -- -t .ctt/python-gitea"
-  - "mise run ctt:test -- -t .ctt/python-mirror"
-  - "mise run ctt:test -- -t .ctt/none-github"
-  - "mise run ctt:test -- -t .ctt/template-github"
-  - "mise run ctt:test -- -t .ctt/ansible-github"
 tools:
   - "brigade"
   - "yamllint"
