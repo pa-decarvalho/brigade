@@ -1,7 +1,8 @@
 [tools]
-# Installs rustup first if needed, then this toolchain (with rustfmt and clippy).
+# Installs rustup first if needed (or uses the machine's), then this toolchain with
+# rustfmt and Clippy, whatever rustup's profile (CI runners: minimal).
 # renovate: datasource=github-releases depName=rust-lang/rust
-rust = "{{ rust_version | default('1.100.0', true) }}"
+rust = { version = "{{ rust_version | default('1.100.0', true) }}", components = ["rustfmt", "clippy"] }
 
 [tasks."rust:lint"]
 description = "Check the formatting and run Clippy"
