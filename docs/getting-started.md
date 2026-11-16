@@ -10,14 +10,14 @@ Requires [mise](https://mise.jdx.dev/) and git.
 uv init my-project
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-project
 cd my-project
-mise lock
+mise -C .brigade lock
 mise install
 mise tasks
 ```
 
 Copier asks a few [questions](questions.md): your tools, whether to customize their versions and commands, CI platform, optional mirrors.
 `copier copy` uses the latest release; add `--vcs-ref X.Y.Z` to pick a version.
-`mise lock` writes the tools' exact versions and checksums to `.brigade/mise.lock` (see [Lockfile](updating.md#lockfile)): commit it.
+`mise -C .brigade lock` writes the tools' exact versions and checksums to `.brigade/mise.lock` (see [Lockfile](updating.md#lockfile)): commit it.
 
 ## Run the stages
 
@@ -47,7 +47,7 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
   stages.toml                     # the stages and the git hook tasks
   mirror.toml                     # only with mirrors
   conf.d/<tool>-brigade.toml      # one per tool, e.g. ruff-brigade.toml, and the CI file linter
-  mise.lock, .mise/locks/         # the tools' versions and checksums, written by mise lock
+  mise.lock, .mise/locks/         # the tools' versions and checksums, written by mise -C .brigade lock
   ci/<ci>/                        # CI steps: actions (GitHub, Gitea), jobs (GitLab)
 <CI files>                        # workflows or .gitlab-ci.yml: see CI platforms
 ```

@@ -49,7 +49,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `yamllint` | `yamllint:lint` | `yamllint --strict` ([config](#tool-configs)) |
 | `gitleaks` | `gitleaks:lint` | `gitleaks git` (history and staged changes) |
 | `typos` | `typos:lint` | `typos`, without `.mise/` (mise's lock sidecars) ([config](#tool-configs)) |
-| `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker` (needs your `.editorconfig`; [config](#tool-configs)) |
+| `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker`, without `.mise/` (mise's lock sidecars) (needs your `.editorconfig`; [config](#tool-configs)) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/*.toml`, `.brigade/*/*.toml` and `.miserc.toml` ([config](#tool-configs)) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
