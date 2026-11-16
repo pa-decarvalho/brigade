@@ -1,3 +1,9 @@
+# [0.24.2](https://github.com/pa-decarvalho/brigade/compare/0.24.1...0.24.2) - 2026-11-16
+
+### 🐛 Bug Fixes
+
+- exclude mise's lock sidecars from the scanners (#241) [_(b7e71da8)_](https://github.com/pa-decarvalho/brigade/commit/b7e71da8fc20e4d8dd814bd8cd90a5188bdf55bf)
+
 # [0.24.1](https://github.com/pa-decarvalho/brigade/compare/0.24.0...0.24.1) - 2026-11-16
 
 ### 🐛 Bug Fixes
