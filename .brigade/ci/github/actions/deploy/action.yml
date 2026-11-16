@@ -3,6 +3,9 @@
 name: deploy
 description: mise run deploy, with the project's tools
 inputs:
+  task:
+    description: The task to run (a job of a split stage), else the stage
+    default: deploy
   ansible-private-key:
     description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
     default: ""
@@ -48,4 +51,5 @@ runs:
         DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-      run: mise run deploy
+        TASK: ${{ inputs.task }}
+      run: mise run "$TASK"

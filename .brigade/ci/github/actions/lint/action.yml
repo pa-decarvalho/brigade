@@ -2,6 +2,10 @@
 # brigade-owned: updated by mise run brigade:update, do not edit.
 name: lint
 description: mise run lint, with the project's tools
+inputs:
+  task:
+    description: The task to run (a job of a split stage), else the stage
+    default: lint
 runs:
   using: composite
   steps:
@@ -9,4 +13,5 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      run: mise run lint
+        TASK: ${{ inputs.task }}
+      run: mise run "$TASK"

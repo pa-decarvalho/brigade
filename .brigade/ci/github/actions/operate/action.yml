@@ -3,6 +3,9 @@
 name: operate
 description: mise run operate (e.g. Renovate), with the project's tools
 inputs:
+  task:
+    description: The task to run (a job of a split stage), else the stage
+    default: operate
   renovate-token:
     description: Renovate's token (RENOVATE_TOKEN secret)
     default: ""
@@ -35,4 +38,5 @@ runs:
         RENOVATE_ONBOARDING: "false"
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
-      run: mise run operate
+        TASK: ${{ inputs.task }}
+      run: mise run "$TASK"
