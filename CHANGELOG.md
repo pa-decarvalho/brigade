@@ -1,3 +1,9 @@
+# [0.24.0](https://github.com/pa-decarvalho/brigade/compare/0.23.0...0.24.0) - 2026-11-16
+
+### 🚀 Features
+
+- lock brigade's tools in .brigade/mise.lock (#236) [_(58e5e0ad)_](https://github.com/pa-decarvalho/brigade/commit/58e5e0ad09c80fc2461872e91677eb393af85ff1)
+
 # [0.23.0](https://github.com/pa-decarvalho/brigade/compare/0.22.0...0.23.0) - 2026-11-16
 
 ### 🚀 Features
