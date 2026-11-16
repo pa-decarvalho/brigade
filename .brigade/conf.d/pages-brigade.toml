@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=ghp-import
-"pipx:ghp-import" = "2.1.0"
+"pipx:ghp-import" = { version = "2.1.0", python = "3.14" }
 
 [tasks."pages:deploy"]
 description = "Publish site/, built by the *:build tasks, to Pages"
