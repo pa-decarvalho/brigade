@@ -1,31 +1,8 @@
 ---
 # Releasaurus needs a RELEASAURUS_GITLAB_TOKEN CI/CD variable
 # (api, write_repository).
-{%- if 'release' in split_stages %}
-# A split stage (a tool's matrix): release-matrix writes one job per task
-# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
-# the linters skip), and release runs them as a child pipeline.
-release-matrix:
-  stage: release
-  rules:
-    - if: >-
-        $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-        && $CI_PIPELINE_SOURCE == "push"
-  before_script:
-    - mise trust
-  script:
-    - >-
-      mise exec uv -- uv run --no-project python
-      .brigade/scripts/ci_jobs.py release --gitlab .mise-data/release-jobs.yml
-  artifacts:
-    paths:
-      - .mise-data/release-jobs.yml
-{%- endif %}
 release:
   stage: release
-{%- if 'release' in split_stages %}
-  needs: [release-matrix]
-{%- endif %}
   rules:
     - if: >-
         $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -34,11 +11,12 @@ release:
     RELEASAURUS_FORGE: gitlab
     RELEASAURUS_REPO: $CI_PROJECT_URL
 {%- if 'release' in split_stages %}
-  trigger:
-    include:
-      - artifact: .mise-data/release-jobs.yml
-        job: release-matrix
-    strategy: depend
+  # One job per command of the stage (release_jobs: the release-<n> tasks).
+  parallel:
+    matrix:
+      - TASK: [{% for job in release_jobs %}release-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+  script:
+    - mise run "$TASK"
 {%- else %}
   script:
     - mise run release

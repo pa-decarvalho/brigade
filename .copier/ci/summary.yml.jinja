@@ -1,0 +1,12 @@
+  # The stage's check (branch protection): all its jobs passed.
+  {{ stage }}:
+    if: always()
+    needs: [run]
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - shell: bash
+        env:
+          RUN: {% raw %}${{ needs.run.result }}{% endraw %}
+        run: test "$RUN" = success

@@ -176,11 +176,11 @@ _post_tasks = [
 ]
 
 [output.".ctt/template-gitlab"]
-# A Copier template project on GitLab: ctt_matrix splits the test stage into child
-# pipeline jobs, replayed by gitlab-ci-local (few tools: each job imports the tool cache).
+# A Copier template project on GitLab: test_jobs splits the test stage into parallel
+# matrix jobs, replayed by gitlab-ci-local (few tools: each job imports the tool cache).
 tools = ["yamllint", "gitleaks", "typos", "ctt", "gitlab-ci-local"]
 ci = "gitlab"
-ctt_matrix = [".out"]
+test_jobs = ["mise run ctt:test -- -t .out", "mise run gitlab-ci-local:test"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
@@ -193,10 +193,10 @@ _post_tasks = [
 ]
 
 [output.".ctt/template-gitea"]
-# A Copier template project on Gitea: ctt_matrix splits the test stage, replayed by act.
+# A Copier template project on Gitea: test_jobs splits the test stage, replayed by act.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "gitea"
-ctt_matrix = [".out"]
+test_jobs = ["mise run ctt:test -- -t .out", "mise run act:test"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
@@ -276,9 +276,8 @@ _post_tasks = [
 # A Copier template project.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "github"
-# ctt_matrix splits the test stage: one CI job per task, one per ctt variant,
-# replayed by act.
-ctt_matrix = [".out"]
+# test_jobs splits the test stage: one CI job per command, replayed by act.
+test_jobs = ["mise run ctt:test -- -t .out", "mise run act:test"]
 _post_tasks = [
     ["git", "init", "-q"],
     # A one-file Copier template and its ctt variant.
@@ -298,8 +297,6 @@ _post_tasks = [
 # playbooks/ on inventory/ (localhost); deploy.yml needs the vault password.
 tools = ["yamllint", "gitleaks", "typos", "ansible-lint", "molecule", "ansible"]
 ci = "github"
-# molecule_matrix splits the test stage: one CI job per task, one per scenario.
-molecule_matrix = ["default"]
 _post_tasks = [
     ["git", "init", "-q"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('site.yml').write_text('---\\n- name: Demo\\n  hosts: localhost\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
@@ -316,6 +313,4 @@ _post_tasks = [
     # deploy decrypts the vault variable with ANSIBLE_VAULT_PASSWORD; operate needs no secret.
     ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, subprocess; subprocess.run(['mise', 'run', 'deploy'], env={**os.environ, 'ANSIBLE_VAULT_PASSWORD': 'ctt'}, check=True)"],
     ["mise", "run", "operate"],
-    # The split test stage: a CI job per molecule scenario (BRIGADE_UNIT: molecule test -s).
-    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import json, os, subprocess\njobs = json.loads(subprocess.run(['uv', 'run', '--no-project', 'python', '.brigade/scripts/ci_jobs.py', 'test'], check=True, capture_output=True, text=True).stdout)\nassert {'name': 'molecule:test (default)', 'task': 'molecule:test', 'unit': 'default'} in jobs, jobs\nout = subprocess.run(['mise', 'run', '--dry-run', 'molecule:test'], check=True, capture_output=True, text=True, env={**os.environ, 'BRIGADE_UNIT': 'default'})\nassert 'molecule test -s default' in out.stdout + out.stderr, out.stderr"],
 ]

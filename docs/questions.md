@@ -10,11 +10,11 @@ Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Cha
 | `tools` | tools of the [catalog](tools.md) | `brigade`, `yamllint`, `gitleaks`, `typos` | One `.brigade/tools/<tool>-brigade.toml` each, with its tasks. Stages follow from the tools. |
 | `<stage>_enabled` | yes / no | yes | Keeps the stage: its mise task and its CI job. See [Stages](tools.md#stages). |
 | `<stage>_commands` | list of commands | empty | Commands of the stage, run in order, locally and in CI. Empty runs all its tools. |
+| `<stage>_jobs` | list of commands | empty | Commands of the stage run as one CI job each, in parallel (locally, in order). Replaces `<stage>_commands`. See [A job per command](ci.md#a-job-per-command). |
 | `operate_schedule` | cron expression, e.g. `0 5 * * 1` | empty | GitHub, Gitea: when the Operate workflow runs, besides manual runs. Empty: manual runs only. On GitLab, set a pipeline schedule instead. |
 | `pages_dir` | folder | `site` | With the `pages` tool: the folder your build writes the site to (`dist` for Vite). |
 | `uv_publish` | yes / no | no | With the `uv` tool: publish the package on each release (`uv:deploy`, see [deploy](tools.md#deploy)). |
 | `npm_publish` | yes / no | no | With the `node` tool: publish the package on each release (`node:deploy`, see [deploy](tools.md#deploy)). |
-| `molecule_matrix`, `ctt_matrix` | list | empty | One CI job per molecule scenario or ctt variant: the test stage is split into one job per task. See [A job per variant or scenario](ci.md#a-job-per-variant-or-scenario-matrices). |
 | `customize_tools` | yes / no | no | Asks a version and a command for each selected tool: see [Tools](tools.md). |
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |

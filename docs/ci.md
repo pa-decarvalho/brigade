@@ -22,7 +22,7 @@ GitHub only reads workflows in `.github/workflows/`: everything else lives in `.
 
 ### Stages
 
-Each stage is one workflow with one job, on Linux, running its action, or one job per task when a tool lists its units: see [A job per variant or scenario](#a-job-per-variant-or-scenario-matrices). To remove a stage or change its commands, see [Stages](tools.md#stages).
+Each stage is one workflow with one job, on Linux, running its action, or one job per command when you list them: see [A job per command](#a-job-per-command). To remove a stage or change its commands, see [Stages](tools.md#stages).
 
 ### Your own jobs
 
@@ -65,30 +65,23 @@ extra:
 
 `gitlab-ci:lint` checks these files against the GitLab CI schema.
 
-## A job per variant or scenario (matrices)
+## A job per command
 
-Each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. A tool whose units are long gets one CI job per unit instead, in parallel on separate runners, when you list them:
+Each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. When a stage is long, list its commands in `<stage>_jobs`: each one gets its own CI job, in parallel on separate runners.
 
 ```yaml
 # .brigade/copier/data.yml
-molecule_matrix:
-  - "default"
-  - "ubuntu"
+test_jobs:
+  - "mise run pytest:test"
+  - "mise run ctt:test -- -t .ctt/python"
+  - "mise run ctt:test -- -t .ctt/go"
 ```
 
-`molecule_matrix` (molecule scenarios) and `ctt_matrix` (ctt variants) are both in `test`: listing one splits the test stage into one job per task, one per unit for these tools. The other stages stay one job each; without a matrix, nothing changes.
-
-A split stage runs in three steps:
-
-1. `matrix` lists the stage's tasks as mise runs them (`*:<stage>`, your own `mise.toml` tasks included) with `.brigade/scripts/ci_jobs.py`, and each unit of a tool with a matrix (`BRIGADE_MATRIX` in its task's `env`, from your answer).
-2. One job per task or unit runs `mise run <task>`; a unit's job sets `BRIGADE_UNIT` (`molecule test -s <scenario>`, `ctt -t <variant>`).
-3. A last job, named after the stage, passes when they all pass: the check to require in branch protection.
-
-- **GitHub, Gitea**: a matrix built from `matrix`'s output.
-- **GitLab**: `test-matrix` writes a child pipeline, which the `test` job runs (`trigger`, `strategy: depend`).
-- With `test_commands`, the stage stays one job.
-- Locally nothing changes: `mise run test` runs every task and unit; `BRIGADE_UNIT=ubuntu mise run molecule:test` runs one CI job's unit.
-- A custom command for such a tool (`molecule_test_command`, `ctt_test_command`) must use `BRIGADE_UNIT` too, or each job runs every unit.
+- Each command becomes a hidden `test-<n>` task in `.brigade/stages.toml`, which its CI job runs (`mise run test-1`...).
+- A last job, named after the stage, passes when they all pass: the check to require in branch protection (GitHub, Gitea). On GitLab, the stage's job runs them as a `parallel:matrix`.
+- Locally, `mise run test` runs the commands one after the other, as `<stage>_commands` does; `mise run test-2` runs one CI job.
+- The list replaces the stage's tools (and `<stage>_commands`): a tool missing from it does not run. Add a command when you add a tool or a ctt variant.
+- Empty (the default), the stage stays one job.
 
 ## Manual run
 

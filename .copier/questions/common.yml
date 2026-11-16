@@ -133,6 +133,14 @@ lint_commands:
   default: []
   when: "{{ lint_enabled }}"
 
+lint_jobs:
+  type: yaml
+  help: >-
+    Commands of the lint stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ lint_enabled and ci != 'none' }}"
+
 build_enabled:
   type: bool
   help: Add the build stage?
@@ -143,6 +151,14 @@ build_commands:
   help: Commands of the build stage, run in order (empty for all its tools)
   default: []
   when: "{{ build_enabled }}"
+
+build_jobs:
+  type: yaml
+  help: >-
+    Commands of the build stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ build_enabled and ci != 'none' }}"
 
 test_enabled:
   type: bool
@@ -155,6 +171,14 @@ test_commands:
   default: []
   when: "{{ test_enabled }}"
 
+test_jobs:
+  type: yaml
+  help: >-
+    Commands of the test stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ test_enabled and ci != 'none' }}"
+
 release_enabled:
   type: bool
   help: Add the release stage?
@@ -165,6 +189,14 @@ release_commands:
   help: Commands of the release stage, run in order (empty for all its tools)
   default: []
   when: "{{ release_enabled }}"
+
+release_jobs:
+  type: yaml
+  help: >-
+    Commands of the release stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ release_enabled and ci != 'none' }}"
 
 deploy_enabled:
   type: bool
@@ -177,6 +209,14 @@ deploy_commands:
   default: []
   when: "{{ deploy_enabled }}"
 
+deploy_jobs:
+  type: yaml
+  help: >-
+    Commands of the deploy stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ deploy_enabled and ci != 'none' }}"
+
 operate_enabled:
   type: bool
   help: Add the operate stage?
@@ -187,6 +227,14 @@ operate_commands:
   help: Commands of the operate stage, run in order (empty for all its tools)
   default: []
   when: "{{ operate_enabled }}"
+
+operate_jobs:
+  type: yaml
+  help: >-
+    Commands of the operate stage run as one CI job each, in parallel (empty for
+    one job running the stage)
+  default: []
+  when: "{{ operate_enabled and ci != 'none' }}"
 
 operate_schedule:
   type: str

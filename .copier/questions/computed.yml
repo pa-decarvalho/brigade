@@ -2,9 +2,12 @@
 # Computed values, never asked nor saved (when: false): included last, so
 # that they can use every answer.
 
-# The stages split into one CI job per task: those with a tool's matrix
-# (molecule_matrix and ctt_matrix are both in test).
+# The stages run as one CI job per command (<stage>_jobs).
 split_stages:
   type: yaml
-  default: "{{ ['test'] if (molecule_matrix or ctt_matrix) else [] }}"
+  default: >-
+    {{ (['lint'] if lint_jobs else []) + (['build'] if build_jobs else [])
+    + (['test'] if test_jobs else []) + (['release'] if release_jobs else [])
+    + (['deploy'] if deploy_jobs else [])
+    + (['operate'] if operate_jobs else []) }}
   when: false

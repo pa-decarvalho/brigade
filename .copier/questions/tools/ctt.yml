@@ -1,12 +1,4 @@
 ---
-ctt_matrix:
-  type: yaml
-  help: >-
-    ctt variants with a CI job each, which splits the test stage into one
-    job per task (BRIGADE_UNIT, ctt -t; empty: one test job)
-  default: []
-  when: "{{ ci != 'none' and 'ctt' in tools }}"
-
 ctt_version:
   type: str
   help: copier-template-tester version (empty for brigade's)

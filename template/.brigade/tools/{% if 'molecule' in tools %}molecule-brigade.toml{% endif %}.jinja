@@ -6,14 +6,9 @@
 
 # mise exec puts Molecule's ansible-playbook first in PATH: the ansible tool's has no docker library.
 [tasks."molecule:test"]
-{%- if molecule_matrix %}
-# One CI job per unit (molecule_matrix): .brigade/scripts/ci_jobs.py reads them here.
-env = { BRIGADE_MATRIX = '{{ molecule_matrix | tojson }}' }
-{%- endif %}
 description = "Test Ansible roles and playbooks with Molecule, in Docker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# BRIGADE_UNIT (a CI job of molecule_matrix): that scenario only.
-run = '''mise exec {{ molecule }} -- {{ molecule_test_command | default('molecule test {% if get_env(name="BRIGADE_UNIT", default="") %}-s {{ get_env(name="BRIGADE_UNIT") }}{% else %}--all{% endif %}', true) }}'''
+run = '''mise exec {{ molecule }} -- {{ molecule_test_command | default('molecule test --all', true) }}'''
 
 # Not stage names: stay out of the pipeline. Arguments go to the command (mise run molecule:converge -- -s <scenario>).
 [tasks."molecule:converge"]

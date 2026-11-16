@@ -1,35 +1,17 @@
 ---
 # Runs in merge request pipelines, next to the other stages.
-{%- if 'lint' in split_stages %}
-# A split stage (a tool's matrix): lint-matrix writes one job per task
-# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
-# the linters skip), and lint runs them as a child pipeline.
-lint-matrix:
+lint:
   stage: lint
   needs: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  before_script:
-    - mise trust
-  script:
-    - >-
-      mise exec uv -- uv run --no-project python
-      .brigade/scripts/ci_jobs.py lint --gitlab .mise-data/lint-jobs.yml
-  artifacts:
-    paths:
-      - .mise-data/lint-jobs.yml
-{%- endif %}
-lint:
-  stage: lint
-  needs: {% if 'lint' in split_stages %}[lint-matrix]{% else %}[]{% endif %}
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 {%- if 'lint' in split_stages %}
-  trigger:
-    include:
-      - artifact: .mise-data/lint-jobs.yml
-        job: lint-matrix
-    strategy: depend
+  # One job per command of the stage (lint_jobs: the lint-<n> tasks).
+  parallel:
+    matrix:
+      - TASK: [{% for job in lint_jobs %}lint-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+  script:
+    - mise run "$TASK"
 {%- else %}
   script:
     - mise run lint

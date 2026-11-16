@@ -4,11 +4,8 @@ name: operate
 description: mise run operate (e.g. Renovate), with the project's tools
 inputs:
   task:
-    description: The task to run (a split stage), else the stage
+    description: The task to run (a job of a split stage), else the stage
     default: operate
-  unit:
-    description: BRIGADE_UNIT, the unit of the task (a split stage)
-    default: ""
   renovate-token:
     description: Renovate's token (RENOVATE_TOKEN secret)
     default: ""
@@ -42,5 +39,4 @@ runs:
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
         TASK: ${{ inputs.task }}
-        BRIGADE_UNIT: ${{ inputs.unit }}
       run: mise run "$TASK"
