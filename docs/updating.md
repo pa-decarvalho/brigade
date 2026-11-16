@@ -33,7 +33,12 @@ See [CI platforms](ci.md). For your own tasks, see [Custom tasks](custom-tasks.m
 
 Since 0.24, the tool files are in `.brigade/conf.d/` (was `.brigade/tools/`), so that mise writes one lockfile for them all. Update as usual: Copier moves them. This first update runs the previous `brigade:update`, which does not lock: then run `mise -C .brigade lock` (mise may ask you to trust the moved files: `mise trust`), and commit the update with `.brigade/mise.lock` and `.brigade/.mise/`.
 
-With `yamllint` and an `npm:` tool (renovate, cspell, markdownlint...), add `.mise/` to `ignore` in `.brigade/configs/yamllint.yml` (yours, so not updated): `.brigade/.mise/locks/` holds their dependency graphs as YAML.
+`.brigade/.mise/locks/` holds the tools' locked dependencies (`uv.lock`, `aube-lock.yaml`, `package.json`). The tool configs in `.brigade/configs/` are yours, so not updated: exclude it in the ones you have, as new projects do:
+
+- `yamllint.yml`: `.mise/` in `ignore`;
+- `trivy.yaml`: `"**/.mise"` in `scan.skip-dirs`;
+- `ansible-lint.yml`: `"**/.mise"` in `exclude_paths`;
+- `biome-brigade.jsonc`: `"!**/.mise"` in `files.includes`.
 
 ## From brigade 0.12 and earlier
 
