@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=sqlfluff
-"pipx:sqlfluff" = "{{ sqlfluff_version | default('4.5.0', true) }}"
+"pipx:sqlfluff" = { version = "{{ sqlfluff_version | default('4.5.0', true) }}", python = "3.14" }
 
 [tasks."sqlfluff:lint"]
 description = "Check SQL files with SQLFluff"

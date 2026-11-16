@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=clang-format
-"pipx:clang-format" = "{{ clang_format_version | default('23.1.5', true) }}"
+"pipx:clang-format" = { version = "{{ clang_format_version | default('23.1.5', true) }}", python = "3.14" }
 
 [tasks."clang-format:lint"]
 description = "Check C and C++ formatting with clang-format"

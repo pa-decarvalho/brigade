@@ -6,4 +6,4 @@ typos = "{{ typos_version | default('1.52.2', true) }}"
 description = "Check spelling with typos"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Config: .brigade/configs/typos.toml (the project's), added to its _typos.toml.
-run = '''{{ typos_lint_command | default('typos --hidden --exclude .git -c .brigade/configs/typos.toml', true) }}'''
+run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise -c .brigade/configs/typos.toml', true) }}'''

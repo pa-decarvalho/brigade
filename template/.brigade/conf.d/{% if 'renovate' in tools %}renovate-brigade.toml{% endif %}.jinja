@@ -4,7 +4,7 @@
 # renovate: datasource=node-version depName=node
 node = "{{ renovate_node_version | default('26.13.1', true) }}"
 # renovate: datasource=pypi depName=check-jsonschema
-"pipx:check-jsonschema" = { version = "{{ renovate_version | default('0.39.0', true) }}", uvx_args = "--with json5" }
+"pipx:check-jsonschema" = { version = "{{ renovate_version | default('0.39.0', true) }}", python = "3.14", uvx_args = "--with json5" }
 
 [tasks."renovate:lint"]
 description = "Check the Renovate config"

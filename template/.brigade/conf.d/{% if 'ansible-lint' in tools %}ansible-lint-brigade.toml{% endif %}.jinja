@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=ansible-lint
-"pipx:ansible-lint" = "{{ ansible_lint_version | default('26.11.0', true) }}"
+"pipx:ansible-lint" = { version = "{{ ansible_lint_version | default('26.11.0', true) }}", python = "3.14" }
 
 [tasks."ansible-lint:lint"]
 description = "Check Ansible content with ansible-lint"

@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=copier
-"pipx:copier" = "{{ brigade_version | default('9.19.1', true) }}"
+"pipx:copier" = { version = "{{ brigade_version | default('9.19.1', true) }}", python = "3.14" }
 
 # Renders the template at the version of .brigade/copier/answers.yml and compares: brigade-owned files
 # must not be edited by hand (brigade:update overwrites them). Needs access to the template.

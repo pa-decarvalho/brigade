@@ -1,7 +1,7 @@
 {%- if ci == 'github' -%}
 [tools]
 # renovate: datasource=pypi depName=ghp-import
-"pipx:ghp-import" = "{{ pages_version | default('2.1.0', true) }}"
+"pipx:ghp-import" = { version = "{{ pages_version | default('2.1.0', true) }}", python = "3.14" }
 
 {% endif -%}
 [tasks."pages:deploy"]

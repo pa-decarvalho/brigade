@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=ansible-core
-"pipx:ansible-core" = "{{ ansible_version | default('2.22.0', true) }}"
+"pipx:ansible-core" = { version = "{{ ansible_version | default('2.22.0', true) }}", python = "3.14" }
 
 # With ANSIBLE_VAULT_PASSWORD (CI secret), the vault password comes from it; an empty
 # --vault-password-file or ANSIBLE_VAULT_PASSWORD_FILE would break Ansible, hence the condition.

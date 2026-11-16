@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=checkov
-"pipx:checkov" = "{{ checkov_version | default('3.4.5', true) }}"
+"pipx:checkov" = { version = "{{ checkov_version | default('3.4.5', true) }}", python = "3.14" }
 
 [tasks."checkov:lint"]
 description = "Check infrastructure code (Terraform, Kubernetes, Dockerfiles, workflows...) for misconfigurations with Checkov"
