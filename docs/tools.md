@@ -65,11 +65,11 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `cspell` | `cspell:lint` | `cspell lint .`, outside hidden folders ([config](#tool-configs)). Checks every word against its dictionaries, unlike `typos` and `codespell`: add your project's words to the config's `words`, listed by `mise exec -- cspell lint --words-only --unique .` |
 | `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names ([config](#tool-configs): set your naming rules, none until then) |
 | `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
-| `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
-| `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS, Markdown: lint and formatting), without what git ignores, `.mise-data/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
+| `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.mise/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
+| `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS, Markdown: lint and formatting), without what git ignores, `.mise-data/`, `.mise/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
 | `clang-format` | `clang-format:lint` | `clang-format --dry-run --Werror` on every C and C++ file (outside hidden folders), with your `.clang-format` (else LLVM style); none: nothing to check |
-| `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
-| `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/`; queries osv.dev, so a new vulnerability can fail an unchanged project |
+| `trivy` | `trivy:lint` | `trivy fs .`: vulnerable dependencies and secrets, without `.mise-data/` and `.mise/` ([config](#tool-configs)); downloads its vulnerability database, so a new vulnerability can fail an unchanged project |
+| `osv-scanner` | `osv-scanner:lint` | `osv-scanner scan source --recursive` on your lockfiles (`uv.lock`, `package-lock.json`...), without `.mise-data/` and `.mise/` (the tools' locked dependencies); queries osv.dev, so a new vulnerability can fail an unchanged project |
 | `golangci-lint` | `golangci-lint:lint` | `golangci-lint run` (needs Go: the `go` tool, or `go` pinned in your `mise.toml`) |
 | `revive` | `revive:lint` | `revive -set_exit_status ./...` (Go, golint's rules; faster than `golangci-lint`, which can run revive too), outside hidden folders; `-config revive.toml` in your command for your rules |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |

@@ -4,7 +4,8 @@
 # Yours: brigade created it once and never changes it.
 # Paths are relative to the project root.
 exclude_paths:
-  # The GitLab CI tool cache.
+  # The GitLab CI tool cache, and mise's lock sidecars.
   - .mise-data
+  - "**/.mise"
   # Copier writes the answers files (lists without indentation).
   - .brigade/copier

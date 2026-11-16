@@ -9,4 +9,4 @@ description = "Check formatting (JavaScript, TypeScript, JSON, YAML, Markdown, C
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Reads the project's .prettierrc and .prettierignore. Its ignore files cannot skip folders from
 # elsewhere: "!" patterns skip the GitLab CI tool cache, .venv and brigade's own files.
-run = '''{{ prettier_lint_command | default('prettier --check --no-error-on-unmatched-pattern . "!**/.mise-data/**" "!**/.venv/**" "!.brigade/**"', true) }}'''
+run = '''{{ prettier_lint_command | default('prettier --check --no-error-on-unmatched-pattern . "!**/.mise-data/**" "!**/.mise/**" "!**/.venv/**" "!.brigade/**"', true) }}'''

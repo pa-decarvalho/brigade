@@ -6,5 +6,6 @@ quiet: true
 exit-code: 1
 scan:
   skip-dirs:
-    # The GitLab CI tool cache.
+    # The GitLab CI tool cache, and mise's lock sidecars (tools' dependencies).
     - .mise-data
+    - "**/.mise"
