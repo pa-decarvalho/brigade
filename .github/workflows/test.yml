@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # One job per command of the stage (<stage>_jobs: the <stage>-<n>
+  # One CI job per job of the stage (the jobs answer: the <stage>-<name>
   # tasks), in parallel.
   run:
     name: ${{ matrix.name }}
@@ -23,32 +23,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "mise run ctt:test -- -t .ctt/python-github"
-            task: test-1
-          - name: "mise run ctt:test -- -t .ctt/go-github"
-            task: test-2
-          - name: "mise run ctt:test -- -t .ctt/python-docker-github"
-            task: test-3
-          - name: "mise run ctt:test -- -t .ctt/node-github"
-            task: test-4
-          - name: "mise run ctt:test -- -t .ctt/react-github"
-            task: test-5
-          - name: "mise run ctt:test -- -t .ctt/python-gitlab"
-            task: test-6
-          - name: "mise run ctt:test -- -t .ctt/template-gitlab"
-            task: test-7
-          - name: "mise run ctt:test -- -t .ctt/template-gitea"
-            task: test-8
-          - name: "mise run ctt:test -- -t .ctt/python-gitea"
-            task: test-9
-          - name: "mise run ctt:test -- -t .ctt/python-mirror"
-            task: test-10
-          - name: "mise run ctt:test -- -t .ctt/none-github"
-            task: test-11
-          - name: "mise run ctt:test -- -t .ctt/template-github"
-            task: test-12
-          - name: "mise run ctt:test -- -t .ctt/ansible-github"
-            task: test-13
+          - name: python-github
+            task: test-python-github
+          - name: go-github
+            task: test-go-github
+          - name: python-docker-github
+            task: test-python-docker-github
+          - name: node-github
+            task: test-node-github
+          - name: react-github
+            task: test-react-github
+          - name: python-gitlab
+            task: test-python-gitlab
+          - name: template-gitlab
+            task: test-template-gitlab
+          - name: template-gitea
+            task: test-template-gitea
+          - name: python-gitea
+            task: test-python-gitea
+          - name: python-mirror
+            task: test-python-mirror
+          - name: none-github
+            task: test-none-github
+          - name: template-github
+            task: test-template-github
+          - name: ansible-github
+            task: test-ansible-github
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
