@@ -26,6 +26,8 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 |---|---|
 | `python` | `ruff`, `ty`, `pytest`, `uv` |
 | `go` | `golangci-lint` |
+| `node` | `node`, `biome` (JavaScript or TypeScript) |
+| `rust` | `rust` |
 | `terraform` | `tflint`, `checkov`, `opentofu` |
 | `ansible` | `ansible-lint`, `molecule`, `ansible` |
 | `shell` | `shellcheck`, `shfmt` |
@@ -81,6 +83,10 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `zizmor` | `zizmor:lint` | GitHub: `zizmor --offline .` audits the workflows and actions for security issues. brigade's own files pass; their `# zizmor: ignore[...]` comments keep `./` for local actions (act has no `$/` syntax) and allow fixed values written to `GITHUB_ENV` |
 | `go` | `go:build` | Installs Go; `go build ./...` (a main package at the root writes its binary there: ignore it) |
 | | `go:test` | `go test ./...` |
+| `rust` | `rust:lint` | Installs Rust (rustup, then the toolchain with rustfmt and Clippy); `cargo fmt --check && cargo clippy --all-targets -- -D warnings` |
+| | `rust:build` | `cargo build` (into `target/`: ignore it) |
+| | `rust:test` | `cargo test` |
+| | `rust:deploy` | With `cargo_publish: true`: `cargo publish`, the crate to crates.io or another registry on each release: see [deploy](#deploy) |
 | `docker` | `docker:build` | GitHub, Gitea, none: `docker build .` (Docker from the machine or the runner) |
 | | `docker:deploy` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [deploy](#deploy) |
 | `node` | `node:lint` | Installs Node.js; `npm ci && npm run lint --if-present`, for linters that are project dependencies (ESLint and its plugins) |
@@ -142,6 +148,7 @@ brigade's own files run on Linux, macOS and Windows; each tool runs where it is 
 
 - `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
+- `rust`: needs the MSVC build tools (Visual Studio Build Tools, C++ workload) to link.
 - `ansible-lint`, `molecule`, `ansible`: Ansible does not run on Windows (use WSL).
 - `act`, `gitlab-ci-local`, `docker`, `container-structure-test`: need Docker with Linux containers (Docker Desktop, WSL 2).
 
@@ -196,6 +203,8 @@ Add `site/` and `.cache/` to your `.gitignore`.
 `goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches the archives and their checksums to the release Releasaurus made for the tag (it needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a `GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your `.gitignore`. A manual run needs a tag at the checked out commit.
 
 `node:deploy` (the `node` tool, with the `npm_publish: true` answer) publishes the package with `npm publish`, once per tag: the version is the one in `package.json`, which Releasaurus bumps in the release PR. Build it in a `prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret (CI/CD variable on GitLab), and give npm the line that reads it in your `.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its host, and `publishConfig.registry` in `package.json`). A scoped public package needs `"publishConfig": {"access": "public"}`. A version already published fails: a manual run on the same tag does nothing new.
+
+`rust:deploy` (the `rust` tool, with the `cargo_publish: true` answer) publishes the crate with `cargo publish`, once per tag: the version is the one in `Cargo.toml`, which Releasaurus bumps in the release PR. In CI, add a `CARGO_REGISTRY_TOKEN` secret (CI/CD variable on GitLab): a crates.io API token with the `publish-update` scope (and `publish-new` for the first release). Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in `.cargo/config.toml`; cargo reads its token from `CARGO_REGISTRIES_<NAME>_TOKEN`, which your `mise.toml` can take from the same secret (`[env]`: `CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version already published fails: a manual run on the same tag does nothing new.
 
 `docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest` (`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE` (`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token (the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It needs Docker in CI, which brigade's GitLab image does not have: `docker` and `container-structure-test` are not offered on GitLab yet. A manual run needs a tag at the checked out commit.
 

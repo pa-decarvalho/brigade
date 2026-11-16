@@ -18,6 +18,8 @@ presets:
   choices:
     python (ruff, ty, pytest, uv): [ruff, ty, pytest, uv]
     go (golangci-lint): [golangci-lint]
+    node (node, biome): [node, biome]
+    rust (rust): [rust]
     terraform (tflint, checkov, opentofu): [tflint, checkov, opentofu]
     ansible (ansible-lint, molecule, ansible): [ansible-lint, molecule, ansible]
     shell (shellcheck, shfmt): [shellcheck, shfmt]
@@ -74,6 +76,7 @@ tools:
     ansible-lint (lint): ansible-lint
     uv (build): uv
     go (build, test): go
+    rust (lint, build, test): rust
     node (lint, build, test): node
     docker (build, deploy):
       value: docker

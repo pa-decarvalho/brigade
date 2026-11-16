@@ -60,6 +60,37 @@ _post_tasks = [
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\nnames = [p.name for p in pathlib.Path('dist').iterdir()]\nassert any('linux_amd64' in n for n in names) and any('windows_amd64' in n for n in names) and any(n.endswith('checksums.txt') for n in names), names"],
 ]
 
+[output.".ctt/rust-github"]
+# Tools from a preset: brigade's defaults, then rust (rustfmt, Clippy, cargo build and test).
+presets = [["rust"]]
+ci = "github"
+cargo_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The project's files: a command with its test, .gitignore (cargo's target/), .editorconfig.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+pathlib.Path("src").mkdir()
+pathlib.Path("Cargo.toml").write_text("[package]\nname = \"demo\"\nversion = \"0.1.0\"\nedition = \"2024\"\n")
+pathlib.Path("src/main.rs").write_text("fn main() {\n    println!(\"{}\", hello());\n}\n\nfn hello() -> &'static str {\n    \"demo\"\n}\n\n#[cfg(test)]\nmod tests {\n    #[test]\n    fn hello() {\n        assert_eq!(super::hello(), \"demo\");\n    }\n}\n")
+pathlib.Path(".gitignore").write_text("/target\n")
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo command.\n")
+'''],
+    ["mise", "exec", "--", "cargo", "generate-lockfile"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "brigade:hooks"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # rust:deploy without publishing: cargo packages and checks the crate.
+    ["mise", "exec", "--", "cargo", "publish", "--dry-run"],
+]
+
 [output.".ctt/python-docker-github"]
 # The Python app example: an app shipped as a Docker image, tested as code and as an image.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ruff", "ty", "osv-scanner", "hadolint", "checkov", "pytest", "docker", "container-structure-test", "releasaurus", "renovate"]
