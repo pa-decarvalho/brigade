@@ -1,3 +1,9 @@
+# [0.23.0](https://github.com/pa-decarvalho/brigade/compare/0.22.0...0.23.0) - 2026-11-16
+
+### 🚀 Features
+
+- node and rust presets, rust tool with crates.io publishing (#233) [_(65804e1e)_](https://github.com/pa-decarvalho/brigade/commit/65804e1e7f6f7ce93942a2fc16994000e402e6d3)
+
 # [0.22.0](https://github.com/pa-decarvalho/brigade/compare/0.21.1...0.22.0) - 2026-11-16
 
 ### 🚀 Features
