@@ -1,3 +1,9 @@
+# [0.24.1](https://github.com/pa-decarvalho/brigade/compare/0.24.0...0.24.1) - 2026-11-16
+
+### 🐛 Bug Fixes
+
+- lock brigade's tools from .brigade/ (#239) [_(f2c9f57f)_](https://github.com/pa-decarvalho/brigade/commit/f2c9f57fa445e3e85d8074d6f0f05f40e0c29cdf)
+
 # [0.24.0](https://github.com/pa-decarvalho/brigade/compare/0.23.0...0.24.0) - 2026-11-16
 
 ### 🚀 Features
