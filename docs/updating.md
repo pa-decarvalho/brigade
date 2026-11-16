@@ -15,9 +15,11 @@ brigade releases are tagged `X.Y.Z`. Tool versions are bumped by Renovate in bri
 
 ## Lockfile
 
-`.brigade/mise.lock` holds the exact version of each brigade tool, with the URL and checksum of its download for Linux, macOS and Windows; `.brigade/.mise/locks/` holds the Python and npm dependencies of the `pipx:` and `npm:` tools. `brigade:update` writes them after each update (`mise lock`): commit them with it. Then `mise install`, locally and in CI, installs these versions and fails when a download does not match its checksum (a release republished under the same version). Without a lockfile, it installs the pinned versions without checksums.
+`.brigade/mise.lock` holds the exact version of each brigade tool, with the URL and checksum of its download for Linux, macOS and Windows; `.brigade/.mise/locks/` holds the Python and npm dependencies of the `pipx:` and `npm:` tools. `brigade:update` writes them after each update (`mise -C .brigade lock`; from the root, `mise lock` only locks your `mise.toml` when you have one): commit them with it. Then `mise install`, locally and in CI, installs these versions and fails when a download does not match its checksum (a release republished under the same version). Without a lockfile, it installs the pinned versions without checksums.
 
-A failed `mise lock` (offline...) does not fail the update: run `mise lock` again. The tools you add in your `mise.toml` are locked in your own `mise.lock`, next to it.
+A failed `mise lock` (offline...) does not fail the update: run `mise -C .brigade lock` again. The tools you add in your `mise.toml` are locked with `mise lock`, in your own `mise.lock` next to it.
+
+Tools that a task declares (`[tasks.<name>.tools]`: `npm:renovate` for `renovate:operate`) are not locked from `.brigade/` (mise 2026.11): they install as before, and `mise install` may add them to the lockfile and `.brigade/.mise/locks/` in CI.
 
 ## What is overwritten
 
@@ -29,7 +31,7 @@ See [CI platforms](ci.md). For your own tasks, see [Custom tasks](custom-tasks.m
 
 ## From brigade 0.23 and earlier
 
-Since 0.24, the tool files are in `.brigade/conf.d/` (was `.brigade/tools/`), so that mise writes one lockfile for them all. Update as usual: Copier moves them, and `brigade:update` writes `.brigade/mise.lock`. Commit both.
+Since 0.24, the tool files are in `.brigade/conf.d/` (was `.brigade/tools/`), so that mise writes one lockfile for them all. Update as usual: Copier moves them. This first update runs the previous `brigade:update`, which does not lock: then run `mise -C .brigade lock` (mise may ask you to trust the moved files: `mise trust`), and commit the update with `.brigade/mise.lock` and `.brigade/.mise/`.
 
 With `yamllint` and an `npm:` tool (renovate, cspell, markdownlint...), add `.mise/` to `ignore` in `.brigade/configs/yamllint.yml` (yours, so not updated): `.brigade/.mise/locks/` holds their dependency graphs as YAML.
 

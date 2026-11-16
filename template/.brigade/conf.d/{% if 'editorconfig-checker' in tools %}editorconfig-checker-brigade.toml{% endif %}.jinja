@@ -6,4 +6,4 @@ editorconfig-checker = "{{ editorconfig_checker_version | default('4.0.2', true)
 description = "Check files against .editorconfig with editorconfig-checker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Config: .brigade/configs/editorconfig-checker.json (the project's).
-run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -config .brigade/configs/editorconfig-checker.json', true) }}'''
+run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -config .brigade/configs/editorconfig-checker.json -exclude "[.]mise/"', true) }}'''
