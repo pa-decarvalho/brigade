@@ -3,11 +3,6 @@
 "pipx:copier-template-tester" = { version = "{{ ctt_version | default('3.0.0', true) }}", uvx_args = "--with copier==9.19.1" }
 
 [tasks."ctt:test"]
-{%- if ctt_matrix %}
-# One CI job per unit (ctt_matrix): .brigade/scripts/ci_jobs.py reads them here.
-env = { BRIGADE_MATRIX = '{{ ctt_matrix | tojson }}' }
-{%- endif %}
 description = "Render every ctt.toml variant of this Copier template"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# BRIGADE_UNIT (a CI job of ctt_matrix): that variant only.
-run = '''{{ ctt_test_command | default('ctt{% if get_env(name="BRIGADE_UNIT", default="") %} -t {{ get_env(name="BRIGADE_UNIT") }}{% endif %}', true) }}'''
+run = '''{{ ctt_test_command | default('ctt', true) }}'''

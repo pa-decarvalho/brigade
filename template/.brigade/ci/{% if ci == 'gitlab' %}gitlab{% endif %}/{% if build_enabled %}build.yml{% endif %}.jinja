@@ -1,35 +1,17 @@
 ---
 # Runs in merge request pipelines, next to the other stages.
-{%- if 'build' in split_stages %}
-# A split stage (a tool's matrix): build-matrix writes one job per task
-# (.brigade/scripts/ci_jobs.py; in .mise-data/, the GitLab tool cache, which
-# the linters skip), and build runs them as a child pipeline.
-build-matrix:
+build:
   stage: build
   needs: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  before_script:
-    - mise trust
-  script:
-    - >-
-      mise exec uv -- uv run --no-project python
-      .brigade/scripts/ci_jobs.py build --gitlab .mise-data/build-jobs.yml
-  artifacts:
-    paths:
-      - .mise-data/build-jobs.yml
-{%- endif %}
-build:
-  stage: build
-  needs: {% if 'build' in split_stages %}[build-matrix]{% else %}[]{% endif %}
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 {%- if 'build' in split_stages %}
-  trigger:
-    include:
-      - artifact: .mise-data/build-jobs.yml
-        job: build-matrix
-    strategy: depend
+  # One job per command of the stage (build_jobs: the build-<n> tasks).
+  parallel:
+    matrix:
+      - TASK: [{% for job in build_jobs %}build-{{ loop.index }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+  script:
+    - mise run "$TASK"
 {%- else %}
   script:
     - mise run build

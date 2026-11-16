@@ -4,11 +4,8 @@ name: test
 description: mise run test, with the project's tools
 inputs:
   task:
-    description: The task to run (a split stage), else the stage
+    description: The task to run (a job of a split stage), else the stage
     default: test
-  unit:
-    description: BRIGADE_UNIT, the unit of the task (a split stage)
-    default: ""
 runs:
   using: composite
   steps:
@@ -17,5 +14,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         TASK: ${{ inputs.task }}
-        BRIGADE_UNIT: ${{ inputs.unit }}
       run: mise run "$TASK"

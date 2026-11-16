@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-{% endraw %}{% with stage = 'release' %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~matrix.yml' %}{% include 'template/.brigade/ci/~run.yml' %}{% else %}{% raw %}  release:
+{% endraw %}{% with stage = 'release' %}{% if stage in split_stages %}{% include '.copier/ci/run.yml.jinja' %}{% else %}{% raw %}  release:
 {% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -27,7 +27,6 @@ jobs:
       - uses: ./.brigade/ci/gitea/actions/release
 {% endraw %}{% raw %}        with:
 {% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
-          unit: ${{ matrix.unit }}
 {% endraw %}{% endif %}{% raw %}          # Optional bot token, else the workflow token.
           token: ${{ secrets.RELEASAURUS_GITEA_TOKEN }}
-{% endraw %}{% if stage in split_stages %}{% include 'template/.brigade/ci/~summary.yml' %}{% endif %}{% endwith -%}
+{% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

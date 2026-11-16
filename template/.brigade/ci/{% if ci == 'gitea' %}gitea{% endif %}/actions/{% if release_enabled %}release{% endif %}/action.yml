@@ -4,11 +4,8 @@ name: release
 description: mise run release (Releasaurus), with the project's tools
 inputs:
   task:
-    description: The task to run (a split stage), else the stage
+    description: The task to run (a job of a split stage), else the stage
     default: release
-  unit:
-    description: BRIGADE_UNIT, the unit of the task (a split stage)
-    default: ""
   token:
     description: >-
       Optional bot token: the release PR and tag made with the workflow token
@@ -25,5 +22,4 @@ runs:
         RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
         RELEASAURUS_GITEA_TOKEN: ${{ inputs.token || github.token }}
         TASK: ${{ inputs.task }}
-        BRIGADE_UNIT: ${{ inputs.unit }}
       run: mise run "$TASK"

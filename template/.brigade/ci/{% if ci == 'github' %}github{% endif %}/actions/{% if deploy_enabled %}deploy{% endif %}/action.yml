@@ -4,11 +4,8 @@ name: deploy
 description: mise run deploy, with the project's tools
 inputs:
   task:
-    description: The task to run (a split stage), else the stage
+    description: The task to run (a job of a split stage), else the stage
     default: deploy
-  unit:
-    description: BRIGADE_UNIT, the unit of the task (a split stage)
-    default: ""
   ansible-private-key:
     description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
     default: ""
@@ -55,5 +52,4 @@ runs:
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
         TASK: ${{ inputs.task }}
-        BRIGADE_UNIT: ${{ inputs.unit }}
       run: mise run "$TASK"
