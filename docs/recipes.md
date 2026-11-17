@@ -2,18 +2,21 @@
 
 *Tested dishes: a whole project, from the first commit to its release.*
 
-Each recipe is a real project that brigade's tests build and run end to end (`ctt.toml`): pick the same tools to get the same kitchen.
+Each recipe is a real project that brigade's tests build and run end to end
+(`ctt.toml`): pick the same tools to get the same kitchen.
 
 ## Python package
 
-A library with its tests and docs, released by Releasaurus and published to PyPI (or another index) on each tag. Tested as the `python-github` variant.
+A library with its tests and docs, released by Releasaurus and published to PyPI
+(or another index) on each tag. Tested as the `python-github` variant.
 
 ```sh
 uv init --lib my-package
 uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-package
 ```
 
-Tick the `python` and `docs` presets, then add the rest in `tools`. In `.brigade/copier/data.yml`:
+Tick the `python` and `docs` presets, then add the rest in `tools`. In
+`.brigade/copier/data.yml`:
 
 ```yaml
 ci: "github"
@@ -47,13 +50,21 @@ tools:
 | `deploy` | the docs to GitHub Pages (`pages`), the package to PyPI (`uv`, with `uv_publish: true`) |
 | `operate` | dependency updates (`renovate`) |
 
-Your part: the code in `src/`, the tests in `tests/`, the docs in `docs/` with a `zensical.toml`, an `.editorconfig`, and these secrets: `UV_PUBLISH_TOKEN` (a PyPI token; another index: `UV_PUBLISH_URL`), `RENOVATE_TOKEN`, and optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). In Settings → Pages, deploy from the `gh-pages` branch.
+Your part: the code in `src/`, the tests in `tests/`, the docs in `docs/` with a
+`zensical.toml`, an `.editorconfig`, and these secrets: `UV_PUBLISH_TOKEN` (a
+PyPI token; another index: `UV_PUBLISH_URL`), `RENOVATE_TOKEN`, and optionally
+`RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). In Settings →
+Pages, deploy from the `gh-pages` branch.
 
-The test publishes to a local PyPI (pypiserver in Docker) twice: the second run skips the files already there.
+The test publishes to a local PyPI (pypiserver in Docker) twice: the second run
+skips the files already there.
 
 ## Go command
 
-A command with its tests, released by Releasaurus, its binaries for Linux, macOS and Windows attached to each release by GoReleaser. Tested as the `go-github` variant (GoReleaser in snapshot mode: it builds every archive without publishing).
+A command with its tests, released by Releasaurus, its binaries for Linux, macOS
+and Windows attached to each release by GoReleaser. Tested as the `go-github`
+variant (GoReleaser in snapshot mode: it builds every archive without
+publishing).
 
 ```sh
 mkdir my-command && cd my-command && git init
@@ -90,11 +101,18 @@ tools:
 | `deploy` | the binaries and their checksums attached to the release (`goreleaser`) |
 | `operate` | dependency updates (`renovate`) |
 
-Your part: the Go code and its tests, a `.gitignore` with `dist/` and the binary `go build` writes, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). GoReleaser uses the workflow token; its settings are in `.brigade/configs/goreleaser.yaml`.
+Your part: the Go code and its tests, a `.gitignore` with `dist/` and the binary
+`go build` writes, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and
+optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)).
+GoReleaser uses the workflow token; its settings are in
+`.brigade/configs/goreleaser.yaml`.
 
 ## Docker image
 
-An image with its structure tests, released by Releasaurus and pushed to a registry on each release (`ghcr.io` on GitHub). Tested through the [Python app in Docker](#python-app-in-docker) variant, which builds, checks and pushes its image the same way.
+An image with its structure tests, released by Releasaurus and pushed to a
+registry on each release (`ghcr.io` on GitHub). Tested through the
+[Python app in Docker](#python-app-in-docker) variant, which builds, checks and
+pushes its image the same way.
 
 ```sh
 mkdir my-image && cd my-image && git init
@@ -130,11 +148,19 @@ tools:
 | `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, the `FROM` images included (`renovate`) |
 
-Your part: the `Dockerfile`, your image's tests in `.brigade/configs/container-structure-test.yaml` (brigade writes a placeholder), an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). Another registry: `DOCKER_IMAGE`, `DOCKER_USERNAME` and `DOCKER_PASSWORD` (see [deploy](tools.md#deploy)).
+Your part: the `Dockerfile`, your image's tests in
+`.brigade/configs/container-structure-test.yaml` (brigade writes a placeholder),
+an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally
+`RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). Another registry:
+`DOCKER_IMAGE`, `DOCKER_USERNAME` and `DOCKER_PASSWORD` (see
+[deploy](tools.md#deploy)).
 
 ## Python app in Docker
 
-An application shipped as a Docker image: tested as code (`pytest`) and as an image (`container-structure-test`), pushed to a registry on each release, not published to PyPI. Tested as the `python-docker-github` variant, which pushes to a local registry in Docker.
+An application shipped as a Docker image: tested as code (`pytest`) and as an
+image (`container-structure-test`), pushed to a registry on each release, not
+published to PyPI. Tested as the `python-docker-github` variant, which pushes to
+a local registry in Docker.
 
 ```sh
 uv init --package my-app
@@ -173,7 +199,8 @@ tools:
 | `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, `uv.lock` and the `FROM` image included (`renovate`) |
 
-No `uv` tool: it builds a package (`uv build`), which an app does not need; the Dockerfile installs the app. A Dockerfile from uv's image:
+No `uv` tool: it builds a package (`uv build`), which an app does not need; the
+Dockerfile installs the app. A Dockerfile from uv's image:
 
 ```dockerfile
 FROM ghcr.io/astral-sh/uv:0.13.8-python3.14-trixie-slim
@@ -187,11 +214,18 @@ HEALTHCHECK NONE
 ENTRYPOINT ["/app/.venv/bin/my-app"]
 ```
 
-Your part: the code in `src/`, the tests in `tests/`, the `Dockerfile` and a `.dockerignore` (at least `.git`, `.venv`, `.mise-data`: a local `.venv` must not end up in the image), your image's tests in `.brigade/configs/container-structure-test.yaml`, an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
+Your part: the code in `src/`, the tests in `tests/`, the `Dockerfile` and a
+`.dockerignore` (at least `.git`, `.venv`, `.mise-data`: a local `.venv` must
+not end up in the image), your image's tests in
+`.brigade/configs/container-structure-test.yaml`, an `.editorconfig`, and the
+secrets `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
 
 ## TypeScript library
 
-A library with its tests, released by Releasaurus and published to npm on each release. JavaScript works the same: the `node` tool runs your `package.json` scripts, and a missing `build` script does nothing. Tested as the `node-github` variant, which publishes to a local npm registry (Verdaccio in Docker).
+A library with its tests, released by Releasaurus and published to npm on each
+release. JavaScript works the same: the `node` tool runs your `package.json`
+scripts, and a missing `build` script does nothing. Tested as the `node-github`
+variant, which publishes to a local npm registry (Verdaccio in Docker).
 
 ```sh
 mkdir my-lib && cd my-lib && git init && npm init -y
@@ -236,11 +270,16 @@ The scripts in `package.json`:
 }
 ```
 
-Your part: the code in `src/`, the tests, `package.json` with its scripts and a committed `package-lock.json`, a `tsconfig.json`, a `.gitignore` with `node_modules/` and `dist/`, an `.editorconfig`, the line `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` in `.npmrc`, and the secrets `NPM_TOKEN`, `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
+Your part: the code in `src/`, the tests, `package.json` with its scripts and a
+committed `package-lock.json`, a `tsconfig.json`, a `.gitignore` with
+`node_modules/` and `dist/`, an `.editorconfig`, the line
+`//registry.npmjs.org/:_authToken=${NPM_TOKEN}` in `.npmrc`, and the secrets
+`NPM_TOKEN`, `RENOVATE_TOKEN` and optionally `RELEASAURUS_GITHUB_TOKEN`.
 
 ## React app
 
-A Vite React app in TypeScript, linted by ESLint, tested by Vitest, published to GitHub Pages on each release. Tested as the `react-github` variant.
+A Vite React app in TypeScript, linted by ESLint, tested by Vitest, published to
+GitHub Pages on each release. Tested as the `react-github` variant.
 
 ```sh
 npm create vite@latest my-app -- --template react-ts
@@ -274,8 +313,18 @@ tools:
 | `deploy` | `dist/` to GitHub Pages (`pages`, with `pages_dir: dist`) |
 | `operate` | dependency updates, `package-lock.json` included (`renovate`) |
 
-Your `test` script must run once and exit: `"test": "vitest run"` (`vitest` alone watches the files and waits, except in CI). A Pages site at `https://<owner>.github.io/<repo>/` needs Vite's `base: "/<repo>/"`. Shipping the app as an image (nginx serving `dist/`) instead: the `docker` tool, as in [Docker image](#docker-image).
+Your `test` script must run once and exit: `"test": "vitest run"` (`vitest`
+alone watches the files and waits, except in CI). A Pages site at
+`https://<owner>.github.io/<repo>/` needs Vite's `base: "/<repo>/"`. Shipping
+the app as an image (nginx serving `dist/`) instead: the `docker` tool, as in
+[Docker image](#docker-image).
 
-`osv-scanner` checks `package-lock.json` too; with many dependencies, expect a new advisory to fail an unchanged project until Renovate or you update the package.
+`osv-scanner` checks `package-lock.json` too; with many dependencies, expect a
+new advisory to fail an unchanged project until Renovate or you update the
+package.
 
-**Angular** works the same way: `npm run build` (`ng build`, into `dist/<app>/browser/`: set `pages_dir` to it), `npm run lint` (`ng lint`, with angular-eslint), and a `test` script that runs once: `ng test --watch=false` (Karma also needs a headless Chrome: `--browsers=ChromeHeadless`). The Angular CLI is a dependency of the project, installed by `npm ci`.
+**Angular** works the same way: `npm run build` (`ng build`, into
+`dist/<app>/browser/`: set `pages_dir` to it), `npm run lint` (`ng lint`, with
+angular-eslint), and a `test` script that runs once: `ng test --watch=false`
+(Karma also needs a headless Chrome: `--browsers=ChromeHeadless`). The Angular
+CLI is a dependency of the project, installed by `npm ci`.
