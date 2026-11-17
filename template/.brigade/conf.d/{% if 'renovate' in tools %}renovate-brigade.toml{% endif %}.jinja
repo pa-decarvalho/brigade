@@ -9,7 +9,9 @@ node = "{{ renovate_node_version | default('26.13.1', true) }}"
 [tasks."renovate:lint"]
 description = "Check the Renovate config"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{{ renovate_lint_command | default('check-jsonschema --builtin-schema vendor.renovate renovate.json', true) }}'''
+# The project's Renovate config wherever Renovate reads it (renovate.json, .github/renovate.json5,
+# .renovaterc...): none passes, before Renovate's onboarding PR adds renovate.json.
+run = '''{{ renovate_lint_command | default('uv run --no-project python .brigade/scripts/brigade_files.py "renovate.json*" ".*/renovate.json*" ".renovaterc*" -- check-jsonschema --builtin-schema vendor.renovate --default-filetype json5', true) }}'''
 
 # Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES: CI sets them). Renovate itself is on the task, so other CI jobs skip it.
 [tasks."renovate:operate"]
