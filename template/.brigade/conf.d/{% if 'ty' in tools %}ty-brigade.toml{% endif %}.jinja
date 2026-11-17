@@ -6,6 +6,7 @@ ty = "{{ ty_version | default('0.0.104', true) }}"
 [tasks."ty:lint"]
 description = "Check Python types with ty"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# uv sync: ty reads the project's .venv for its dependencies.
+# ty reads the project's .venv for its dependencies: in CI, which has none, create it first
+# (ty_lint_command or lint_commands: uv sync && ty check ...).
 # Config: .brigade/configs/ty.toml (brigade's; ty_config for your own).
-run = '''{{ ty_lint_command | default("uv sync && ty check --config-file " ~ config, true) }}'''
+run = '''{{ ty_lint_command | default("ty check --config-file " ~ config, true) }}'''

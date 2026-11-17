@@ -64,7 +64,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check` ([config](#tool-configs)) |
-| `ty` | `ty:lint` | `uv sync && ty check` (`uv sync`: ty reads the project's `.venv`; [config](#tool-configs)) |
+| `ty` | `ty:lint` | `ty check` ([config](#tool-configs)). It reads the project's `.venv` for its dependencies: CI has none, so a project with dependencies creates it first (`ty_lint_command: "uv sync && ty check --config-file .brigade/configs/ty.toml"`), else their imports fail (`import-not-found`) |
 | `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
 | `shfmt` | `shfmt:lint` | `shfmt --diff` on the same files (style: your `.editorconfig`) |
 | `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown: rumdl's rules, lines of 80 columns; `CHANGELOG.md`, written by the release tool, skipped; HTML only without a Markdown equivalent, or in `<p>` and `<h1>` blocks for a centered README header; [config](#tool-configs)) |
