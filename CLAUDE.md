@@ -24,31 +24,31 @@ mise fragment with all its tasks, and stages follow from the tools.
   path being `{%- set config = <tool>_config or '.brigade/configs/<file>' -%}`
   (a `<tool>_config` answer points to the project's own file); except configs
   that hold the project's content (`goreleaser`, `container-structure-test`,
-  `ls-lint`, `sqlfluff`): created once, then the project's (`_skip_if_exists` in
-  `.copier/settings.yml`, `PROJECT_CONFIGS` skipped by `brigade:lint`). A
-  setting brigade needs goes in the brigade-owned config, or in the command when
-  the config is the project's and the option adds to it. Other settings stay
-  command-line options. Copier answers live in `.brigade/copier/answers.yml`
-  (written by Copier); the project edits them in `.brigade/copier/data.yml` (all
-  the answers but `_commit` and `_src_path`: rendered once, `_skip_if_exists`,
-  since Copier's merge of it conflicts; `brigade:update` runs
-  `.brigade/scripts/brigade_update.py` (pinned Copier command as arguments),
-  which passes it with `--data-file`, set aside in `.git/brigade-data.yml` when
-  it is the only uncommitted change (Copier needs a clean tree; put back on
-  failure or Ctrl+C, and by the next run after a killed one), then, on success
-  only, `.brigade/scripts/brigade_data.py` (PyYAML from the same Copier's env,
-  `uvx --from copier@<version>`; not a `depends_post` task, which runs even on
-  failure) writes all the answers back to it, new questions included, in the
-  format `copier/data.yml.jinja` renders (sorted keys, JSON values, lists and
-  mappings as YAML blocks); `brigade:lint` compares it as any file, so an edit
-  not yet applied fails).
+  `ls-lint`, `sqlfluff`, `prek`): created once, then the project's
+  (`_skip_if_exists` in `.copier/settings.yml`, `PROJECT_CONFIGS` skipped by
+  `brigade:lint`). A setting brigade needs goes in the brigade-owned config, or
+  in the command when the config is the project's and the option adds to it.
+  Other settings stay command-line options. Copier answers live in
+  `.brigade/copier/answers.yml` (written by Copier); the project edits them in
+  `.brigade/copier/data.yml` (all the answers but `_commit` and `_src_path`:
+  rendered once, `_skip_if_exists`, since Copier's merge of it conflicts;
+  `brigade:update` runs `.brigade/scripts/brigade_update.py` (pinned Copier
+  command as arguments), which passes it with `--data-file`, set aside in
+  `.git/brigade-data.yml` when it is the only uncommitted change (Copier needs a
+  clean tree; put back on failure or Ctrl+C, and by the next run after a killed
+  one), then, on success only, `.brigade/scripts/brigade_data.py` (PyYAML from
+  the same Copier's env, `uvx --from copier@<version>`; not a `depends_post`
+  task, which runs even on failure) writes all the answers back to it, new
+  questions included, in the format `copier/data.yml.jinja` renders (sorted
+  keys, JSON values, lists and mappings as YAML blocks); `brigade:lint` compares
+  it as any file, so an edit not yet applied fails).
 - Generated files must work on Linux, macOS and Windows; each tool runs where it
   is supported (limits listed in `docs/tools.md#platforms`).
 - No bash: tasks are TOML commands, real logic is Python run with `uv run`.
 - mise reads only the files listed in `.miserc.toml`
   (`override_config_filenames`: exact names, no globs, missing ones ignored):
-  `.brigade/mise.toml` (uv, `brigade:update`), `.brigade/stages.toml` (stages,
-  git hook tasks), `.brigade/mirror.toml`, one Jinja fragment per selected tool
+  `.brigade/mise.toml` (uv, `brigade:update`), `.brigade/stages.toml` (stages),
+  `.brigade/mirror.toml`, one Jinja fragment per selected tool
   `.brigade/conf.d/<tool>-brigade.toml` (the suffix avoids names such as
   `ruff.toml`, which mise reads as tool config; `conf.d/` makes mise write one
   lockfile, `.brigade/mise.lock` with its `.brigade/.mise/locks/` sidecars, for
@@ -125,8 +125,8 @@ mise fragment with all its tasks, and stages follow from the tools.
   may redefine a key of another (`default.yml` holds the image, cache and
   `before_script`).
 - Linters and formatters are mise tools, not project dependencies.
-- `brigade:*` tasks are brigade's own helpers (`brigade:update`,
-  `brigade:hooks`), not pipeline stages, except `brigade:lint`, the task of the
+- `brigade:*` tasks are brigade's own helpers (`brigade:update`), not pipeline
+  stages, except `brigade:lint`, the task of the
   `brigade` tool (selected by default): it renders the template at `_commit`
   (`HEAD` for a local `_src_path`) with the answers and fails when a
   brigade-owned file differs (`.brigade/scripts/brigade_lint.py`); it also

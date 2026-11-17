@@ -30,12 +30,16 @@ mise run test
 
 ## Lint before each commit
 
+Select the `prek` tool (in `tools`, or `tools` in `.brigade/copier/data.yml`),
+then:
+
 ```sh
-mise run brigade:hooks
+mise run prek:install
 ```
 
-This writes a git hook in `.git/hooks/` that runs `mise run brigade:pre-commit`.
-The task is defined by brigade, so `brigade:update` keeps it up to date.
+This writes a git hook in `.git/hooks/` that runs the hooks of
+`.brigade/configs/prek.yaml`, yours: `mise run lint` to start with, and any
+hook of the pre-commit ecosystem you add (see [prek](tools.md#prek)).
 
 ## Generated files
 
@@ -46,7 +50,7 @@ The task is defined by brigade, so `brigade:update` keeps it up to date.
   copier/data.yml           # your answers, to edit: brigade:update applies them
   configs/                  # tool configs (yamllint.yml, ruff.toml...)
   mise.toml                 # uv and brigade:update
-  stages.toml               # the stages and the git hook tasks
+  stages.toml               # the stages
   mirror.toml               # only with mirrors
   conf.d/<tool>-brigade.toml  # one per tool, and the CI file linter
   mise.lock, .mise/locks/   # tools' versions and checksums (mise lock)

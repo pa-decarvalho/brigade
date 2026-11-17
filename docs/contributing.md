@@ -30,7 +30,6 @@ Docker (the Docker, Ansible and publishing variants use it).
 
 ```sh
 mise install
-mise run brigade:hooks    # optional: lint before each commit
 mise run lint
 mise run build            # the documentation site, strict
 mise run test

@@ -17,6 +17,11 @@
 
 <p align="center"><img src="assets/banner.webp" alt="brigade: mise-en-place, ready for service"></p>
 
+> **Alpha.** brigade's questions, tasks and generated files can still change
+> before 1.0.0. Read the
+> [release notes](https://github.com/pa-decarvalho/brigade/blob/main/CHANGELOG.md)
+> and [Updating](updating.md) before you update.
+
 brigade is a [Copier](https://copier.readthedocs.io/) template that adds
 [mise](https://mise.jdx.dev/) tooling and CI to an existing project.
 

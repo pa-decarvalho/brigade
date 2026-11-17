@@ -1,0 +1,18 @@
+---
+prek_version:
+  type: str
+  help: prek version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prek' in tools }}"
+
+prek_install_command:
+  type: str
+  help: Command of prek:install (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prek' in tools }}"
+
+prek_run_command:
+  type: str
+  help: Command of prek:run (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'prek' in tools }}"

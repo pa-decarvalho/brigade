@@ -112,6 +112,7 @@ tools:
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
+    prek (git hooks, local): prek
   # brigade's defaults, then the presets' tools, without those the CI
   # platform refuses (see their validator).
   default: >-
