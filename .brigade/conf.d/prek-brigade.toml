@@ -1,0 +1,17 @@
+[tools]
+# renovate: datasource=github-releases depName=j178/prek
+prek = "0.5.11"
+
+# Git hooks, for local use: not a pipeline stage. Config: .brigade/configs/prek.yaml (the
+# project's: its hooks, pre-commit's format). The hook calls this prek by its install path, so
+# run prek:install again after a prek version change. --force replaces the hooks already there
+# (the hook of brigade 0.25 and earlier, a hand-written one: move it to prek.yaml, repo: local).
+[tasks."prek:install"]
+description = "Install the git hooks of .brigade/configs/prek.yaml (pre-commit: mise run lint)"
+dir = "{{config_root}}/../.."
+run = '''prek install --force -c .brigade/configs/prek.yaml'''
+
+[tasks."prek:run"]
+description = "Run the hooks of .brigade/configs/prek.yaml on every file"
+dir = "{{config_root}}/../.."
+run = '''prek run --all-files -c .brigade/configs/prek.yaml'''

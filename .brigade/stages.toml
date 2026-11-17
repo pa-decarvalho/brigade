@@ -116,13 +116,3 @@ depends = [{ task = "*:deploy", optional = true }]
 description = "Stage: operate (CI runs it on manual runs, or GitLab schedules)"
 dir = "{{config_root}}/.."
 depends = [{ task = "*:operate", optional = true }]
-
-[tasks."brigade:pre-commit"]
-description = "Checks run by the git pre-commit hook"
-dir = "{{config_root}}/.."
-depends = ["lint"]
-
-[tasks."brigade:hooks"]
-description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
-dir = "{{config_root}}/.."
-run = "mise generate git-pre-commit --task brigade:pre-commit --write"
