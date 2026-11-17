@@ -16,7 +16,7 @@ depends = [{ task = "*:build", optional = true }]
 [tasks.test]
 description = "Stage: tests"
 dir = "{{config_root}}/.."
-run = ["mise run ctt:test -- -t .ctt/python-github", "mise run ctt:test -- -t .ctt/go-github", "mise run ctt:test -- -t .ctt/python-docker-github", "mise run ctt:test -- -t .ctt/node-github", "mise run ctt:test -- -t .ctt/react-github", "mise run ctt:test -- -t .ctt/rust-github", "mise run ctt:test -- -t .ctt/python-gitlab", "mise run ctt:test -- -t .ctt/template-gitlab", "mise run ctt:test -- -t .ctt/template-gitea", "mise run ctt:test -- -t .ctt/python-gitea", "mise run ctt:test -- -t .ctt/python-mirror", "mise run ctt:test -- -t .ctt/none-github", "mise run ctt:test -- -t .ctt/template-github", "mise run ctt:test -- -t .ctt/ansible-github"]
+run = ["mise run ctt:test -- -t .ctt/python-github", "mise run ctt:test -- -t .ctt/go-github", "mise run ctt:test -- -t .ctt/python-docker-github", "mise run ctt:test -- -t .ctt/node-github", "mise run ctt:test -- -t .ctt/react-github", "mise run ctt:test -- -t .ctt/angular-github", "mise run ctt:test -- -t .ctt/rust-github", "mise run ctt:test -- -t .ctt/python-gitlab", "mise run ctt:test -- -t .ctt/template-gitlab", "mise run ctt:test -- -t .ctt/template-gitea", "mise run ctt:test -- -t .ctt/python-gitea", "mise run ctt:test -- -t .ctt/python-mirror", "mise run ctt:test -- -t .ctt/none-github", "mise run ctt:test -- -t .ctt/template-github", "mise run ctt:test -- -t .ctt/ansible-github"]
 
 [tasks."test-python-github"]
 description = "Job python-github of the test stage (CI)"
@@ -47,6 +47,12 @@ description = "Job react-github of the test stage (CI)"
 hide = true
 dir = "{{config_root}}/.."
 run = ["mise run ctt:test -- -t .ctt/react-github"]
+
+[tasks."test-angular-github"]
+description = "Job angular-github of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = ["mise run ctt:test -- -t .ctt/angular-github"]
 
 [tasks."test-rust-github"]
 description = "Job rust-github of the test stage (CI)"

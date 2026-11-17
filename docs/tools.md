@@ -114,6 +114,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `molecule:reconverge` | `molecule:destroy`, then `molecule converge`, to converge from scratch |
 | | `molecule:login` | `molecule login`, a shell in the instance |
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; render the variants into `.ctt/`, which `yamllint` skips) |
+| `codeceptjs` | `codeceptjs:test` | `npm ci`, Chromium (`npx playwright install --with-deps chromium`), then `npx codeceptjs run` with your `codecept.conf.*`; none: nothing runs. Needs `node`: see [codeceptjs](#codeceptjs) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
@@ -170,6 +171,22 @@ relative to the project root.
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
 `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`,
 `.clang-format`...).
+
+## codeceptjs
+
+`codeceptjs` runs end-to-end tests: [CodeceptJS](https://codecept.io/) drives
+Chromium through its Playwright helper, against your app. CodeceptJS and
+Playwright are your dev dependencies (`npm install -D codeceptjs playwright`,
+then `npx codeceptjs init`): the helper loads Playwright next to CodeceptJS, so
+mise cannot install them apart, and their versions are in your
+`package.json`. It needs the `node` tool, and waits for `node:test`, which also
+runs `npm ci`.
+
+Your `codecept.conf.*` holds your tests, your app's URL, and the server they
+need: CI runs each stage in a fresh job, without the build stage's output, so
+start it in `bootstrap` (and stop it in `teardown`), e.g. a static server on
+your build, or `ng serve`. The task installs Chromium, and on Linux its system
+packages (with `sudo` outside CI).
 
 ## prek
 

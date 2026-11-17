@@ -33,6 +33,8 @@ jobs:
             task: test-node-github
           - name: react-github
             task: test-react-github
+          - name: angular-github
+            task: test-angular-github
           - name: rust-github
             task: test-rust-github
           - name: python-gitlab

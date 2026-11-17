@@ -323,8 +323,53 @@ the app as an image (nginx serving `dist/`) instead: the `docker` tool, as in
 new advisory to fail an unchanged project until Renovate or you update the
 package.
 
-**Angular** works the same way: `npm run build` (`ng build`, into
-`dist/<app>/browser/`: set `pages_dir` to it), `npm run lint` (`ng lint`, with
-angular-eslint), and a `test` script that runs once: `ng test --watch=false`
-(Karma also needs a headless Chrome: `--browsers=ChromeHeadless`). The Angular
-CLI is a dependency of the project, installed by `npm ci`.
+## Angular app
+
+An Angular app, unit-tested by Vitest, tested end to end by CodeceptJS
+(Chromium, through Playwright), published to GitHub Pages on each release.
+Tested as the `angular-github` variant.
+
+```sh
+npx @angular/cli new my-app --defaults
+uvx copier@9.19.1 copy gh:pa-decarvalho/brigade my-app
+cd my-app
+npm install -D codeceptjs playwright
+npx codeceptjs init
+```
+
+In `.brigade/copier/data.yml`:
+
+```yaml
+ci: "github"
+pages_dir: "dist/my-app/browser"
+tools:
+  - "brigade"
+  - "yamllint"
+  - "gitleaks"
+  - "typos"
+  - "editorconfig-checker"
+  - "zizmor"
+  - "node"
+  - "codeceptjs"
+  - "pages"
+  - "releasaurus"
+  - "renovate"
+```
+
+| Stage | What runs |
+|---|---|
+| `lint` | `brigade`, YAML, spelling, `.editorconfig`, secrets, workflows (`zizmor`), your `lint` script if any (`ng lint`, with angular-eslint) |
+| `build` | `npm ci`, then your `build` script (`ng build`, into `dist/my-app/browser/`) |
+| `test` | `npm ci`, your `test` script (`ng test`, Vitest), then CodeceptJS against the app in Chromium (`codeceptjs`) |
+| `release` | the release PR, then the tag (`releasaurus`) |
+| `deploy` | `dist/my-app/browser/` to GitHub Pages (`pages`, with `pages_dir`) |
+| `operate` | dependency updates, `package-lock.json` included (`renovate`) |
+
+Your `test` script must run once and exit: `"test": "ng test --watch=false"`.
+CodeceptJS tests the app while it runs: its `bootstrap` builds it and serves
+`dist/my-app/browser/` (the test job does not have the build stage's output),
+its `teardown` stops the server; see the `angular-github` variant in
+brigade's `ctt.toml` for a `codecept.conf.js` that does it with Node's `http`
+module. A Pages site at `https://<owner>.github.io/<repo>/` needs
+`ng build --base-href /<repo>/`. The Angular CLI is a dependency of the
+project, installed by `npm ci`.

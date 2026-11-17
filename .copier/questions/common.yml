@@ -92,6 +92,7 @@ tools:
         {% if ci == 'gitlab' %}needs a Docker daemon in CI: not on
         GitLab yet{% endif %}
     ctt (test): ctt
+    codeceptjs (test, needs node): codeceptjs
     releasaurus (release): releasaurus
     ansible (deploy, operate): ansible
     goreleaser (deploy):

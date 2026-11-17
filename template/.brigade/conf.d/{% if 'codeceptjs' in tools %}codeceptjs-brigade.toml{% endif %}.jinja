@@ -1,0 +1,11 @@
+# End-to-end tests with CodeceptJS and its Playwright helper. Both are the project's dev
+# dependencies (package.json): the helper loads Playwright next to CodeceptJS, so mise cannot
+# install them apart. Needs the node tool (Node.js), and a codecept.conf.* (the project's: its
+# tests, its app's URL, and the server its bootstrap starts); none: nothing runs.
+[tasks."codeceptjs:test"]
+description = "Run the end-to-end tests with CodeceptJS (Playwright, Chromium)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# node:test runs npm ci too: not both at once.
+wait_for = [{ task = "node:test", optional = true }]
+# Chromium and, on Linux, its system packages (sudo outside CI).
+run = '''{{ codeceptjs_test_command | default('npm ci && npx playwright install --with-deps chromium && uv run --no-project python .brigade/scripts/brigade_files.py "codecept.conf.*" -- npx codeceptjs run --config', true) }}'''
