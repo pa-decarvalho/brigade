@@ -1,3 +1,9 @@
+# [0.25.2](https://github.com/pa-decarvalho/brigade/compare/0.25.1...0.25.2) - 2026-11-17
+
+### 🐛 Bug Fixes
+
+- run ty without uv sync (#250) [_(41bd4bf8)_](https://github.com/pa-decarvalho/brigade/commit/41bd4bf883fd1df23bc12c0cd6bceb93710282e2)
+
 # [0.25.1](https://github.com/pa-decarvalho/brigade/compare/0.25.0...0.25.1) - 2026-11-17
 
 ### 🐛 Bug Fixes
