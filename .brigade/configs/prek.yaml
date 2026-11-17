@@ -1,0 +1,28 @@
+---
+# prek config (pre-commit's format): prek install -c .brigade/configs/prek.yaml
+# Yours: brigade created it once and never changes it.
+# Add your hooks (https://prek.j178.dev/), e.g. from pre-commit-hooks.
+repos:
+  # prek's own hooks: offline, fast, on the committed files only.
+  - repo: builtin
+    hooks:
+      # Conflict markers, also those brigade:update leaves (not a git merge).
+      - id: check-merge-conflict
+        args: [--assume-in-merge]
+      - id: check-added-large-files
+      # Names that break on macOS and Windows.
+      - id: check-case-conflict
+      - id: check-illegal-windows-names
+      # These fix the files: stage the fixes and commit again.
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: local
+    hooks:
+      # The lint stage, as in CI, on every commit.
+      - id: lint
+        name: mise run lint
+        entry: mise run lint
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -22,6 +22,7 @@ override_config_filenames = [
     ".brigade/conf.d/ctt-brigade.toml",
     ".brigade/conf.d/releasaurus-brigade.toml",
     ".brigade/conf.d/pages-brigade.toml",
+    ".brigade/conf.d/prek-brigade.toml",
     "mise.toml",
     "mise.local.toml",
 ]

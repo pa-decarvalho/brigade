@@ -27,6 +27,7 @@ PROJECT_CONFIGS = tuple(
         "container-structure-test.yaml",
         "ls-lint.yml",
         "sqlfluff.cfg",
+        "prek.yaml",
     )
 )
 
