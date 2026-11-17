@@ -1,3 +1,9 @@
+# [0.25.4](https://github.com/pa-decarvalho/brigade/compare/0.25.3...0.25.4) - 2026-11-17
+
+### 🐛 Bug Fixes
+
+- yamllint skips .ctt/, zizmor comments in the Gitea actions (#254) [_(64b5c8d9)_](https://github.com/pa-decarvalho/brigade/commit/64b5c8d9b2d2ee2c6f95e3bafe35546a79dc6689)
+
 # [0.25.3](https://github.com/pa-decarvalho/brigade/compare/0.25.2...0.25.3) - 2026-11-17
 
 ### 🐛 Bug Fixes
