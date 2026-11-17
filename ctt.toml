@@ -177,6 +177,86 @@ _post_tasks = [
     ["mise", "run", "brigade:lint"],
 ]
 
+[output.".ctt/angular-github"]
+# The Angular example: an app with its unit tests (Vitest) and end-to-end tests (CodeceptJS),
+# published to GitHub Pages on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "node", "codeceptjs", "pages", "releasaurus", "renovate"]
+ci = "github"
+# Angular writes the site to dist/<project>/browser.
+pages_dir = "dist/demo/browser"
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The project, by Angular's own tool.
+    ["mise", "exec", "--", "npx", "-y", "@angular/cli@22.2.7", "new", "demo", "--defaults", "--skip-git", "--directory", "."],
+    # CodeceptJS and Playwright: the project's dev dependencies.
+    ["mise", "exec", "--", "npm", "install", "--no-audit", "--no-fund", "-D", "codeceptjs@4.2.4", "playwright@1.65.1"],
+    # Unit tests run once (not in watch mode); an end-to-end test against the built app; renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import json, pathlib
+pkg = pathlib.Path("package.json"); d = json.loads(pkg.read_text())
+d["scripts"]["test"] = "ng test --watch=false"
+pkg.write_text(json.dumps(d, indent=2) + "\n")
+pathlib.Path("e2e").mkdir()
+pathlib.Path("e2e/home_test.js").write_text("""Feature('home');
+
+Scenario('shows the title', ({ I }) => {
+    I.amOnPage('/');
+    I.see('Hello, demo', 'h1');
+});
+""")
+pathlib.Path("codecept.conf.js").write_text("""const { execSync } = require('node:child_process');
+const fs = require('node:fs');
+const http = require('node:http');
+const path = require('node:path');
+
+const site = path.join(__dirname, 'dist/demo/browser');
+// Browsers run module scripts only with a JavaScript content type.
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+let server;
+
+exports.config = {
+    tests: './e2e/*_test.js',
+    output: './e2e/output',
+    helpers: {
+        Playwright: { url: 'http://127.0.0.1:4200', show: false, browser: 'chromium' },
+    },
+    // CI runs each stage in a fresh job: build the app, then serve it.
+    async bootstrap() {
+        execSync('npx ng build', { stdio: 'inherit' });
+        server = http
+            .createServer((req, res) => {
+                const asked = path.join(site, path.normalize(req.url));
+                const found = fs.statSync(asked, { throwIfNoEntry: false })?.isFile();
+                const file = asked.startsWith(site) && found ? asked : path.join(site, 'index.html');
+                const type = types[path.extname(file)] || 'application/octet-stream';
+                res.setHeader('content-type', type);
+                fs.createReadStream(file).pipe(res);
+            })
+            .listen(4200, '127.0.0.1');
+    },
+    async teardown() {
+        server.close();
+    },
+    name: 'demo',
+};
+""")
+with open(".gitignore", "a") as f:
+    f.write("/e2e/output\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+'''],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    # The site Pages publishes: Angular writes dist/demo/browser (the pages_dir answer).
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib\nassert '<app-root' in pathlib.Path('dist/demo/browser/index.html').read_text()"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+]
+
 [output.".ctt/python-gitlab"]
 tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "zensical", "pages"]
 ci = "gitlab"

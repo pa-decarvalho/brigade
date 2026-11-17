@@ -178,7 +178,8 @@ project with every tool it uses, up to its deploy (`python-github`: a package
 published to a local PyPI in Docker; `go-github`: binaries built by GoReleaser
 in snapshot mode; `python-docker-github`: a Python app shipped as an image;
 `node-github`: a TypeScript library published to a local npm registry;
-`react-github`: a Vite React app with ESLint and Vitest); the others cover CI
+`react-github`: a Vite React app with ESLint and Vitest; `angular-github`: an
+Angular app with Vitest and CodeceptJS end-to-end tests); the others cover CI
 platforms and the rest of the catalog. ctt only sees files tracked by git. The
 variants do not select `act` or `gitlab-ci-local` (a replay ran their stages a
 second time); their CI files are only linted, except in the `template-*`

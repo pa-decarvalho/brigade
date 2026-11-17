@@ -23,6 +23,9 @@ jobs:
     - name: "react-github"
       run:
         - "mise run ctt:test -- -t .ctt/react-github"
+    - name: "angular-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/angular-github"
     - name: "rust-github"
       run:
         - "mise run ctt:test -- -t .ctt/rust-github"

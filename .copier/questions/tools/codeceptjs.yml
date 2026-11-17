@@ -1,0 +1,6 @@
+---
+codeceptjs_test_command:
+  type: str
+  help: Command of codeceptjs:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'codeceptjs' in tools }}"
