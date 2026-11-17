@@ -1,3 +1,9 @@
+# [0.27.0](https://github.com/pa-decarvalho/brigade/compare/0.26.0...0.27.0) - 2026-11-17
+
+### 🚀 Features
+
+- add codeceptjs, with an Angular recipe (#261) [_(0d1ea788)_](https://github.com/pa-decarvalho/brigade/commit/0d1ea78892e6e2e7577b7f6eaccd0555ff1b9bcc)
+
 # [0.26.0](https://github.com/pa-decarvalho/brigade/compare/0.25.4...0.26.0) - 2026-11-17
 
 ### 🚀 Features
