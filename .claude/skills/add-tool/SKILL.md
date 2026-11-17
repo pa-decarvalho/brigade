@@ -19,19 +19,19 @@ Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's 
   - **no input files**: must pass, not fail or wait for stdin.
   - **network** needs, and whether results can change without a project change (say so in the docs).
   - **CI-only behavior**: CI sets env vars a local run lacks (`GITHUB_TOKEN`, `GITHUB_ACTIONS`, `CI`). Run it once with them set to dummy values and check it writes nothing (checkov wrote `github_conf/`).
-- A tool that takes a file list: a Python glob run by uv, as in `hadolint` or `shellcheck` (no shell, works on Windows; `glob` skips hidden folders):
-  `uv run --no-project python -c "import glob, subprocess, sys; files = glob.glob('**/*.sh', recursive=True); sys.exit(subprocess.call(['<tool>', *files]) if files else 0)"`
+- A tool that takes a file list: `.brigade/scripts/brigade_files.py`, as in `hadolint` or `shellcheck` (no shell, works on Windows; skips hidden folders; passes when no file matches; `--contains TEXT` filters by content, as in `cfn-lint`):
+  `uv run --no-project python .brigade/scripts/brigade_files.py "**/*.sh" -- <tool>`
 - Clean up afterwards: tools installed from the scratchpad leave global mise shims (`mise uninstall <tool> --all && mise reshim`); a shim with no version breaks tools that look it up in PATH (jactionlint and shellcheck).
 
 ## 2. Files
 
 Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint` for a file list, `ansible-lint` for `pipx:`, `yamllint` for a config file).
 
-- `template/.brigade/tools/{% if '<tool>' in tools %}<tool>-brigade.toml{% endif %}.jinja`:
+- `template/.brigade/conf.d/{% if '<tool>' in tools %}<tool>-brigade.toml{% endif %}.jinja`:
   - `# renovate: datasource=<github-releases|pypi|npm> depName=<owner/repo|package>` on the line above `<tool> = "{{ <tool_>_version | default('<pin>', true) }}"`. The `customManagers` regex in `.github/renovate.json5` reads it; a pin elsewhere in the line (`uvx_args`...) needs its own entry there.
   - `[tasks."<tool>:<stage>"]` with `description`, `{% raw %}dir = "{{config_root}}/../.."{% endraw %}` and one `run = '''{{ <tool_>_<action>_command | default('<command>', true) }}'''`. Inside a `default("...")` with double quotes, escape inner `"` as `\"`.
   - In variable names, `-` becomes `_` (`osv_scanner_version`).
-- Config: when the tool takes a config path (`-c`...) and brigade passes it settings (excluding `.mise-data`...), put them in `template/.brigade/configs/{% if '<tool>' in tools %}<tool>.<ext>{% endif %}` (no Jinja inside, a header comment saying it is the project's, paths relative to the project root; YAML within yamllint's rules: `---`, 80 columns; JSON on one line, since the project's `.editorconfig` sets its indentation) and pass `-c .brigade/configs/<tool>.<ext>`. Check first, in the scratch dir: the config's paths resolve from the project root, and whether the tool still reads its usual config file (`docs/tools.md#tool-configs` table). A tool with nothing to configure gets no file (it would hide the project's usual config).
+- Config: when the tool takes a config path (`-c`...) and brigade passes it settings (excluding `.mise-data`...), put them in `template/.brigade/configs/{% if '<tool>' in tools %}<tool>.<ext>{% endif %}` (no Jinja inside, a header comment saying it is brigade-owned and that `<tool>_config` points to the project's own, paths relative to the project root; YAML within yamllint's rules: `---`, 80 columns; JSON on one line, since the project's `.editorconfig` sets its indentation). In the fragment, `{%- set config = <tool_>_config or '.brigade/configs/<tool>.<ext>' -%}` on the first line, and the command passes `-c ' ~ config ~ '`; add a `<tool_>_config` question (copy `ruff.yml`'s). A config that holds the project's content (its builds, tests, rules: `goreleaser`) is the project's instead: no `<tool>_config`, add it to `_skip_if_exists` in `.copier/settings.yml` and to `PROJECT_CONFIGS` in `brigade_lint.py`. Check first, in the scratch dir: the config's paths resolve from the project root, and whether the tool still reads its usual config file (`docs/tools.md#tool-configs` table). A tool with nothing to configure gets no file (it would hide the project's usual config).
 - `.copier/questions/tools/<tool>.yml`: copy `gitleaks.yml`, replace the name (`sed 's/gitleaks/<tool>/g'`, then fix `-` → `_` in the variable names only).
 - `.copier/questions/common.yml`: a choice `<tool> (<stage>): <tool>` next to tools of the same stage; a `validator` on `ci` when it only fits one CI platform (`zizmor`).
 - `docs/tools.md`: a catalog row (tool, task, command; `([config](#tool-configs))` with a row in the "Tool configs" table); a "Platforms" line if it does not run on Windows.

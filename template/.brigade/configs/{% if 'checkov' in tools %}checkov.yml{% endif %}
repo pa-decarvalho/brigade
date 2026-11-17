@@ -1,6 +1,7 @@
 ---
 # Checkov config: checkov --config-file .brigade/configs/checkov.yml
-# Yours: brigade created it once and never changes it.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set checkov_config to your file.
 # It replaces the project's .checkov.yaml.
 directory:
   - .

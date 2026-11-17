@@ -1,7 +1,8 @@
 ---
 # ansible-lint config:
 # ansible-lint --strict -c .brigade/configs/ansible-lint.yml
-# Yours: brigade created it once and never changes it.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set ansible_lint_config to your file.
 # Paths are relative to the project root.
 exclude_paths:
   # The GitLab CI tool cache, and mise's lock sidecars.

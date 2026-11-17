@@ -1,3 +1,4 @@
+{%- set config = trivy_config or '.brigade/configs/trivy.yaml' -%}
 [tools]
 # renovate: datasource=github-releases depName=aquasecurity/trivy
 "aqua:aquasecurity/trivy" = "{{ trivy_version | default('0.76.2', true) }}"
@@ -5,6 +6,6 @@
 [tasks."trivy:lint"]
 description = "Check dependencies for vulnerabilities and files for secrets with Trivy"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/trivy.yaml (the project's). Downloads its vulnerability database
+# Config: .brigade/configs/trivy.yaml (brigade's; trivy_config for your own). Downloads its vulnerability database
 # (ghcr.io) into the user cache: a new vulnerability can fail an unchanged project.
-run = '''{{ trivy_lint_command | default('trivy fs --config .brigade/configs/trivy.yaml .', true) }}'''
+run = '''{{ trivy_lint_command | default('trivy fs --config ' ~ config ~ ' .', true) }}'''

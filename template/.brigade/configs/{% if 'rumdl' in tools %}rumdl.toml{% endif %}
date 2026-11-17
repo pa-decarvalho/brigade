@@ -1,5 +1,7 @@
 # rumdl config (rumdl check --no-cache --config .brigade/configs/rumdl.toml .).
-# Yours: brigade created it once and never changes it. It replaces the project's .rumdl.toml.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set rumdl_config to your file.
+# It replaces the project's .rumdl.toml.
 [global]
 # .mise-data is the GitLab CI tool cache.
 exclude = [".mise-data"]

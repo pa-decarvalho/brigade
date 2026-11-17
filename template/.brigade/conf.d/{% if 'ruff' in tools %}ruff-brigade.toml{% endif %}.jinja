@@ -1,3 +1,4 @@
+{%- set config = ruff_config or '.brigade/configs/ruff.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ruff
 ruff = "{{ ruff_version | default('0.17.5', true) }}"
@@ -5,5 +6,5 @@ ruff = "{{ ruff_version | default('0.17.5', true) }}"
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/ruff.toml (the project's).
-run = '''{{ ruff_lint_command | default('ruff check --config .brigade/configs/ruff.toml && ruff format --check --config .brigade/configs/ruff.toml', true) }}'''
+# Config: .brigade/configs/ruff.toml (brigade's; ruff_config for your own).
+run = '''{{ ruff_lint_command | default('ruff check --config ' ~ config ~ ' && ruff format --check --config ' ~ config, true) }}'''

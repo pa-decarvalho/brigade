@@ -7,4 +7,4 @@ shellcheck = "0.11.0"
 description = "Check Gitea/Forgejo workflows and actions with jactionlint"
 dir = "{{config_root}}/../.."
 # Only this project's files (not the copies in subfolders); Python globs on every OS.
-run = '''uv run --no-project python -c "import glob, subprocess, sys; sys.exit(subprocess.call(['jactionlint', *glob.glob('.gitea/workflows/*.yml'), *glob.glob('.brigade/ci/gitea/actions/*/action.yml')]))"'''
+run = '''uv run --no-project python .brigade/scripts/brigade_files.py ".gitea/workflows/*.yml" ".brigade/ci/gitea/actions/*/action.yml" -- jactionlint'''

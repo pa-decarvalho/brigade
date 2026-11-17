@@ -1,3 +1,4 @@
+{%- set config = taplo_config or '.brigade/configs/taplo.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=tamasfe/taplo
 taplo = "{{ taplo_version | default('0.10.0', true) }}"
@@ -5,5 +6,5 @@ taplo = "{{ taplo_version | default('0.10.0', true) }}"
 [tasks."taplo:lint"]
 description = "Check TOML formatting with taplo"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# brigade's TOML files only. Config: .brigade/configs/taplo.toml (the project's).
-run = '''{{ taplo_lint_command | default('taplo fmt --check -c .brigade/configs/taplo.toml ".brigade/*.toml" ".brigade/*/*.toml" .miserc.toml', true) }}'''
+# brigade's TOML files only. Config: .brigade/configs/taplo.toml (brigade's; taplo_config for your own).
+run = '''{{ taplo_lint_command | default('taplo fmt --check -c ' ~ config ~ ' ".brigade/*.toml" ".brigade/*/*.toml" .miserc.toml', true) }}'''

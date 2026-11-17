@@ -1,5 +1,7 @@
 # Vale config: vale --config .brigade/configs/vale.ini
-# Yours: brigade created it once and never changes it. It replaces the project's .vale.ini.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set vale_config to your file.
+# It replaces the project's .vale.ini.
 # Add style packages (Packages = Google, write-good...): vale sync downloads them first.
 MinAlertLevel = suggestion
 

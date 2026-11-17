@@ -1,3 +1,4 @@
+{%- set config = biome_config or '.brigade/configs/biome-brigade.jsonc' -%}
 [tools]
 # renovate: datasource=npm depName=@biomejs/biome
 "aqua:biomejs/biome" = "{{ biome_version | default('2.6.8', true) }}"
@@ -5,6 +6,6 @@
 [tasks."biome:lint"]
 description = "Check JavaScript, TypeScript, JSON and CSS (lint and formatting) with Biome"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/biome-brigade.jsonc (the project's; not biome.json, which Biome would
+# Config: .brigade/configs/biome-brigade.jsonc (brigade's; biome_config for your own; not biome.json, which Biome would
 # also find as a nested root config). Nothing to check: passes.
-run = '''{{ biome_lint_command | default('biome ci --no-errors-on-unmatched --config-path .brigade/configs/biome-brigade.jsonc .', true) }}'''
+run = '''{{ biome_lint_command | default('biome ci --no-errors-on-unmatched --config-path ' ~ config ~ ' .', true) }}'''

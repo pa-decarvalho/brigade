@@ -1,3 +1,4 @@
+{%- set config = vale_config or '.brigade/configs/vale.ini' -%}
 [tools]
 # renovate: datasource=github-releases depName=vale-cli/vale
 "aqua:vale-cli/vale" = "{{ vale_version | default('3.27.0', true) }}"
@@ -5,6 +6,6 @@
 [tasks."vale:lint"]
 description = "Check prose (Markdown) with Vale"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/vale.ini (the project's). vale sync downloads the style packages it
+# Config: .brigade/configs/vale.ini (brigade's; vale_config for your own). vale sync downloads the style packages it
 # lists (none by default); --glob skips the GitLab CI tool cache and dependency folders.
-run = '''{{ vale_lint_command | default('vale --config .brigade/configs/vale.ini sync && vale --config .brigade/configs/vale.ini "--glob=!{.mise-data,.venv,node_modules}/**" .', true) }}'''
+run = '''{{ vale_lint_command | default('vale --config ' ~ config ~ ' sync && vale --config ' ~ config ~ ' "--glob=!{.mise-data,.venv,node_modules}/**" .', true) }}'''

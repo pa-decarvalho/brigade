@@ -1,6 +1,7 @@
 ---
 # yamllint config: yamllint --strict -c .brigade/configs/yamllint.yml .
-# Yours: brigade created it once and never changes it.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set yamllint_config to your file.
 # Paths are relative to the project root.
 extends: default
 ignore: |
