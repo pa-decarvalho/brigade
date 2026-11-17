@@ -29,11 +29,15 @@ Files you add are yours: brigade never touches them, such as `mise.toml`, your o
 
 See [CI platforms](ci.md). For your own tasks, see [Custom tasks](custom-tasks.md).
 
+## From brigade 0.24 and earlier
+
+Since 0.25, the tool configs in `.brigade/configs/` hold brigade's settings and belong to brigade, except `goreleaser`, `container-structure-test`, `ls-lint` and `sqlfluff`, which stay yours (see [Tool configs](tools.md#tool-configs)). `brigade:update` merges brigade's changes into them; then `brigade:lint` shows the ones you had edited as `edited`. For each: move your settings to your own file (e.g. `ruff.toml` at the root), set `<tool>_config` to it in `.brigade/copier/data.yml`, and run `mise run brigade:update`, which restores brigade's file.
+
 ## From brigade 0.23 and earlier
 
 Since 0.24, the tool files are in `.brigade/conf.d/` (was `.brigade/tools/`), so that mise writes one lockfile for them all. Update as usual: Copier moves them. This first update runs the previous `brigade:update`, which does not lock: then run `mise -C .brigade lock` (mise may ask you to trust the moved files: `mise trust`), and commit the update with `.brigade/mise.lock` and `.brigade/.mise/`.
 
-`.brigade/.mise/locks/` holds the tools' locked dependencies (`uv.lock`, `aube-lock.yaml`, `package.json`). The tool configs in `.brigade/configs/` are yours, so not updated: exclude it in the ones you have, as new projects do:
+`.brigade/.mise/locks/` holds the tools' locked dependencies (`uv.lock`, `aube-lock.yaml`, `package.json`). Until 0.25, the tool configs in `.brigade/configs/` were yours, so not updated: exclude it in the ones you have, as new projects do (0.25 does it for brigade's configs):
 
 - `yamllint.yml`: `.mise/` in `ignore`;
 - `trivy.yaml`: `"**/.mise"` in `scan.skip-dirs`;

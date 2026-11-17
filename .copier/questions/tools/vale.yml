@@ -5,6 +5,12 @@ vale_version:
   default: ""
   when: "{{ customize_tools and 'vale' in tools }}"
 
+vale_config:
+  type: str
+  help: Config file of vale, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'vale' in tools }}"
+
 vale_lint_command:
   type: str
   help: Command of vale:lint (empty for brigade's)

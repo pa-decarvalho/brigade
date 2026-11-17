@@ -1,3 +1,4 @@
+{%- set config = yamllint_config or '.brigade/configs/yamllint.yml' -%}
 [tools]
 # renovate: datasource=pypi depName=yamllint
 "pipx:yamllint" = { version = "{{ yamllint_version | default('1.38.0', true) }}", python = "3.14" }
@@ -5,5 +6,5 @@
 [tasks."yamllint:lint"]
 description = "Check YAML files with yamllint"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/yamllint.yml (the project's).
-run = '''{{ yamllint_lint_command | default('yamllint --strict -c .brigade/configs/yamllint.yml .', true) }}'''
+# Config: .brigade/configs/yamllint.yml (brigade's; yamllint_config for your own).
+run = '''{{ yamllint_lint_command | default('yamllint --strict -c ' ~ config ~ ' .', true) }}'''

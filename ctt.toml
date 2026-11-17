@@ -194,9 +194,10 @@ tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "bi
 ci = "gitlab"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false
-# Custom version and command for a tool.
+# Custom version, config and command for a tool.
 customize_tools = true
 typos_version = "1.51.1"
+yamllint_config = ".yamllint.yml"
 ruff_lint_command = "ruff check --extend-exclude .mise-data ."
 _post_tasks = [
     ["git", "init", "-q"],
@@ -207,10 +208,12 @@ _post_tasks = [
     ["uv", "run", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_hello():\\n    assert demo.hello()\\n')"],
     # The documentation source: brigade only adds the build and deploy tools.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \"demo\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n')"],
+    # The project's own yamllint config (yamllint_config), extending brigade's.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.yamllint.yml').write_text('---\\nextends: .brigade/configs/yamllint.yml\\nrules:\\n  line-length: disable\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
-    # The custom version and command are in the rendered files.
-    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.brigade/conf.d'); assert '1.51.1' in (d / 'typos-brigade.toml').read_text(); assert 'ruff check --extend-exclude .mise-data .' in (d / 'ruff-brigade.toml').read_text()"],
+    # The custom version, config and command are in the rendered files.
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('.brigade/conf.d'); assert '1.51.1' in (d / 'typos-brigade.toml').read_text(); assert '-c .yamllint.yml .' in (d / 'yamllint-brigade.toml').read_text(); assert 'ruff check --extend-exclude .mise-data .' in (d / 'ruff-brigade.toml').read_text()"],
     ["mise", "run", "brigade:hooks"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-q", "--allow-empty", "-m", "check hook"],
     ["mise", "run", "lint"],

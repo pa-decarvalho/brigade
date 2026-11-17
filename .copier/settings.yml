@@ -5,5 +5,9 @@ _answers_file: .brigade/copier/answers.yml
 # Created once, then written by brigade:update (Copier would merge it).
 _skip_if_exists:
   - .brigade/copier/data.yml
-  # Tool configs: the project's (docs/tools.md).
-  - .brigade/configs/*
+  # The tool configs that hold the project's content (docs/tools.md); the
+  # others are brigade's (<tool>_config points a tool to the project's own).
+  - .brigade/configs/goreleaser.yaml
+  - .brigade/configs/container-structure-test.yaml
+  - .brigade/configs/ls-lint.yml
+  - .brigade/configs/sqlfluff.cfg

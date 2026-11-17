@@ -16,7 +16,7 @@ Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Cha
 | `uv_publish` | yes / no | no | With the `uv` tool: publish the package on each release (`uv:deploy`, see [deploy](tools.md#deploy)). |
 | `npm_publish` | yes / no | no | With the `node` tool: publish the package on each release (`node:deploy`, see [deploy](tools.md#deploy)). |
 | `cargo_publish` | yes / no | no | With the `rust` tool: publish the crate on each release (`rust:deploy`, see [deploy](tools.md#deploy)). |
-| `customize_tools` | yes / no | no | Asks a version and a command for each selected tool: see [Tools](tools.md). |
+| `customize_tools` | yes / no | no | Asks a version, a config file and a command for each selected tool: see [Tools](tools.md#customize-a-version-or-a-command). |
 | `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |
 | `pypi_index` | URL | empty | PyPI simple index: see [Mirrors](mirrors.md). |

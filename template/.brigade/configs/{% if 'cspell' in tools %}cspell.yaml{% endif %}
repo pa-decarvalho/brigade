@@ -1,6 +1,7 @@
 ---
 # cspell config: cspell lint -c .brigade/configs/cspell.yaml .
-# Yours: brigade created it once and never changes it.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set cspell_config to your file.
 # The project's cspell.json is still read too.
 # Paths are relative to the project root.
 version: "0.2"

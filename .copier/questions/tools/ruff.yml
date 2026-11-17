@@ -5,6 +5,12 @@ ruff_version:
   default: ""
   when: "{{ customize_tools and 'ruff' in tools }}"
 
+ruff_config:
+  type: str
+  help: Config file of ruff, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ruff' in tools }}"
+
 ruff_lint_command:
   type: str
   help: Command of ruff:lint (empty for brigade's)

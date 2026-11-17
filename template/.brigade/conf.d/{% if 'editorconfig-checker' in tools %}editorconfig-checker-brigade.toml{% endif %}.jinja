@@ -1,3 +1,4 @@
+{%- set config = editorconfig_checker_config or '.brigade/configs/editorconfig-checker.json' -%}
 [tools]
 # renovate: datasource=github-releases depName=editorconfig-checker/editorconfig-checker
 editorconfig-checker = "{{ editorconfig_checker_version | default('4.0.2', true) }}"
@@ -5,5 +6,5 @@ editorconfig-checker = "{{ editorconfig_checker_version | default('4.0.2', true)
 [tasks."editorconfig-checker:lint"]
 description = "Check files against .editorconfig with editorconfig-checker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/editorconfig-checker.json (the project's).
-run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -config .brigade/configs/editorconfig-checker.json -exclude "[.]mise/"', true) }}'''
+# Config: .brigade/configs/editorconfig-checker.json (brigade's; editorconfig_checker_config for your own).
+run = '''{{ editorconfig_checker_lint_command | default('editorconfig-checker -config ' ~ config ~ ' -exclude "[.]mise/"', true) }}'''

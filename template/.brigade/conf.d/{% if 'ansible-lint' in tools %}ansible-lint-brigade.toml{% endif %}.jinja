@@ -1,3 +1,4 @@
+{%- set config = ansible_lint_config or '.brigade/configs/ansible-lint.yml' -%}
 [tools]
 # renovate: datasource=pypi depName=ansible-lint
 "pipx:ansible-lint" = { version = "{{ ansible_lint_version | default('26.11.0', true) }}", python = "3.14" }
@@ -5,5 +6,5 @@
 [tasks."ansible-lint:lint"]
 description = "Check Ansible content with ansible-lint"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/ansible-lint.yml (the project's).
-run = '''{{ ansible_lint_lint_command | default('ansible-lint --strict -c .brigade/configs/ansible-lint.yml', true) }}'''
+# Config: .brigade/configs/ansible-lint.yml (brigade's; ansible_lint_config for your own).
+run = '''{{ ansible_lint_lint_command | default('ansible-lint --strict -c ' ~ config, true) }}'''

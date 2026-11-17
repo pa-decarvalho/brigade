@@ -5,6 +5,12 @@ trivy_version:
   default: ""
   when: "{{ customize_tools and 'trivy' in tools }}"
 
+trivy_config:
+  type: str
+  help: Config file of trivy, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'trivy' in tools }}"
+
 trivy_lint_command:
   type: str
   help: Command of trivy:lint (empty for brigade's)

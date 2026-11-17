@@ -1,3 +1,4 @@
+{%- set config = typos_config or '.brigade/configs/typos.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=crate-ci/typos
 typos = "{{ typos_version | default('1.52.2', true) }}"
@@ -5,5 +6,5 @@ typos = "{{ typos_version | default('1.52.2', true) }}"
 [tasks."typos:lint"]
 description = "Check spelling with typos"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/typos.toml (the project's), added to its _typos.toml.
-run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise -c .brigade/configs/typos.toml', true) }}'''
+# Config: .brigade/configs/typos.toml (brigade's; typos_config for your own), added to its _typos.toml.
+run = '''{{ typos_lint_command | default('typos --hidden --exclude .git --exclude .mise -c ' ~ config, true) }}'''

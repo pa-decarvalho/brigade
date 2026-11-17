@@ -5,6 +5,12 @@ biome_version:
   default: ""
   when: "{{ customize_tools and 'biome' in tools }}"
 
+biome_config:
+  type: str
+  help: Config file of biome, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'biome' in tools }}"
+
 biome_lint_command:
   type: str
   help: Command of biome:lint (empty for brigade's)

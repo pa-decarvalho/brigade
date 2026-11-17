@@ -115,32 +115,33 @@ The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see 
 
 ## Tool configs
 
-Tools that read a config file get one in `.brigade/configs/`, created with brigade's settings when the tool is selected (the folders to skip, such as `.mise-data/`, the GitLab CI tool cache). The file is yours: edit it, brigade never changes it again (`brigade:update` keeps it, `brigade:lint` skips it). Removing the tool from `tools` removes it. Paths in it are relative to the project root.
+Tools that read a config file get one in `.brigade/configs/`, created when the tool is selected; removing the tool from `tools` removes it. Paths in it are relative to the project root.
 
-| Tool | Config | Your usual config file |
-|---|---|---|
-| `yamllint` | `.brigade/configs/yamllint.yml` | `.yamllint`: not read |
-| `ruff` | `.brigade/configs/ruff.toml` | `[tool.ruff]` in `pyproject.toml`, `ruff.toml`: not read |
-| `ty` | `.brigade/configs/ty.toml` | `[tool.ty]` in `pyproject.toml`, `ty.toml`: not read |
-| `typos` | `.brigade/configs/typos.toml` | `_typos.toml`, `typos.toml`: still read, both apply |
-| `taplo` | `.brigade/configs/taplo.toml` | `taplo.toml`: not read |
-| `rumdl` | `.brigade/configs/rumdl.toml` | `.rumdl.toml`: not read |
-| `editorconfig-checker` | `.brigade/configs/editorconfig-checker.json` | `.editorconfig-checker.json`: not read (`.editorconfig` still is) |
-| `ansible-lint` | `.brigade/configs/ansible-lint.yml` | `.ansible-lint`: not read |
-| `vale` | `.brigade/configs/vale.ini` | `.vale.ini`: not read |
-| `codespell` | `.brigade/configs/codespell.cfg` | `.codespellrc`: not read |
-| `biome` | `.brigade/configs/biome-brigade.jsonc` | `biome.json`, `biome.jsonc`: not read |
-| `trivy` | `.brigade/configs/trivy.yaml` | `trivy.yaml`: not read |
-| `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
-| `checkov` | `.brigade/configs/checkov.yml` | `.checkov.yaml`: not read |
-| `goreleaser` | `.brigade/configs/goreleaser.yaml` | `.goreleaser.yaml`: not read |
-| `container-structure-test` | `.brigade/configs/container-structure-test.yaml` | none: your image's tests |
-| `cspell` | `.brigade/configs/cspell.yaml` | `cspell.json`, `.cspell.json`...: still read, both apply |
-| `ls-lint` | `.brigade/configs/ls-lint.yml` | `.ls-lint.yml`: not read |
+- **brigade's settings** (the folders to skip, such as `.mise-data/` and `.mise/`): brigade-owned, like the rest of `.brigade/`. `brigade:update` updates them and `brigade:lint` fails when one is edited. For your own settings, write your own file (start from a copy of brigade's, or extend it where the tool allows: `extend` in ruff, `import` in cspell, `extends` in yamllint, biome and rumdl), and set `<tool>_config` to its path (see [Customize](#customize-a-version-or-a-command)); it then keeps your settings, and brigade's later changes are yours to follow.
+- **Your content** (`goreleaser`, `container-structure-test`, `ls-lint`, `sqlfluff`: your builds, tests, naming rules, SQL dialect): created once with a starting point, then yours: `brigade:update` keeps it, `brigade:lint` skips it.
 
-Move your settings into the brigade file. Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`, `.clang-format`...).
+| Tool | Config | Owner | Your usual config file, with brigade's |
+|---|---|---|---|
+| `yamllint` | `.brigade/configs/yamllint.yml` | brigade's (`yamllint_config`) | `.yamllint`: not read |
+| `ruff` | `.brigade/configs/ruff.toml` | brigade's (`ruff_config`) | `[tool.ruff]` in `pyproject.toml`, `ruff.toml`: not read |
+| `ty` | `.brigade/configs/ty.toml` | brigade's (`ty_config`) | `[tool.ty]` in `pyproject.toml`, `ty.toml`: not read |
+| `typos` | `.brigade/configs/typos.toml` | brigade's (`typos_config`) | `_typos.toml`, `typos.toml`: still read, both apply |
+| `taplo` | `.brigade/configs/taplo.toml` | brigade's (`taplo_config`) | `taplo.toml`: not read |
+| `rumdl` | `.brigade/configs/rumdl.toml` | brigade's (`rumdl_config`) | `.rumdl.toml`: not read |
+| `editorconfig-checker` | `.brigade/configs/editorconfig-checker.json` | brigade's (`editorconfig_checker_config`) | `.editorconfig-checker.json`: not read (`.editorconfig` still is) |
+| `ansible-lint` | `.brigade/configs/ansible-lint.yml` | brigade's (`ansible_lint_config`) | `.ansible-lint`: not read |
+| `vale` | `.brigade/configs/vale.ini` | brigade's (`vale_config`) | `.vale.ini`: not read |
+| `codespell` | `.brigade/configs/codespell.cfg` | brigade's (`codespell_config`) | `.codespellrc`: not read |
+| `biome` | `.brigade/configs/biome-brigade.jsonc` | brigade's (`biome_config`) | `biome.json`, `biome.jsonc`: not read |
+| `trivy` | `.brigade/configs/trivy.yaml` | brigade's (`trivy_config`) | `trivy.yaml`: not read |
+| `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | yours | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
+| `checkov` | `.brigade/configs/checkov.yml` | brigade's (`checkov_config`) | `.checkov.yaml`: not read |
+| `goreleaser` | `.brigade/configs/goreleaser.yaml` | yours | `.goreleaser.yaml`: not read |
+| `container-structure-test` | `.brigade/configs/container-structure-test.yaml` | yours | none: your image's tests |
+| `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
+| `ls-lint` | `.brigade/configs/ls-lint.yml` | yours | `.ls-lint.yml`: not read |
 
-Before brigade 0.15, these settings were command-line options: `brigade:update` creates the files with the same settings. A file brigade creates is not updated by later releases: compare it with the template when a release changes it (release notes).
+Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`, `.clang-format`...).
 
 ## Platforms
 
@@ -271,18 +272,19 @@ Pick [act](https://github.com/nektos/act) (GitHub, Gitea) or [gitlab-ci-local](h
 ## Customize a version or a command
 
 Each tool has one file with its version and its commands.
-Answer yes to `customize_tools` and Copier asks, for each selected tool, a version and a command:
+Answer yes to `customize_tools` and Copier asks, for each selected tool, a version, a config file (tools with one in `.brigade/configs/`) and a command:
 
 ```text
 Customize tool versions and commands? (y/N) y
 ruff version (empty for brigade's):
+Config file of ruff, from the project root (empty for brigade's): ruff.toml
 Command of ruff:lint (empty for brigade's): ruff check src
 ```
 
 - An answer replaces brigade's value, and stays on `brigade:update` until you change it.
 - An empty answer takes brigade's value, and keeps following it on `brigade:update`. Clear an answer to go back to it.
 
-Answers are named `<tool>_version` and `<tool>_<action>_command`, e.g. `ruff_version`, `zensical_serve_command`.
+Answers are named `<tool>_version`, `<tool>_config` and `<tool>_<action>_command`, e.g. `ruff_version`, `ruff_config`, `zensical_serve_command`.
 To change them later, see [Questions](questions.md).
 
 Missing a tool? Add your own task: see [Custom tasks](custom-tasks.md).

@@ -5,6 +5,12 @@ taplo_version:
   default: ""
   when: "{{ customize_tools and 'taplo' in tools }}"
 
+taplo_config:
+  type: str
+  help: Config file of taplo, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'taplo' in tools }}"
+
 taplo_lint_command:
   type: str
   help: Command of taplo:lint (empty for brigade's)

@@ -1,3 +1,4 @@
+{%- set config = ty_config or '.brigade/configs/ty.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ty
 ty = "{{ ty_version | default('0.0.104', true) }}"
@@ -5,5 +6,6 @@ ty = "{{ ty_version | default('0.0.104', true) }}"
 [tasks."ty:lint"]
 description = "Check Python types with ty"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# uv sync: ty reads the project's .venv for its dependencies. Config: .brigade/configs/ty.toml.
-run = '''{{ ty_lint_command | default("uv sync && ty check --config-file .brigade/configs/ty.toml", true) }}'''
+# uv sync: ty reads the project's .venv for its dependencies.
+# Config: .brigade/configs/ty.toml (brigade's; ty_config for your own).
+run = '''{{ ty_lint_command | default("uv sync && ty check --config-file " ~ config, true) }}'''

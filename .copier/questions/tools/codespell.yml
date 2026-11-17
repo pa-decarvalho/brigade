@@ -5,6 +5,12 @@ codespell_version:
   default: ""
   when: "{{ customize_tools and 'codespell' in tools }}"
 
+codespell_config:
+  type: str
+  help: Config file of codespell, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'codespell' in tools }}"
+
 codespell_lint_command:
   type: str
   help: Command of codespell:lint (empty for brigade's)

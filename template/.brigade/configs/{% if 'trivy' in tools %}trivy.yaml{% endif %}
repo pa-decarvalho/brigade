@@ -1,6 +1,7 @@
 ---
 # Trivy config: trivy fs --config .brigade/configs/trivy.yaml .
-# Yours: brigade created it once and never changes it.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set trivy_config to your file.
 # It replaces the project's trivy.yaml. Paths are relative to the project root.
 quiet: true
 exit-code: 1

@@ -1,3 +1,4 @@
+{%- set config = checkov_config or '.brigade/configs/checkov.yml' -%}
 [tools]
 # renovate: datasource=pypi depName=checkov
 "pipx:checkov" = { version = "{{ checkov_version | default('3.4.5', true) }}", python = "3.14" }
@@ -5,5 +6,5 @@
 [tasks."checkov:lint"]
 description = "Check infrastructure code (Terraform, Kubernetes, Dockerfiles, workflows...) for misconfigurations with Checkov"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-# Config: .brigade/configs/checkov.yml (the project's).
-run = '''{{ checkov_lint_command | default('checkov --config-file .brigade/configs/checkov.yml', true) }}'''
+# Config: .brigade/configs/checkov.yml (brigade's; checkov_config for your own).
+run = '''{{ checkov_lint_command | default('checkov --config-file ' ~ config, true) }}'''

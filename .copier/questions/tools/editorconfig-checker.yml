@@ -5,6 +5,14 @@ editorconfig_checker_version:
   default: ""
   when: "{{ customize_tools and 'editorconfig-checker' in tools }}"
 
+editorconfig_checker_config:
+  type: str
+  help: >-
+    Config file of editorconfig-checker, from the project root (empty for
+    brigade's)
+  default: ""
+  when: "{{ customize_tools and 'editorconfig-checker' in tools }}"
+
 editorconfig_checker_lint_command:
   type: str
   help: Command of editorconfig-checker:lint (empty for brigade's)

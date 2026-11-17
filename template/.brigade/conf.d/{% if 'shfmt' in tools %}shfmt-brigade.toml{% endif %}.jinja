@@ -6,4 +6,4 @@ shfmt = "{{ shfmt_version | default('3.14.1', true) }}"
 description = "Check shell script formatting with shfmt"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Python globs on every OS, without hidden folders (.mise-data); no script: nothing to check.
-run = '''{{ shfmt_lint_command | default("uv run --no-project python -c \"import glob, subprocess, sys; files = glob.glob('**/*.sh', recursive=True) + glob.glob('**/*.bash', recursive=True); sys.exit(subprocess.call(['shfmt', '--diff', *files]) if files else 0)\"", true) }}'''
+run = '''{{ shfmt_lint_command | default('uv run --no-project python .brigade/scripts/brigade_files.py "**/*.sh" "**/*.bash" -- shfmt --diff', true) }}'''

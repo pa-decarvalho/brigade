@@ -5,6 +5,12 @@ ansible_lint_version:
   default: ""
   when: "{{ customize_tools and 'ansible-lint' in tools }}"
 
+ansible_lint_config:
+  type: str
+  help: Config file of ansible-lint, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ansible-lint' in tools }}"
+
 ansible_lint_lint_command:
   type: str
   help: Command of ansible-lint:lint (empty for brigade's)
