@@ -1,3 +1,9 @@
+# [0.25.0](https://github.com/pa-decarvalho/brigade/compare/0.24.2...0.25.0) - 2026-11-17
+
+### 🚀 Features
+
+- brigade-owned tool configs, with a config answer per tool (#246) [_(f0c18bc2)_](https://github.com/pa-decarvalho/brigade/commit/f0c18bc2b6722a2620d4b3c62d65eaa0f63cf49e)
+
 # [0.24.2](https://github.com/pa-decarvalho/brigade/compare/0.24.1...0.24.2) - 2026-11-16
 
 ### 🐛 Bug Fixes
