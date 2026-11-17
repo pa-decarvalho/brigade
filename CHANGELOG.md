@@ -1,3 +1,9 @@
+# [0.26.0](https://github.com/pa-decarvalho/brigade/compare/0.25.4...0.26.0) - 2026-11-17
+
+### 🚀 Features
+
+- optional git hooks with the prek tool (#258) [_(a3970704)_](https://github.com/pa-decarvalho/brigade/commit/a39707041d7d8d87edec3e2321e4db7add465220)
+
 # [0.25.4](https://github.com/pa-decarvalho/brigade/compare/0.25.3...0.25.4) - 2026-11-17
 
 ### 🐛 Bug Fixes
