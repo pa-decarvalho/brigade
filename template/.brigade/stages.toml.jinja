@@ -33,15 +33,3 @@ run = {{ job.run | tojson }}
 {%- endfor %}
 {%- endif %}
 {%- endfor %}
-{%- if lint_enabled %}
-
-[tasks."brigade:pre-commit"]
-description = "Checks run by the git pre-commit hook"
-{% raw %}dir = "{{config_root}}/.."{% endraw %}
-depends = ["lint"]
-
-[tasks."brigade:hooks"]
-description = "Install a git pre-commit hook that runs mise run brigade:pre-commit"
-{% raw %}dir = "{{config_root}}/.."{% endraw %}
-run = "mise generate git-pre-commit --task brigade:pre-commit --write"
-{%- endif %}

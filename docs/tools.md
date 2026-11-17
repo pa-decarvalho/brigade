@@ -119,6 +119,8 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
+| `prek` | `prek:install` | `prek install --force`: the git hooks of `.brigade/configs/prek.yaml`, in place of any hook already there (local use, not a stage): see [prek](#prek) |
+| | `prek:run` | `prek run --all-files`: the hooks on every file |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
@@ -139,9 +141,9 @@ relative to the project root.
   [Customize](#customize-a-version-or-a-command)); it then keeps your settings,
   and brigade's later changes are yours to follow.
 - **Your content** (`goreleaser`, `container-structure-test`, `ls-lint`,
-  `sqlfluff`: your builds, tests, naming rules, SQL dialect): created once with
-  a starting point, then yours: `brigade:update` keeps it, `brigade:lint` skips
-  it.
+  `sqlfluff`, `prek`: your builds, tests, naming rules, SQL dialect, hooks):
+  created once with a starting point, then yours: `brigade:update` keeps it,
+  `brigade:lint` skips it.
 
 | Tool | Config | Owner | Your usual config file, with brigade's |
 |---|---|---|---|
@@ -157,6 +159,7 @@ relative to the project root.
 | `codespell` | `.brigade/configs/codespell.cfg` | brigade's (`codespell_config`) | `.codespellrc`: not read |
 | `biome` | `.brigade/configs/biome-brigade.jsonc` | brigade's (`biome_config`) | `biome.json`, `biome.jsonc`: not read |
 | `trivy` | `.brigade/configs/trivy.yaml` | brigade's (`trivy_config`) | `trivy.yaml`: not read |
+| `prek` | `.brigade/configs/prek.yaml` | yours | `.pre-commit-config.yaml`: not read |
 | `sqlfluff` | `.brigade/configs/sqlfluff.cfg` | yours | `.sqlfluff`: still read, the brigade file wins (its `dialect`) |
 | `checkov` | `.brigade/configs/checkov.yml` | brigade's (`checkov_config`) | `.checkov.yaml`: not read |
 | `goreleaser` | `.brigade/configs/goreleaser.yaml` | yours | `.goreleaser.yaml`: not read |
@@ -167,6 +170,33 @@ relative to the project root.
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
 `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`,
 `.clang-format`...).
+
+## prek
+
+`prek` runs git hooks, for local use; it stays out of the pipeline, which CI
+runs anyway. [prek](https://prek.j178.dev/) is a faster, single-binary
+pre-commit: same config format, same hooks. Its config,
+`.brigade/configs/prek.yaml`, is yours: brigade creates it once, then never
+changes it. It starts with prek's builtin hooks, fast and offline, on the
+committed files:
+
+- `check-merge-conflict`: conflict markers, also those `brigade:update` leaves;
+- `check-added-large-files`: files over 500 KiB;
+- `check-case-conflict`, `check-illegal-windows-names`: names that break on
+  macOS or Windows;
+- `mixed-line-ending`, `trailing-whitespace`, `end-of-file-fixer`: they fix the
+  files and fail the commit; stage the fixes and commit again.
+
+Then `mise run lint`, the lint stage as in CI. Add hooks from the pre-commit
+ecosystem there (they download their own tools), or `repo: local` hooks that
+call your mise tasks.
+
+`mise run prek:install` writes the hook into `.git/hooks/`, each clone once, in
+place of any hook already there (`--force`): the hook of brigade 0.25 and
+earlier, or one you wrote, whose commands go in `prek.yaml` as `repo: local`
+hooks. The hook calls this prek by its install path, so run it again after a
+prek version change. `mise run prek:run` runs the hooks on every file. Skip them
+for one commit with `git commit --no-verify`.
 
 ## Platforms
 

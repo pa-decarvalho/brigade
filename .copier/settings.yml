@@ -11,3 +11,4 @@ _skip_if_exists:
   - .brigade/configs/container-structure-test.yaml
   - .brigade/configs/ls-lint.yml
   - .brigade/configs/sqlfluff.cfg
+  - .brigade/configs/prek.yaml

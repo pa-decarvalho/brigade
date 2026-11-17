@@ -19,6 +19,12 @@
 
 <p align="center"><img src="docs/assets/banner.webp" alt="brigade: mise-en-place, ready for service"></p>
 
+> [!WARNING]
+> brigade is in alpha: its questions, tasks and generated files can still change
+> before 1.0.0. Read the [release notes](CHANGELOG.md) and
+> [Updating](https://pa-decarvalho.github.io/brigade/updating/) before you
+> update.
+
 ## Getting started
 
 brigade does not create the project: do that with the ecosystem's own tool, then

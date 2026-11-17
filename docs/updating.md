@@ -52,6 +52,15 @@ own workflows or `.gitlab/ci/*.yml` files.
 See [CI platforms](ci.md). For your own tasks, see
 [Custom tasks](custom-tasks.md).
 
+## From brigade 0.25 and earlier
+
+Since 0.26, git hooks come from the `prek` tool: `brigade:hooks` and
+`brigade:pre-commit` are gone. A hook installed with `brigade:hooks` calls
+`mise run brigade:pre-commit`, so each commit fails after the update: delete
+`.git/hooks/pre-commit`, or select `prek` (`tools` in
+`.brigade/copier/data.yml`), run `mise run brigade:update`, then
+`mise run prek:install` (it replaces the old hook).
+
 ## From brigade 0.24 and earlier
 
 Since 0.25, the tool configs in `.brigade/configs/` hold brigade's settings and
