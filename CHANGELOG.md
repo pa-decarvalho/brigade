@@ -1,3 +1,9 @@
+# [0.25.3](https://github.com/pa-decarvalho/brigade/compare/0.25.2...0.25.3) - 2026-11-17
+
+### 🐛 Bug Fixes
+
+- lint the Renovate config wherever Renovate reads it (#252) [_(81e655ea)_](https://github.com/pa-decarvalho/brigade/commit/81e655ea44daa55c2b7a6c16b6d7d1aab0eb2bed)
+
 # [0.25.2](https://github.com/pa-decarvalho/brigade/compare/0.25.1...0.25.2) - 2026-11-17
 
 ### 🐛 Bug Fixes
