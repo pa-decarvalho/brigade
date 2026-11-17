@@ -9,6 +9,8 @@ ignore: |
   node_modules/
   .mise-data/
   .mise/
+  # ctt's rendered templates (the copier-template preset).
+  .ctt/
   .brigade/copier/
 rules:
   truthy:

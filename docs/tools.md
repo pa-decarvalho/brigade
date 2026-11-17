@@ -113,7 +113,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `molecule:converge`, `molecule:verify`, `molecule:destroy` | `molecule converge`, `verify`, `destroy`, while writing a role |
 | | `molecule:reconverge` | `molecule:destroy`, then `molecule converge`, to converge from scratch |
 | | `molecule:login` | `molecule login`, a shell in the instance |
-| `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`) |
+| `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; render the variants into `.ctt/`, which `yamllint` skips) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
 | `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |

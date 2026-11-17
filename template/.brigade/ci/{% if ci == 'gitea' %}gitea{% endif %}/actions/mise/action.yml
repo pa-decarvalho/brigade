@@ -13,6 +13,9 @@ runs:
       shell: bash
       run: | # jactionlint ignore=unverified-download
         curl -fsSL https://mise.run | MISE_VERSION=v2026.11.9 sh
+    - name: Put mise on PATH
+      shell: bash
+      run: | # zizmor: ignore[github-env]
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
     - name: Install tools
       shell: bash
