@@ -2,7 +2,9 @@
 
 *Taking the order: what goes on the menu.*
 
-Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Changing answers](#changing-answers)), and in `.brigade/copier/answers.yml`, Copier's own copy (do not edit).
+Answers are saved in `.brigade/copier/data.yml`, where you change them (see
+[Changing answers](#changing-answers)), and in `.brigade/copier/answers.yml`,
+Copier's own copy (do not edit).
 
 | Question | Values | Default | Effect |
 |---|---|---|---|
@@ -23,7 +25,8 @@ Answers are saved in `.brigade/copier/data.yml`, where you change them (see [Cha
 
 ## Changing answers
 
-Your answers are all in `.brigade/copier/data.yml`. Edit them there, then run `mise run brigade:update`:
+Your answers are all in `.brigade/copier/data.yml`. Edit them there, then run
+`mise run brigade:update`:
 
 ```yaml
 # Your answers: edit them, then run mise run brigade:update.
@@ -37,11 +40,20 @@ tools:
   - "ruff"
 ```
 
-`brigade:update` applies them, then writes all the answers back to this file, sorted, with JSON values (double quotes) and lists indented under their key:
+`brigade:update` applies them, then writes all the answers back to this file,
+sorted, with JSON values (double quotes) and lists indented under their key:
 
-- New questions of a release show up with their default (Renovate's update PR included): change them there too.
+- New questions of a release show up with their default (Renovate's update PR
+  included): change them there too.
 - A removed key comes back with its last value: set the value you want instead.
-- A key that is not a question (a typo), or a question not asked (tool versions need `customize_tools: true`), is dropped.
+- A key that is not a question (a typo), or a question not asked (tool versions
+  need `customize_tools: true`), is dropped.
 - Your comments and formatting are not kept.
 
-When `data.yml` is your only change, `brigade:update` applies it without a commit first: review and commit the edit and the update together. Your edits are kept if the update fails or is stopped; after a killed run, the next `brigade:update` puts them back first (they wait in `.git/brigade-data.yml`). With other uncommitted changes, Copier refuses to update: commit them first. Until you run `brigade:update`, `brigade:lint` fails: the answers are not applied yet.
+When `data.yml` is your only change, `brigade:update` applies it without a
+commit first: review and commit the edit and the update together. Your edits are
+kept if the update fails or is stopped; after a killed run, the next
+`brigade:update` puts them back first (they wait in `.git/brigade-data.yml`).
+With other uncommitted changes, Copier refuses to update: commit them first.
+Until you run `brigade:update`, `brigade:lint` fails: the answers are not
+applied yet.

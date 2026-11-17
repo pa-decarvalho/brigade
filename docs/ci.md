@@ -2,11 +2,17 @@
 
 *The pass: every plate is checked before it leaves the kitchen.*
 
-brigade generates the CI files and `mise run brigade:update` keeps them up to date: do not edit them. Change the stages through your answers, or add your own files.
+brigade generates the CI files and `mise run brigade:update` keeps them up to
+date: do not edit them. Change the stages through your answers, or add your own
+files.
 
-Jobs only install mise and call `mise run <stage>`, so CI and laptops run the same tools.
+Jobs only install mise and call `mise run <stage>`, so CI and laptops run the
+same tools.
 
-On every platform, `lint`, `build` and `test` run on pull requests (merge requests on GitLab), side by side; `release` runs on pushes to the default branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs and on the `operate_schedule` answer (scheduled pipelines on GitLab).
+On every platform, `lint`, `build` and `test` run on pull requests (merge
+requests on GitLab), side by side; `release` runs on pushes to the default
+branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs
+and on the `operate_schedule` answer (scheduled pipelines on GitLab).
 
 ## GitHub (`ci: github`)
 
@@ -16,17 +22,25 @@ On every platform, `lint`, `build` and `test` run on pull requests (merge reques
 | `.brigade/ci/github/actions/<stage>/action.yml` | The stage's steps: install mise and the tools, then `mise run <stage>` with the stage's environment (Releasaurus, Renovate). Secrets are passed as inputs: `token` (release), `renovate-token` (operate). |
 | `.brigade/ci/github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools, with a cache. `deploy` installs them without a cache. |
 
-GitHub only reads workflows in `.github/workflows/`: everything else lives in `.brigade/`.
+GitHub only reads workflows in `.github/workflows/`: everything else lives in
+`.brigade/`.
 
-[jactionlint](https://jactionlint.jdx.dev) (`jactionlint:lint`) checks the workflows and the actions, with its default rules: actions pinned by commit SHA (Renovate updates the SHA and its version comment), `permissions:`, `timeout-minutes`, `concurrency:` (pull request runs cancel the older ones, release and deploy runs wait), and no cache restored in `deploy`.
+[jactionlint](https://jactionlint.jdx.dev) (`jactionlint:lint`) checks the
+workflows and the actions, with its default rules: actions pinned by commit SHA
+(Renovate updates the SHA and its version comment), `permissions:`,
+`timeout-minutes`, `concurrency:` (pull request runs cancel the older ones,
+release and deploy runs wait), and no cache restored in `deploy`.
 
 ### Stages
 
-Each stage is one workflow with one job, on Linux, running its action, or one job per named job when you list them: see [Named CI jobs](#named-ci-jobs). To remove a stage or change its commands, see [Stages](tools.md#stages).
+Each stage is one workflow with one job, on Linux, running its action, or one
+job per named job when you list them: see [Named CI jobs](#named-ci-jobs). To
+remove a stage or change its commands, see [Stages](tools.md#stages).
 
 ### Your own jobs
 
-For anything else (several OSes, other triggers), add your own workflow file next to them, with another name: brigade never touches it.
+For anything else (several OSes, other triggers), add your own workflow file
+next to them, with another name: brigade never touches it.
 
 ```yaml
 # .github/workflows/tests-os.yml
@@ -53,7 +67,8 @@ jobs:
 | `.brigade/ci/gitlab/default.yml` | The mise image, the tool cache and `mise install`. |
 | `.brigade/ci/gitlab/<stage>.yml` | One job per stage, running `mise run <stage>`: `lint`, `build` and `test` in merge request pipelines (`needs: []`, side by side), `release` on pushes to the default branch, `deploy` on `X.Y.Z` tags and "Run pipeline", `operate` in scheduled pipelines. |
 
-To add jobs, create your own file in `.gitlab/ci/`: it is included automatically, and GitLab merges included files.
+To add jobs, create your own file in `.gitlab/ci/`: it is included
+automatically, and GitLab merges included files.
 
 ```yaml
 # .gitlab/ci/extra.yml
@@ -67,7 +82,10 @@ extra:
 
 ## Named CI jobs
 
-Each stage is one CI job running `mise run <stage>`, and mise runs the stage's tasks in parallel inside it. When a stage is long, split it with the `jobs` answer: each job gets its own CI job, in parallel on separate runners, and runs its commands in order.
+Each stage is one CI job running `mise run <stage>`, and mise runs the stage's
+tasks in parallel inside it. When a stage is long, split it with the `jobs`
+answer: each job gets its own CI job, in parallel on separate runners, and runs
+its commands in order.
 
 ```yaml
 # .brigade/copier/data.yml
@@ -85,23 +103,40 @@ jobs:
         - "mise run ctt:test -- -t .ctt/go"
 ```
 
-- The keys are stages (`lint`, `build`, `test`, `release`, `deploy`, `operate`); a job has a `name` (letters, digits, `.`, `_`, `-`; unique in its stage) and a `run` list.
-- Each job becomes a hidden `<stage>-<name>` task in `.brigade/stages.toml`, which its CI job runs (`mise run test-unit`...); the check shows its name.
-- A last job, named after the stage, passes when they all pass: the check to require in branch protection (GitHub, Gitea). On GitLab, the stage's job runs them as a `parallel:matrix` (`test: [test-unit]`...).
-- Locally, `mise run test` runs every job's commands one after the other; `mise run test-unit` runs one CI job.
-- The jobs replace the stage's tools (and `<stage>_commands`): a tool missing from them does not run. Add a job or a command when you add a tool or a ctt variant.
+- The keys are stages (`lint`, `build`, `test`, `release`, `deploy`, `operate`);
+  a job has a `name` (letters, digits, `.`, `_`, `-`; unique in its stage) and a
+  `run` list.
+- Each job becomes a hidden `<stage>-<name>` task in `.brigade/stages.toml`,
+  which its CI job runs (`mise run test-unit`...); the check shows its name.
+- A last job, named after the stage, passes when they all pass: the check to
+  require in branch protection (GitHub, Gitea). On GitLab, the stage's job runs
+  them as a `parallel:matrix` (`test: [test-unit]`...).
+- Locally, `mise run test` runs every job's commands one after the other;
+  `mise run test-unit` runs one CI job.
+- The jobs replace the stage's tools (and `<stage>_commands`): a tool missing
+  from them does not run. Add a job or a command when you add a tool or a ctt
+  variant.
 - A stage missing from `jobs` stays one job.
-- From brigade 0.21: `<stage>_jobs` is gone; move its commands to `jobs` (one job each, with a name).
+- From brigade 0.21: `<stage>_jobs` is gone; move its commands to `jobs` (one
+  job each, with a name).
 
 ## Manual run
 
-To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub, Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate` now, use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline schedule on GitLab.
+To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub,
+Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate` now,
+use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline
+schedule on GitLab.
 
 ## Gitea and Forgejo (`ci: gitea`)
 
-Same layout as GitHub: `.gitea/workflows/<stage>.yml` and `.brigade/ci/gitea/actions/`.
+Same layout as GitHub: `.gitea/workflows/<stage>.yml` and
+`.brigade/ci/gitea/actions/`.
 
-- mise is installed with its install script: Forgejo resolves actions from its own mirror, which has `actions/checkout` but not mise-action, and act (local runs) refuses full URLs. The script checks the archive against a checksum file from the same server, so it trusts HTTPS only: `jactionlint:lint` ignores that one finding (`unverified-download`).
+- mise is installed with its install script: Forgejo resolves actions from its
+  own mirror, which has `actions/checkout` but not mise-action, and act (local
+  runs) refuses full URLs. The script checks the archive against a checksum file
+  from the same server, so it trusts HTTPS only: `jactionlint:lint` ignores that
+  one finding (`unverified-download`).
 
 ## None (`ci: none`)
 

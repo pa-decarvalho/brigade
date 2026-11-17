@@ -2,16 +2,21 @@
 
 *The stations of the brigade, and who works at each one.*
 
-Pick your tools in one list when applying brigade. A tool brings its version and all its tasks, in one file: `.brigade/conf.d/<tool>-brigade.toml`, listed in `.miserc.toml`. Its tasks run at the project root.
+Pick your tools in one list when applying brigade. A tool brings its version and
+all its tasks, in one file: `.brigade/conf.d/<tool>-brigade.toml`, listed in
+`.miserc.toml`. Its tasks run at the project root.
 
-Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`, `test`, `release`, `deploy`, `operate`, and each runs every `<tool>:<stage>` task. Any other action, such as `zensical:serve`, stays out of the pipeline.
+Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`,
+`test`, `release`, `deploy`, `operate`, and each runs every `<tool>:<stage>`
+task. Any other action, such as `zensical:serve`, stays out of the pipeline.
 
 ## Stages
 
 For each stage, Copier asks whether to keep it, then its commands.
 
 - Answer no to remove the stage: no mise task, no CI job.
-- Leave the commands empty to run all the stage's tools. A stage without tools does nothing.
+- Leave the commands empty to run all the stage's tools. A stage without tools
+  does nothing.
 - Give commands to run them instead, in order, locally and in CI:
 
 ```yaml
@@ -20,7 +25,12 @@ lint_commands: ["mise run ruff:lint", "mise run typos:lint"]
 
 ## Presets
 
-The `presets` question, asked before `tools`, pre-selects tools: tick or untick them in `tools` before going on. Only `tools` decides what the project gets; a preset changed in a later brigade release does not change existing projects. A preset's tools never change: its answer is checked against the choices on each `brigade:update`, so a new list is a new preset. A preset's answer is its tool list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
+The `presets` question, asked before `tools`, pre-selects tools: tick or untick
+them in `tools` before going on. Only `tools` decides what the project gets; a
+preset changed in a later brigade release does not change existing projects. A
+preset's tools never change: its answer is checked against the choices on each
+`brigade:update`, so a new list is a new preset. A preset's answer is its tool
+list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 
 | Preset | Tools |
 |---|---|
@@ -57,7 +67,7 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `ty` | `ty:lint` | `uv sync && ty check` (`uv sync`: ty reads the project's `.venv`; [config](#tool-configs)) |
 | `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
 | `shfmt` | `shfmt:lint` | `shfmt --diff` on the same files (style: your `.editorconfig`) |
-| `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown; [config](#tool-configs)) |
+| `rumdl` | `rumdl:lint` | `rumdl check --no-cache .` (Markdown: rumdl's rules, lines of 80 columns; `CHANGELOG.md`, written by the release tool, skipped; HTML only without a Markdown equivalent, or in `<p>` and `<h1>` blocks for a centered README header; [config](#tool-configs)) |
 | `markdownlint` | `markdownlint:lint` | `markdownlint-cli2 "**/*.md"`, without `.mise-data/`, `.venv/` and `node_modules/`; reads your `.markdownlint-cli2.*` or `.markdownlint.*`. Same rules as `rumdl`: pick one |
 | `vale` | `vale:lint` | `vale sync && vale .` (prose in Markdown, with Vale's built-in style), without `.mise-data/`, `.venv/` and `node_modules/` ([config](#tool-configs); `vale sync` downloads the style packages it lists) |
 | `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders and `CHANGELOG.md`, whose release PR links to a tag not made yet); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
@@ -111,14 +121,27 @@ The `presets` question, asked before `tools`, pre-selects tools: tick or untick 
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
-The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see [CI platforms](ci.md).
+The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
+[CI platforms](ci.md).
 
 ## Tool configs
 
-Tools that read a config file get one in `.brigade/configs/`, created when the tool is selected; removing the tool from `tools` removes it. Paths in it are relative to the project root.
+Tools that read a config file get one in `.brigade/configs/`, created when the
+tool is selected; removing the tool from `tools` removes it. Paths in it are
+relative to the project root.
 
-- **brigade's settings** (the folders to skip, such as `.mise-data/` and `.mise/`): brigade-owned, like the rest of `.brigade/`. `brigade:update` updates them and `brigade:lint` fails when one is edited. For your own settings, write your own file (start from a copy of brigade's, or extend it where the tool allows: `extend` in ruff, `import` in cspell, `extends` in yamllint, biome and rumdl), and set `<tool>_config` to its path (see [Customize](#customize-a-version-or-a-command)); it then keeps your settings, and brigade's later changes are yours to follow.
-- **Your content** (`goreleaser`, `container-structure-test`, `ls-lint`, `sqlfluff`: your builds, tests, naming rules, SQL dialect): created once with a starting point, then yours: `brigade:update` keeps it, `brigade:lint` skips it.
+- **brigade's settings** (the folders to skip, such as `.mise-data/` and
+  `.mise/`): brigade-owned, like the rest of `.brigade/`. `brigade:update`
+  updates them and `brigade:lint` fails when one is edited. For your own
+  settings, write your own file (start from a copy of brigade's, or extend it
+  where the tool allows: `extend` in ruff, `import` in cspell, `extends` in
+  yamllint, biome and rumdl), and set `<tool>_config` to its path (see
+  [Customize](#customize-a-version-or-a-command)); it then keeps your settings,
+  and brigade's later changes are yours to follow.
+- **Your content** (`goreleaser`, `container-structure-test`, `ls-lint`,
+  `sqlfluff`: your builds, tests, naming rules, SQL dialect): created once with
+  a starting point, then yours: `brigade:update` keeps it, `brigade:lint` skips
+  it.
 
 | Tool | Config | Owner | Your usual config file, with brigade's |
 |---|---|---|---|
@@ -141,33 +164,59 @@ Tools that read a config file get one in `.brigade/configs/`, created when the t
 | `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | yours | `.ls-lint.yml`: not read |
 
-Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`, `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`, `.clang-format`...).
+Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
+`stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`,
+`.clang-format`...).
 
 ## Platforms
 
-brigade's own files run on Linux, macOS and Windows; each tool runs where it is supported. CI runs on Linux, so these limits only matter for local runs (`mise run <stage>`, git hooks). Known limits on Windows:
+brigade's own files run on Linux, macOS and Windows; each tool runs where it is
+supported. CI runs on Linux, so these limits only matter for local runs
+(`mise run <stage>`, git hooks). Known limits on Windows:
 
-- `taplo`: fails on checkouts with CRLF line endings (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
+- `taplo`: fails on checkouts with CRLF line endings
+  (`git config core.autocrlf false`, or `* text eol=lf` in `.gitattributes`).
 - `ctt`: ctt 3.0.0 fails inside a git repository.
-- `rust`: needs the MSVC build tools (Visual Studio Build Tools, C++ workload) to link.
-- `ansible-lint`, `molecule`, `ansible`: Ansible does not run on Windows (use WSL).
-- `act`, `gitlab-ci-local`, `docker`, `container-structure-test`: need Docker with Linux containers (Docker Desktop, WSL 2).
+- `rust`: needs the MSVC build tools (Visual Studio Build Tools, C++ workload)
+  to link.
+- `ansible-lint`, `molecule`, `ansible`: Ansible does not run on Windows (use
+  WSL).
+- `act`, `gitlab-ci-local`, `docker`, `container-structure-test`: need Docker
+  with Linux containers (Docker Desktop, WSL 2).
 
 ## brigade
 
-`brigade:lint` renders the template at the version of `.brigade/copier/answers.yml`, with your answers, into a temporary folder, and compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite it. Run `mise run brigade:update` to restore them. An edited `.brigade/copier/data.yml` fails it too until `brigade:update` applies it (see [Changing answers](questions.md#changing-answers)).
+`brigade:lint` renders the template at the version of
+`.brigade/copier/answers.yml`, with your answers, into a temporary folder, and
+compares it with your brigade-owned files (`.miserc.toml`, `.brigade/`, the
+generated workflows or `.gitlab-ci.yml`). An edited or deleted file fails the
+lint stage, locally, in the git hook and in CI: `brigade:update` would overwrite
+it. Run `mise run brigade:update` to restore them. An edited
+`.brigade/copier/data.yml` fails it too until `brigade:update` applies it (see
+[Changing answers](questions.md#changing-answers)).
 
-It also tells when a newer brigade release is out (`copier check-update`), without failing: run `mise run brigade:update`, or let [Renovate](#brigade-updates) open the PR.
+It also tells when a newer brigade release is out (`copier check-update`),
+without failing: run `mise run brigade:update`, or let
+[Renovate](#brigade-updates) open the PR.
 
-It needs access to the template (`gh:pa-decarvalho/brigade`, through git) on each run. Offline, behind a proxy, or to edit a generated file on purpose, remove `brigade` from your tools.
+It needs access to the template (`gh:pa-decarvalho/brigade`, through git) on
+each run. Offline, behind a proxy, or to edit a generated file on purpose,
+remove `brigade` from your tools.
 
 ## release
 
-CI runs this stage on its own, on pushes to the default branch (`main`): `lint`, `build` and `test` already ran on the pull request.
+CI runs this stage on its own, on pushes to the default branch (`main`): `lint`,
+`build` and `test` already ran on the pull request.
 
-With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the Conventional Commits since the last tag and opens or updates a release pull request, with the next version and a `CHANGELOG.md`. Once you merge it, the next run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on GitHub, GitLab, Gitea and Forgejo.
+With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the
+Conventional Commits since the last tag and opens or updates a release pull
+request, with the next version and a `CHANGELOG.md`. Once you merge it, the next
+run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on
+GitHub, GitLab, Gitea and Forgejo.
 
-By default, every Conventional Commit (`ci:`, `docs:`, `chore:`...) makes a release. To release on `feat` and `fix` only, add a `releasaurus.toml` that skips the other groups, which also leaves them out of `CHANGELOG.md`:
+By default, every Conventional Commit (`ci:`, `docs:`, `chore:`...) makes a
+release. To release on `feat` and `fix` only, add a `releasaurus.toml` that
+skips the other groups, which also leaves them out of `CHANGELOG.md`:
 
 ```toml
 [defaults.versioning.named_parsers]
@@ -182,7 +231,10 @@ miscellaneous.skip = true
 
 See [Releasaurus commit groups](https://releasaurus.rgon.io/changelog.html).
 
-On GitHub and Gitea, it works with the CI's own token, but the release pull request and the tag it makes start no CI: merge the release pull request with a bypass of the required checks, and run `deploy` by hand. With a bot token, both start the CI as usual. GitLab needs the token.
+On GitHub and Gitea, it works with the CI's own token, but the release pull
+request and the tag it makes start no CI: merge the release pull request with a
+bypass of the required checks, and run `deploy` by hand. With a bot token, both
+start the CI as usual. GitLab needs the token.
 
 | CI | Secret or CI/CD variable (bot token) | Scopes |
 |---|---|---|
@@ -192,60 +244,146 @@ On GitHub and Gitea, it works with the CI's own token, but the release pull requ
 
 ## deploy
 
-CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus pushes, and on a manual run, to deploy without a release: for example to fix a typo in the documentation.
+CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones
+Releasaurus pushes, and on a manual run, to deploy without a release: for
+example to fix a typo in the documentation.
 
-`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app: `pages_dir: dist`), or your own (for example `mkdocs:build`, see [Custom tasks](custom-tasks.md)).
+`pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site
+to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:
+`pages_dir: dist`), or your own (for example `mkdocs:build`, see
+[Custom tasks](custom-tasks.md)).
 
-- **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages, choose "Deploy from a branch" and `gh-pages`.
-- **GitLab**: the job publishes the `pages_dir` folder with `pages.publish` (GitLab 17.10 or later).
+- **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages,
+  choose "Deploy from a branch" and `gh-pages`.
+- **GitLab**: the job publishes the `pages_dir` folder with `pages.publish`
+  (GitLab 17.10 or later).
 
 Add `site/` and `.cache/` to your `.gitignore`.
 
-`goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches the archives and their checksums to the release Releasaurus made for the tag (it needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a `GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your `.gitignore`. A manual run needs a tag at the checked out commit.
+`goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches
+the archives and their checksums to the release Releasaurus made for the tag (it
+needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a
+`GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed
+GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your
+`.gitignore`. A manual run needs a tag at the checked out commit.
 
-`node:deploy` (the `node` tool, with the `npm_publish: true` answer) publishes the package with `npm publish`, once per tag: the version is the one in `package.json`, which Releasaurus bumps in the release PR. Build it in a `prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret (CI/CD variable on GitLab), and give npm the line that reads it in your `.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its host, and `publishConfig.registry` in `package.json`). A scoped public package needs `"publishConfig": {"access": "public"}`. A version already published fails: a manual run on the same tag does nothing new.
+`node:deploy` (the `node` tool, with the `npm_publish: true` answer) publishes
+the package with `npm publish`, once per tag: the version is the one in
+`package.json`, which Releasaurus bumps in the release PR. Build it in a
+`prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret
+(CI/CD variable on GitLab), and give npm the line that reads it in your
+`.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its
+host, and `publishConfig.registry` in `package.json`). A scoped public package
+needs `"publishConfig": {"access": "public"}`. A version already published
+fails: a manual run on the same tag does nothing new.
 
-`rust:deploy` (the `rust` tool, with the `cargo_publish: true` answer) publishes the crate with `cargo publish`, once per tag: the version is the one in `Cargo.toml`, which Releasaurus bumps in the release PR. In CI, add a `CARGO_REGISTRY_TOKEN` secret (CI/CD variable on GitLab): a crates.io API token with the `publish-update` scope (and `publish-new` for the first release). Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in `.cargo/config.toml`; cargo reads its token from `CARGO_REGISTRIES_<NAME>_TOKEN`, which your `mise.toml` can take from the same secret (`[env]`: `CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version already published fails: a manual run on the same tag does nothing new.
+`rust:deploy` (the `rust` tool, with the `cargo_publish: true` answer) publishes
+the crate with `cargo publish`, once per tag: the version is the one in
+`Cargo.toml`, which Releasaurus bumps in the release PR. In CI, add a
+`CARGO_REGISTRY_TOKEN` secret (CI/CD variable on GitLab): a crates.io API token
+with the `publish-update` scope (and `publish-new` for the first release).
+Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in
+`.cargo/config.toml`; cargo reads its token from
+`CARGO_REGISTRIES_<NAME>_TOKEN`, which your `mise.toml` can take from the same
+secret (`[env]`:
+`CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version
+already published fails: a manual run on the same tag does nothing new.
 
-`docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest` (`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE` (`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token (the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It needs Docker in CI, which brigade's GitLab image does not have: `docker` and `container-structure-test` are not offered on GitLab yet. A manual run needs a tag at the checked out commit.
+`docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
+(`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE`
+(`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the
+repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token
+(the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another
+registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It
+needs Docker in CI, which brigade's GitLab image does not have: `docker` and
+`container-structure-test` are not offered on GitLab yet. A manual run needs a
+tag at the checked out commit.
 
-`uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the Python package built by uv (`uv build --clear && uv publish`), once per tag: the version is the one in `pyproject.toml`, which Releasaurus bumps in the release PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus, Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml` (`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD variable on GitLab): the index's token (on PyPI, an API token scoped to the project once it exists); or, for an index with a user and a password (Nexus...), `UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL (`https://pypi.org/simple/`), which skips the files already there.
+`uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the
+Python package built by uv (`uv build --clear && uv publish`), once per tag: the
+version is the one in `pyproject.toml`, which Releasaurus bumps in the release
+PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
+(`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD
+variable on GitLab): the index's token (on PyPI, an API token scoped to the
+project once it exists); or, for an index with a user and a password (Nexus...),
+`UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already
+published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL
+(`https://pypi.org/simple/`), which skips the files already there.
 
 ## operate
 
-Operations that do not belong to a release, such as `renovate:operate`. Run it with `mise run operate`, or in CI:
+Operations that do not belong to a release, such as `renovate:operate`. Run it
+with `mise run operate`, or in CI:
 
-- **GitHub, Gitea**: "Run workflow" on the Operate workflow, and on the `operate_schedule` answer (a cron expression, e.g. `0 5 * * 1` for Mondays at 5:00 UTC).
-- **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now), since "Run pipeline" deploys.
+- **GitHub, Gitea**: "Run workflow" on the Operate workflow, and on the
+  `operate_schedule` answer (a cron expression, e.g. `0 5 * * 1` for Mondays at
+  5:00 UTC).
+- **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now),
+  since "Run pipeline" deploys.
 
-For Renovate, CI sets the platform, the endpoint and the repository; add a `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits as the token's owner, with their noreply address (`RENOVATE_GIT_AUTHOR`); elsewhere, set `gitAuthor` in your Renovate config if needed. See [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
+For Renovate, CI sets the platform, the endpoint and the repository; add a
+`RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits
+as the token's owner, with their noreply address (`RENOVATE_GIT_AUTHOR`);
+elsewhere, set `gitAuthor` in your Renovate config if needed. See
+[Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
 
 ### brigade updates
 
-`renovate:operate` also follows brigade: on a new release, it opens a PR that runs `mise run brigade:update` to that version, on every CI platform. Copier shows conflicts with your edits as inline markers in the PR: fix them there before merging (`brigade:lint` fails until then). On GitHub, the token also needs the Workflows permission, since updates change workflow files.
+`renovate:operate` also follows brigade: on a new release, it opens a PR that
+runs `mise run brigade:update` to that version, on every CI platform. Copier
+shows conflicts with your edits as inline markers in the PR: fix them there
+before merging (`brigade:lint` fails until then). On GitHub, the token also
+needs the Workflows permission, since updates change workflow files.
 
-Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task): your Renovate config can still change the PR, for example its commit type with a `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`, add `.brigade/copier/answers.yml`. Keep `brigade` out of groups (such as `group:all`): Copier needs a clean tree, so the update must be its own PR.
+Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task):
+your Renovate config can still change the PR, for example its commit type with a
+`packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`,
+add `.brigade/copier/answers.yml`. Keep `brigade` out of groups (such as
+`group:all`): Copier needs a clean tree, so the update must be its own PR.
 
-To update every day and merge automatically once the checks pass, answer `operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge" in Settings). A failing check, or Copier's conflict markers in a brigade update, keep the PR open.
+To update every day and merge automatically once the checks pass, answer
+`operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config
+and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge"
+in Settings). A failing check, or Copier's conflict markers in a brigade update,
+keep the PR open.
 
 ## Ansible
 
-`ansible` installs `ansible-core` and runs your playbooks on your inventory: `playbooks/deploy.yml` in the deploy stage (on `X.Y.Z` tags and manual runs), `playbooks/operate.yml` in the operate stage (manual runs and `operate_schedule`), both with `-i inventory`. Other paths or options: change the commands (`ansible_deploy_command`, `ansible_operate_command`), or add `ansible.cfg`.
+`ansible` installs `ansible-core` and runs your playbooks on your inventory:
+`playbooks/deploy.yml` in the deploy stage (on `X.Y.Z` tags and manual runs),
+`playbooks/operate.yml` in the operate stage (manual runs and
+`operate_schedule`), both with `-i inventory`. Other paths or options: change
+the commands (`ansible_deploy_command`, `ansible_operate_command`), or add
+`ansible.cfg`.
 
 In CI, two optional secrets (CI/CD variables on GitLab, of type Variable):
 
-- `ANSIBLE_PRIVATE_KEY`: the SSH private key. Ansible loads it into an SSH agent of its own (`ANSIBLE_SSH_AGENT=auto`, ansible-core 2.19 or later), with no key file. Without it, the tasks keep your own SSH setup. On GitLab, brigade's image has no SSH client yet ([#139](https://github.com/pa-decarvalho/brigade/issues/139)).
-- `ANSIBLE_VAULT_PASSWORD`: the vault password. When it is set, the tasks add `--vault-password-file .brigade/scripts/ansible_vault_password.py`, a script that prints it. Without it, Ansible uses your own setup (`ansible.cfg`, `ANSIBLE_VAULT_PASSWORD_FILE`), so it works the same locally: `ANSIBLE_VAULT_PASSWORD=... mise run deploy`.
+- `ANSIBLE_PRIVATE_KEY`: the SSH private key. Ansible loads it into an SSH agent
+  of its own (`ANSIBLE_SSH_AGENT=auto`, ansible-core 2.19 or later), with no key
+  file. Without it, the tasks keep your own SSH setup. On GitLab, brigade's
+  image has no SSH client yet
+  ([#139](https://github.com/pa-decarvalho/brigade/issues/139)).
+- `ANSIBLE_VAULT_PASSWORD`: the vault password. When it is set, the tasks add
+  `--vault-password-file .brigade/scripts/ansible_vault_password.py`, a script
+  that prints it. Without it, Ansible uses your own setup (`ansible.cfg`,
+  `ANSIBLE_VAULT_PASSWORD_FILE`), so it works the same locally:
+  `ANSIBLE_VAULT_PASSWORD=... mise run deploy`.
 
 Lint the playbooks with `ansible-lint`, test roles with `molecule`.
 
 ## Toolchain
 
-Create the project with `uv init`: `uv` is always installed, and picks Python from `.python-version` and `requires-python`.
+Create the project with `uv init`: `uv` is always installed, and picks Python
+from `.python-version` and `requires-python`.
 
 ## Molecule
 
-`molecule:test` runs every scenario of `molecule/` (`molecule test --all`), with the Docker driver of `molecule-plugins` and `ansible-core` installed alongside. `molecule init scenario` writes a scenario to fill in; for Docker, set the driver and an image with Python (`pre_build_image` uses it as is; without it, the driver builds an image and needs `rsync`):
+`molecule:test` runs every scenario of `molecule/` (`molecule test --all`), with
+the Docker driver of `molecule-plugins` and `ansible-core` installed alongside.
+`molecule init scenario` writes a scenario to fill in; for Docker, set the
+driver and an image with Python (`pre_build_image` uses it as is; without it,
+the driver builds an image and needs `rsync`):
 
 ```yaml
 # molecule/default/molecule.yml
@@ -257,22 +395,36 @@ platforms:
     pre_build_image: true
 ```
 
-The other tasks stay out of the pipeline and work on the `default` scenario. Arguments go to the command: `mise run molecule:converge -- -s <scenario>`; `molecule:reconverge` passes them to `converge` only (its `molecule:destroy` takes the `default` scenario). The tasks run Molecule with `mise exec pipx:molecule@<version>`, so that its `ansible-playbook` (with the Docker libraries) comes before the `ansible` tool's.
+The other tasks stay out of the pipeline and work on the `default` scenario.
+Arguments go to the command: `mise run molecule:converge -- -s <scenario>`;
+`molecule:reconverge` passes them to `converge` only (its `molecule:destroy`
+takes the `default` scenario). The tasks run Molecule with
+`mise exec pipx:molecule@<version>`, so that its `ansible-playbook` (with the
+Docker libraries) comes before the `ansible` tool's.
 
-It needs Docker, also in CI: GitHub runners and `act` have it; on GitLab and Gitea, the runner must give the job access to a Docker daemon (mounted socket or `DOCKER_HOST`).
+It needs Docker, also in CI: GitHub runners and `act` have it; on GitLab and
+Gitea, the runner must give the job access to a Docker daemon (mounted socket or
+`DOCKER_HOST`).
 
 ## Run the CI locally
 
-Pick [act](https://github.com/nektos/act) (GitHub, Gitea) or [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab): `act:test` or `gitlab-ci-local:test` replays the CI of pull requests in Docker, as part of the test stage.
+Pick [act](https://github.com/nektos/act) (GitHub, Gitea) or
+[gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab):
+`act:test` or `gitlab-ci-local:test` replays the CI of pull requests in Docker,
+as part of the test stage.
 
-- It needs Docker, also in CI: GitHub runners have it; on GitLab, the task does nothing in a pipeline, and on Gitea it depends on the runner.
-- Inside the replayed CI, its test job runs the task again: there it does nothing (act sets `ACT`, gitlab-ci-local sets `GITLAB_CI`), so the replay does not loop.
+- It needs Docker, also in CI: GitHub runners have it; on GitLab, the task does
+  nothing in a pipeline, and on Gitea it depends on the runner.
+- Inside the replayed CI, its test job runs the task again: there it does
+  nothing (act sets `ACT`, gitlab-ci-local sets `GITLAB_CI`), so the replay does
+  not loop.
 - In CI, the test job then replays the whole CI once more, which takes longer.
 
 ## Customize a version or a command
 
-Each tool has one file with its version and its commands.
-Answer yes to `customize_tools` and Copier asks, for each selected tool, a version, a config file (tools with one in `.brigade/configs/`) and a command:
+Each tool has one file with its version and its commands. Answer yes to
+`customize_tools` and Copier asks, for each selected tool, a version, a config
+file (tools with one in `.brigade/configs/`) and a command:
 
 ```text
 Customize tool versions and commands? (y/N) y
@@ -281,10 +433,13 @@ Config file of ruff, from the project root (empty for brigade's): ruff.toml
 Command of ruff:lint (empty for brigade's): ruff check src
 ```
 
-- An answer replaces brigade's value, and stays on `brigade:update` until you change it.
-- An empty answer takes brigade's value, and keeps following it on `brigade:update`. Clear an answer to go back to it.
+- An answer replaces brigade's value, and stays on `brigade:update` until you
+  change it.
+- An empty answer takes brigade's value, and keeps following it on
+  `brigade:update`. Clear an answer to go back to it.
 
-Answers are named `<tool>_version`, `<tool>_config` and `<tool>_<action>_command`, e.g. `ruff_version`, `ruff_config`, `zensical_serve_command`.
-To change them later, see [Questions](questions.md).
+Answers are named `<tool>_version`, `<tool>_config` and
+`<tool>_<action>_command`, e.g. `ruff_version`, `ruff_config`,
+`zensical_serve_command`. To change them later, see [Questions](questions.md).
 
 Missing a tool? Add your own task: see [Custom tasks](custom-tasks.md).

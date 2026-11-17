@@ -5,46 +5,112 @@ description: Add one or more tools (linters, formatters, test or deploy tools) t
 
 # Add a tool to the catalog
 
-Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's language; files in English.
+Follow CLAUDE.md's rules; this is the checklist they imply. Reply in the user's
+language; files in English.
 
 ## 1. Check the tool first (in the scratchpad, not the repo)
 
-- `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else `pipx:`/`npm:`. Latest version: `gh release view -R <owner>/<repo> --json tagName`.
-  - aqua's registry can miss platforms the release has (dotenv-linter: no linux/arm64, which act uses on Apple Silicon): compare with `gh release view <tag> -R <owner>/<repo> --json assets`, and use `github:<owner>/<repo>` then.
-  - A tool that needs a runtime (golangci-lint: Go) relies on the project's `mise.toml` for it, as `pytest` relies on the project's dependencies.
-  - A tool that needs a config file to do anything (vale's `.vale.ini`) gets a working one in `.brigade/configs/` (see Config below). One that needs a project layout instead (kubeconform's manifest folder) is a poor fit until there is a question for it.
+- `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else
+  `pipx:`/`npm:`. Latest version:
+  `gh release view -R <owner>/<repo> --json tagName`.
+  - aqua's registry can miss platforms the release has (dotenv-linter: no
+    linux/arm64, which act uses on Apple Silicon): compare with
+    `gh release view <tag> -R <owner>/<repo> --json assets`, and use
+    `github:<owner>/<repo>` then.
+  - A tool that needs a runtime (golangci-lint: Go) relies on the project's
+    `mise.toml` for it, as `pytest` relies on the project's dependencies.
+  - A tool that needs a config file to do anything (vale's `.vale.ini`) gets a
+    working one in `.brigade/configs/` (see Config below). One that needs a
+    project layout instead (kubeconform's manifest folder) is a poor fit until
+    there is a question for it.
 - In a scratch dir with a `mise.toml` pinning it, run its command and check:
-  - **file discovery**: does it walk the folder itself? Does it skip hidden folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a bad file in `.mise-data/x/` and see. Exclude it in the tool's config file when it has one (see Config below), else with its option (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit (biome was left out for this).
+  - **file discovery**: does it walk the folder itself? Does it skip hidden
+    folders and `.mise-data/` (GitLab's tool cache, inside the project)? Put a
+    bad file in `.mise-data/x/` and see. Exclude it in the tool's config file
+    when it has one (see Config below), else with its option
+    (`--exclude .mise-data`...). A tool that cannot exclude it is a poor fit
+    (biome was left out for this).
   - **files it writes** in the project (caches: `--no-cache`).
   - **no input files**: must pass, not fail or wait for stdin.
-  - **network** needs, and whether results can change without a project change (say so in the docs).
-  - **CI-only behavior**: CI sets env vars a local run lacks (`GITHUB_TOKEN`, `GITHUB_ACTIONS`, `CI`). Run it once with them set to dummy values and check it writes nothing (checkov wrote `github_conf/`).
-- A tool that takes a file list: `.brigade/scripts/brigade_files.py`, as in `hadolint` or `shellcheck` (no shell, works on Windows; skips hidden folders; passes when no file matches; `--contains TEXT` filters by content, as in `cfn-lint`):
+  - **network** needs, and whether results can change without a project change
+    (say so in the docs).
+  - **CI-only behavior**: CI sets env vars a local run lacks (`GITHUB_TOKEN`,
+    `GITHUB_ACTIONS`, `CI`). Run it once with them set to dummy values and check
+    it writes nothing (checkov wrote `github_conf/`).
+- A tool that takes a file list: `.brigade/scripts/brigade_files.py`, as in
+  `hadolint` or `shellcheck` (no shell, works on Windows; skips hidden folders;
+  passes when no file matches; `--contains TEXT` filters by content, as in
+  `cfn-lint`):
   `uv run --no-project python .brigade/scripts/brigade_files.py "**/*.sh" -- <tool>`
-- Clean up afterwards: tools installed from the scratchpad leave global mise shims (`mise uninstall <tool> --all && mise reshim`); a shim with no version breaks tools that look it up in PATH (jactionlint and shellcheck).
+- Clean up afterwards: tools installed from the scratchpad leave global mise
+  shims (`mise uninstall <tool> --all && mise reshim`); a shim with no version
+  breaks tools that look it up in PATH (jactionlint and shellcheck).
 
 ## 2. Files
 
-Copy an existing tool of the same kind (`gitleaks` for a plain binary, `hadolint` for a file list, `ansible-lint` for `pipx:`, `yamllint` for a config file).
+Copy an existing tool of the same kind (`gitleaks` for a plain binary,
+`hadolint` for a file list, `ansible-lint` for `pipx:`, `yamllint` for a config
+file).
 
-- `template/.brigade/conf.d/{% if '<tool>' in tools %}<tool>-brigade.toml{% endif %}.jinja`:
-  - `# renovate: datasource=<github-releases|pypi|npm> depName=<owner/repo|package>` on the line above `<tool> = "{{ <tool_>_version | default('<pin>', true) }}"`. The `customManagers` regex in `.github/renovate.json5` reads it; a pin elsewhere in the line (`uvx_args`...) needs its own entry there.
-  - `[tasks."<tool>:<stage>"]` with `description`, `{% raw %}dir = "{{config_root}}/../.."{% endraw %}` and one `run = '''{{ <tool_>_<action>_command | default('<command>', true) }}'''`. Inside a `default("...")` with double quotes, escape inner `"` as `\"`.
+- The fragment `template/.brigade/conf.d/<tool>-brigade.toml.jinja`, named
+  `{% if '<tool>' in tools %}<tool>-brigade.toml{% endif %}.jinja`:
+  - `# renovate: datasource=<github-releases|pypi|npm> depName=<owner/repo|package>`
+    on the line above
+    `<tool> = "{{ <tool_>_version | default('<pin>', true) }}"`. The
+    `customManagers` regex in `.github/renovate.json5` reads it; a pin elsewhere
+    in the line (`uvx_args`...) needs its own entry there.
+  - `[tasks."<tool>:<stage>"]` with `description`,
+    `{% raw %}dir = "{{config_root}}/../.."{% endraw %}` and one
+    `run = '''{{ <tool_>_<action>_command | default('<command>', true) }}'''`.
+    Inside a `default("...")` with double quotes, escape inner `"` as `\"`.
   - In variable names, `-` becomes `_` (`osv_scanner_version`).
-- Config: when the tool takes a config path (`-c`...) and brigade passes it settings (excluding `.mise-data`...), put them in `template/.brigade/configs/{% if '<tool>' in tools %}<tool>.<ext>{% endif %}` (no Jinja inside, a header comment saying it is brigade-owned and that `<tool>_config` points to the project's own, paths relative to the project root; YAML within yamllint's rules: `---`, 80 columns; JSON on one line, since the project's `.editorconfig` sets its indentation). In the fragment, `{%- set config = <tool_>_config or '.brigade/configs/<tool>.<ext>' -%}` on the first line, and the command passes `-c ' ~ config ~ '`; add a `<tool_>_config` question (copy `ruff.yml`'s). A config that holds the project's content (its builds, tests, rules: `goreleaser`) is the project's instead: no `<tool>_config`, add it to `_skip_if_exists` in `.copier/settings.yml` and to `PROJECT_CONFIGS` in `brigade_lint.py`. Check first, in the scratch dir: the config's paths resolve from the project root, and whether the tool still reads its usual config file (`docs/tools.md#tool-configs` table). A tool with nothing to configure gets no file (it would hide the project's usual config).
-- `.copier/questions/tools/<tool>.yml`: copy `gitleaks.yml`, replace the name (`sed 's/gitleaks/<tool>/g'`, then fix `-` → `_` in the variable names only).
-- `.copier/questions/common.yml`: a choice `<tool> (<stage>): <tool>` next to tools of the same stage; a `validator` on `ci` when it only fits one CI platform (`zizmor`).
-- `docs/tools.md`: a catalog row (tool, task, command; `([config](#tool-configs))` with a row in the "Tool configs" table); a "Platforms" line if it does not run on Windows.
-- `ctt.toml`: add it to a variant whose project type fits (`none-github` for generic linters, `python-gitlab` to test the `.mise-data` exclusion inside the gitlab-ci-local replay), with a file for it to check (`_post_tasks`, written with `uv run --no-project python -c`; in TOML basic strings, `\\n` is a Python `\n` and `\"` a quote).
+- Config: when the tool takes a config path (`-c`...) and brigade passes it
+  settings (excluding `.mise-data`...), put them in
+  `template/.brigade/configs/{% if '<tool>' in tools %}<tool>.<ext>{% endif %}`
+  (no Jinja inside, a header comment saying it is brigade-owned and that
+  `<tool>_config` points to the project's own, paths relative to the project
+  root; YAML within yamllint's rules: `---`, 80 columns; JSON on one line, since
+  the project's `.editorconfig` sets its indentation). In the fragment,
+  `{%- set config = <tool_>_config or '.brigade/configs/<tool>.<ext>' -%}` on
+  the first line, and the command passes `-c ' ~ config ~ '`; add a
+  `<tool_>_config` question (copy `ruff.yml`'s). A config that holds the
+  project's content (its builds, tests, rules: `goreleaser`) is the project's
+  instead: no `<tool>_config`, add it to `_skip_if_exists` in
+  `.copier/settings.yml` and to `PROJECT_CONFIGS` in `brigade_lint.py`. Check
+  first, in the scratch dir: the config's paths resolve from the project root,
+  and whether the tool still reads its usual config file
+  (`docs/tools.md#tool-configs` table). A tool with nothing to configure gets no
+  file (it would hide the project's usual config).
+- `.copier/questions/tools/<tool>.yml`: copy `gitleaks.yml`, replace the name
+  (`sed 's/gitleaks/<tool>/g'`, then fix `-` → `_` in the variable names only).
+- `.copier/questions/common.yml`: a choice `<tool> (<stage>): <tool>` next to
+  tools of the same stage; a `validator` on `ci` when it only fits one CI
+  platform (`zizmor`).
+- `docs/tools.md`: a catalog row (tool, task, command;
+  `([config](#tool-configs))` with a row in the "Tool configs" table); a
+  "Platforms" line if it does not run on Windows.
+- `ctt.toml`: add it to a variant whose project type fits (`none-github` for
+  generic linters, `python-gitlab` to test the `.mise-data` exclusion inside the
+  gitlab-ci-local replay), with a file for it to check (`_post_tasks`, written
+  with `uv run --no-project python -c`; in TOML basic strings, `\\n` is a Python
+  `\n` and `\"` a quote).
 
 ## 3. Verify
 
 - `mise run lint`, `mise run build`.
 - Start Docker first (`docker info`; macOS: `open -a Docker`).
-- `git add -A && mise run test; git reset -q` (ctt only sees tracked files; needs Docker). Check the tool's lines in the log, also inside the act / gitlab-ci-local replays.
-- Fix what the new tool finds in brigade's own generated files (as `zizmor` did) rather than weakening its command.
+- `git add -A && mise run test; git reset -q` (ctt only sees tracked files;
+  needs Docker). Check the tool's lines in the log, also inside the act /
+  gitlab-ci-local replays.
+- Fix what the new tool finds in brigade's own generated files (as `zizmor` did)
+  rather than weakening its command.
 
 ## 4. Deliver
 
-- Ask before committing, pushing or opening the PR. Branch `feat/<tool>` (or `feat/linters` for a batch), title `feat: add <tool> to the tool catalog`, body "Part of #<epic>" (the stage's epic: #138 lint, #197 test, #198 build, #199 release, #200 deploy, #201 operate), no AI attribution.
-- Once merged: tick the tool in its epic (`gh issue view <epic> --json body -q .body > <scratchpad>/<epic>.md`, edit, `gh issue edit <epic> --body-file ...`) with the PR number.
+- Ask before committing, pushing or opening the PR. Branch `feat/<tool>` (or
+  `feat/linters` for a batch), title `feat: add <tool> to the tool catalog`,
+  body "Part of #<epic>" (the stage's epic: #138 lint, #197 test, #198
+  build, #199 release, #200 deploy, #201 operate), no AI attribution.
+- Once merged: tick the tool in its epic
+  (`gh issue view <epic> --json body -q .body > <scratchpad>/<epic>.md`, edit,
+  `gh issue edit <epic> --body-file ...`) with the PR number.

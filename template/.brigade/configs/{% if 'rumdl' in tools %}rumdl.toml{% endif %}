@@ -3,5 +3,16 @@
 # For your own settings, set rumdl_config to your file.
 # It replaces the project's .rumdl.toml.
 [global]
-# .mise-data is the GitLab CI tool cache.
-exclude = [".mise-data"]
+# .mise-data is the GitLab CI tool cache; CHANGELOG.md is written by the release
+# tool (Releasaurus adds each release at the top, as a level-1 heading).
+exclude = [".mise-data", "CHANGELOG.md"]
+
+# HTML only where Markdown has no equivalent, and in <p> and <h1> blocks: the
+# centered header of a README (logo, title, badges).
+[MD033]
+allowed-elements = ["no-markdown-equivalent"]
+allowed-inside = ["p", "h1"]
+
+# A header (logo, comment) may come before the first heading, still a level-1 one.
+[MD041]
+allow-preamble = true
