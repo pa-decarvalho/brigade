@@ -5,5 +5,5 @@ ruff = "0.17.5"
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"
 dir = "{{config_root}}/../.."
-# Config: .brigade/configs/ruff.toml (the project's).
+# Config: .brigade/configs/ruff.toml (brigade's; ruff_config for your own).
 run = '''ruff check --config .brigade/configs/ruff.toml && ruff format --check --config .brigade/configs/ruff.toml'''

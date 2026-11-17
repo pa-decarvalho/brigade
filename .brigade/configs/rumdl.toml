@@ -1,14 +1,18 @@
 # rumdl config (rumdl check --no-cache --config .brigade/configs/rumdl.toml .).
-# Yours: brigade created it once and never changes it. It replaces the project's .rumdl.toml.
+# brigade-owned: updated by mise run brigade:update.
+# For your own settings, set rumdl_config to your file.
+# It replaces the project's .rumdl.toml.
 [global]
-# One sentence per line: no line length.
-disable = ["MD013"]
-# .mise-data is the GitLab CI tool cache; .ctt holds the rendered variants,
-# template/ the files they come from; CHANGELOG.md is written by Releasaurus;
-# the PR template starts with a comment, not a heading.
-exclude = [".mise-data", ".ctt", "template", "CHANGELOG.md", ".github/pull_request_template.md"]
+# .mise-data is the GitLab CI tool cache; CHANGELOG.md is written by the release
+# tool (Releasaurus adds each release at the top, as a level-1 heading).
+exclude = [".mise-data", "CHANGELOG.md"]
 
-# The README and the docs home page open with a centered HTML header.
-[per-file-ignores]
-"README.md" = ["MD033", "MD041"]
-"docs/index.md" = ["MD033", "MD041"]
+# HTML only where Markdown has no equivalent, and in <p> and <h1> blocks: the
+# centered header of a README (logo, title, badges).
+[MD033]
+allowed-elements = ["no-markdown-equivalent"]
+allowed-inside = ["p", "h1"]
+
+# A header (logo, comment) may come before the first heading, still a level-1 one.
+[MD041]
+allow-preamble = true

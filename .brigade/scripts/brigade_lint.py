@@ -2,8 +2,8 @@
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 Renders the template at the version of .brigade/copier/answers.yml into a temporary
-folder, then compares each rendered file with the project's (but the tool configs in
-.brigade/configs/, the project's): data.yml differs when
+folder, then compares each rendered file with the project's (but the tool configs
+that hold the project's content): data.yml differs when
 edited answers are not applied yet. Also tells when a newer brigade release is out
 (a notice, not a failure).
 """
@@ -19,8 +19,16 @@ import tempfile
 
 ANSWERS = ".brigade/copier/answers.yml"
 DATA = ".brigade/copier/data.yml"
-# Created once, then the project's.
-CONFIGS = ".brigade/configs/"
+# Created once, then the project's (_skip_if_exists in brigade's .copier/settings.yml).
+PROJECT_CONFIGS = tuple(
+    f".brigade/configs/{name}"
+    for name in (
+        "goreleaser.yaml",
+        "container-structure-test.yaml",
+        "ls-lint.yml",
+        "sqlfluff.cfg",
+    )
+)
 
 
 def read(path: pathlib.Path) -> bytes:
@@ -85,7 +93,7 @@ def main() -> int:
         problems = []
         for path in sorted(rendered.rglob("*")):
             name = path.relative_to(rendered).as_posix()
-            if not path.is_file() or name == ANSWERS or name.startswith(CONFIGS):
+            if not path.is_file() or name == ANSWERS or name in PROJECT_CONFIGS:
                 continue
             mine = pathlib.Path(name)
             if not mine.is_file():
