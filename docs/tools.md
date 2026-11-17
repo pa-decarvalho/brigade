@@ -61,7 +61,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `typos` | `typos:lint` | `typos`, without `.mise/` (mise's lock sidecars) ([config](#tool-configs)) |
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker`, without `.mise/` (mise's lock sidecars) (needs your `.editorconfig`; [config](#tool-configs)) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/*.toml`, `.brigade/*/*.toml` and `.miserc.toml` ([config](#tool-configs)) |
-| `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate renovate.json` (other config path: change the command) |
+| `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate` on your Renovate config, wherever Renovate reads it (`renovate.json`, `.github/renovate.json5`, `.renovaterc`...); none: passes |
 | | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check` ([config](#tool-configs)) |
 | `ty` | `ty:lint` | `ty check` ([config](#tool-configs)). It reads the project's `.venv` for its dependencies: CI has none, so a project with dependencies creates it first (`ty_lint_command: "uv sync && ty check --config-file .brigade/configs/ty.toml"`), else their imports fail (`import-not-found`) |
@@ -321,6 +321,11 @@ with `mise run operate`, or in CI:
   5:00 UTC).
 - **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now),
   since "Run pipeline" deploys.
+
+On its first run on a repository, Renovate opens an onboarding PR, "Configure
+Renovate", which adds `renovate.json` (`config:recommended`) and previews the
+updates to come: review it, adjust the config if needed, and merge it; the next
+runs update your dependencies.
 
 For Renovate, CI sets the platform, the endpoint and the repository; add a
 `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits
