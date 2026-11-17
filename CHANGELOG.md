@@ -1,3 +1,9 @@
+# [0.25.1](https://github.com/pa-decarvalho/brigade/compare/0.25.0...0.25.1) - 2026-11-17
+
+### 🐛 Bug Fixes
+
+- rumdl defaults for generated changelogs and README headers (#248) [_(90f47205)_](https://github.com/pa-decarvalho/brigade/commit/90f4720550890519c5c6a632f721384a1edbaf35)
+
 # [0.25.0](https://github.com/pa-decarvalho/brigade/compare/0.24.2...0.25.0) - 2026-11-17
 
 ### 🚀 Features
