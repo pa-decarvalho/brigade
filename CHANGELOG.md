@@ -1,3 +1,9 @@
+# [0.28.1](https://github.com/pa-decarvalho/brigade/compare/0.28.0...0.28.1) - 2026-11-18
+
+### 🐛 Bug Fixes
+
+- Renovate leaves brigade-owned files to brigade:update (#275) [_(5182a686)_](https://github.com/pa-decarvalho/brigade/commit/5182a6868c0b29e76dcd29bb1b49fcd9f2e2b5eb)
+
 # [0.28.0](https://github.com/pa-decarvalho/brigade/compare/0.27.1...0.28.0) - 2026-11-18
 
 ### 🚀 Features
