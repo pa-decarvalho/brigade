@@ -1,0 +1,13 @@
+{#- The checks besides the merge method, from the selected tools. -#}
+{%- set checks = ['releasaurus', 'renovate'] | select('in', tools) | list
+  + (['automerge'] if 'renovate' in tools and renovate_automerge else [])
+  + ['pages'] | select('in', tools) | list -%}
+[tools]
+# renovate: datasource=github-releases depName=cli/cli
+gh = "{{ gh_version | default('2.105.0', true) }}"
+
+# Not a stage name: stays out of the pipeline. Needs your login (gh auth login).
+[tasks."gh:check"]
+description = "Check the GitHub repository's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ gh_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py gh ' ~ checks | join(' ')) | trim, true) }}'''

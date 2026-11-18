@@ -1,0 +1,12 @@
+---
+glab_version:
+  type: str
+  help: glab version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'glab' in tools }}"
+
+glab_check_command:
+  type: str
+  help: Command of glab:check (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'glab' in tools }}"

@@ -1,0 +1,12 @@
+{#- The checks besides the merge method, from the selected tools. -#}
+{%- set checks = ['releasaurus', 'renovate'] | select('in', tools) | list -%}
+[tools]
+# Released on gitea.com, which mise reads as a Forgejo forge (same API).
+# renovate: datasource=gitea-releases depName=gitea/tea
+"forgejo:gitea/tea" = { version = "{{ tea_version | default('0.16.0', true) }}", api_url = "https://gitea.com/api/v1" }
+
+# Not a stage name: stays out of the pipeline. Needs your login (tea login add).
+[tasks."tea:check"]
+description = "Check the Gitea repository's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ tea_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py tea ' ~ checks | join(' ')) | trim, true) }}'''

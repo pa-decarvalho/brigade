@@ -1,0 +1,12 @@
+---
+tea_version:
+  type: str
+  help: tea version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'tea' in tools }}"
+
+tea_check_command:
+  type: str
+  help: Command of tea:check (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'tea' in tools }}"
