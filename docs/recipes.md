@@ -327,7 +327,11 @@ package.
 
 An Angular app, unit-tested by Vitest, tested end to end by CodeceptJS
 (Chromium, through Playwright), published to GitHub Pages on each release.
-Tested as the `angular-github` variant.
+Tested as the `angular-github` variant. Examples:
+[on GitHub](https://github.com/pa-decarvalho/brigade-example-angular)
+([site](https://pa-decarvalho.github.io/brigade-example-angular/)) and
+[on GitLab](https://gitlab.com/philippe.andre.decarvalho/brigade-example-angular)
+(`ci: gitlab`, [site](https://brigade-example-angular-72c17f.gitlab.io/)).
 
 ```sh
 npx @angular/cli new my-app --defaults
@@ -371,5 +375,6 @@ CodeceptJS tests the app while it runs: its `bootstrap` builds it and serves
 its `teardown` stops the server; see the `angular-github` variant in
 brigade's `ctt.toml` for a `codecept.conf.js` that does it with Node's `http`
 module. A Pages site at `https://<owner>.github.io/<repo>/` needs
-`ng build --base-href /<repo>/`. The Angular CLI is a dependency of the
+`"baseHref": "/<repo>/"` in `angular.json` (GitLab's unique domain: none, see
+[deploy](tools.md#deploy)). The Angular CLI is a dependency of the
 project, installed by `npm ci`.

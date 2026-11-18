@@ -43,6 +43,10 @@ release and deploy stages, with custom versions and commands. CI: GitHub,
 GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks. Update a
 project with `mise run brigade:update`.
 
+Examples: an Angular app
+[on GitHub](https://github.com/pa-decarvalho/brigade-example-angular) and
+[on GitLab](https://gitlab.com/philippe.andre.decarvalho/brigade-example-angular).
+
 Documentation: <https://pa-decarvalho.github.io/brigade/> (sources in `docs/`,
 preview with `mise run zensical:serve`).
 
