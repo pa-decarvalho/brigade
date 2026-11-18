@@ -13,10 +13,13 @@ runs:
       shell: bash
       run: | # jactionlint ignore=unverified-download
         curl -fsSL https://mise.run | MISE_VERSION=v2026.11.9 sh
+    # With mise's shims: mise does not put a task's tools on PATH when aube
+    # builds one (npm:renovate with allow_builds, in a ~aube~ folder).
     - name: Put mise on PATH
       shell: bash
       run: | # zizmor: ignore[github-env]
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+        echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
     - name: Install tools
       shell: bash
       env:
