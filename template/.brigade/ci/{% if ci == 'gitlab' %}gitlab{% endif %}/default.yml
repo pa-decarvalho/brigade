@@ -3,6 +3,12 @@ variables:
   MISE_DATA_DIR: $CI_PROJECT_DIR/.mise-data
   # Python tools link to uv's Python: it must be in the cache with them.
   UV_PYTHON_INSTALL_DIR: $CI_PROJECT_DIR/.mise-data/uv-python
+  # mise's shims first, then the image's PATH (written out: GitLab does not
+  # expand the image's $PATH here). mise does not put a task's tools on PATH
+  # when aube builds one (npm:renovate with allow_builds, in a ~aube~ folder):
+  # the shims still find them.
+  PATH: "$CI_PROJECT_DIR/.mise-data/shims:\
+    /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 default:
   image: jdxcode/mise:2026.11.9-debian
