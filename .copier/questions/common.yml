@@ -113,6 +113,15 @@ tools:
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
+    gh (repository settings, local):
+      value: gh
+      validator: "{% if ci != 'github' %}needs GitHub{% endif %}"
+    glab (repository settings, local):
+      value: glab
+      validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
+    tea (repository settings, local):
+      value: tea
+      validator: "{% if ci != 'gitea' %}needs Gitea{% endif %}"
     prek (git hooks, local): prek
   # brigade's defaults, then the presets' tools, without those the CI
   # platform refuses (see their validator).

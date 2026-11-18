@@ -1,0 +1,11 @@
+{#- The checks besides the merge method, from the selected tools. -#}
+{%- set checks = ['releasaurus', 'renovate', 'pages'] | select('in', tools) | list -%}
+[tools]
+# renovate: datasource=gitlab-releases depName=gitlab-org/cli
+glab = "{{ glab_version | default('1.131.0', true) }}"
+
+# Not a stage name: stays out of the pipeline. Needs your login (glab auth login).
+[tasks."glab:check"]
+description = "Check the GitLab project's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ glab_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py glab ' ~ checks | join(' ')) | trim, true) }}'''

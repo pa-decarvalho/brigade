@@ -5,7 +5,7 @@
 
 [output.".ctt/python-github"]
 # The Python example: a package with its docs, everything a real project uses, up to PyPI.
-tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "taplo", "rumdl", "ruff", "ty", "osv-scanner", "pytest", "uv", "zensical", "pages", "releasaurus", "renovate"]
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "taplo", "rumdl", "ruff", "ty", "osv-scanner", "pytest", "uv", "zensical", "pages", "releasaurus", "renovate", "gh"]
 ci = "github"
 operate_schedule = "0 5 * * 1"
 # uv:deploy publishes the package on each release.
@@ -275,7 +275,7 @@ pathlib.Path("renovate.json").write_text("{}\n")
 ]
 
 [output.".ctt/python-gitlab"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "zensical", "pages"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "ty", "rumdl", "prettier", "biome", "trivy", "pytest", "zensical", "pages", "glab"]
 ci = "gitlab"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false
@@ -346,7 +346,7 @@ _post_tasks = [
 ]
 
 [output.".ctt/python-gitea"]
-tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv", "prek"]
+tools = ["yamllint", "gitleaks", "typos", "ruff", "pytest", "uv", "prek", "tea"]
 ci = "gitea"
 # No build stage: the other CI jobs must not depend on it.
 build_enabled = false

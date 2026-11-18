@@ -122,6 +122,9 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `prek` | `prek:install` | `prek install --force`: the git hooks of `.brigade/configs/prek.yaml`, in place of any hook already there (local use, not a stage): see [prek](#prek) |
 | | `prek:run` | `prek run --all-files`: the hooks on every file |
+| `gh` | `gh:check` | GitHub: checks the repository's settings for the selected tools, changing nothing (local use, not a stage): see [Repository settings](#repository-settings) |
+| `glab` | `glab:check` | GitLab: the same for the project |
+| `tea` | `tea:check` | Gitea, Forgejo: the same for the repository |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
@@ -217,6 +220,25 @@ earlier, or one you wrote, whose commands go in `prek.yaml` as `repo: local`
 hooks. The hook calls this prek by its install path, so run it again after a
 prek version change. `mise run prek:run` runs the hooks on every file. Skip them
 for one commit with `git commit --no-verify`.
+
+## Repository settings
+
+Each forge's CLI comes with a check, for local use (not a stage): `gh:check`
+(GitHub), `glab:check` (GitLab), `tea:check` (Gitea, Forgejo). It reads the
+repository's settings that the selected tools need, with your login
+(`gh auth login`, `glab auth login`, `tea login add`), changes nothing, and
+fails when a required one is missing, with where to change it:
+
+| Tool | GitHub | GitLab | Gitea |
+|---|---|---|---|
+| always | squash merge only, the pull request title as the commit | squash commits required | squash merge only |
+| `releasaurus` | `RELEASAURUS_GITHUB_TOKEN`, else Actions allowed to create pull requests | `RELEASAURUS_GITLAB_TOKEN` | `RELEASAURUS_GITEA_TOKEN` (advised) |
+| `renovate` | `RENOVATE_TOKEN`; auto-merge allowed with `renovate_automerge` | `RENOVATE_TOKEN`; `RENOVATE_GITHUB_COM_TOKEN` and an active pipeline schedule (advised) | `RENOVATE_TOKEN`; `RENOVATE_GITHUB_COM_TOKEN` (advised) |
+| `pages` | Pages published from `gh-pages` | Pages enabled | |
+
+Secrets and CI/CD variables are looked up in the repository and its
+organization or group. Only admins (maintainers on GitLab) can list them: for
+others, they show as `unknown`.
 
 ## Platforms
 

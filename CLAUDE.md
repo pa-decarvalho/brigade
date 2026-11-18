@@ -80,11 +80,11 @@ mise fragment with all its tasks, and stages follow from the tools.
   (GitLab: scheduled pipelines, since "Run pipeline" deploys). Tokens are
   secrets named after the tool's env var. Each runs `*:<stage>`; tools are
   `<tool>:<stage>` tasks (e.g. `ruff:lint`), and any other action
-  (`zensical:serve`) stays out of the pipeline. `<stage>_enabled` keeps the
-  stage or not (mise task and CI job); `<stage>_commands`, when given, replaces
-  its tools with a `run` list, the same locally and in CI. A stage without tools
-  does nothing: its `depends` is `optional`, because `*:<stage>` fails
-  otherwise. CI only calls `mise run <stage>`.
+  (`zensical:serve`, `gh:check`) stays out of the pipeline. `<stage>_enabled`
+  keeps the stage or not (mise task and CI job); `<stage>_commands`, when given,
+  replaces its tools with a `run` list, the same locally and in CI. A stage
+  without tools does nothing: its `depends` is `optional`, because `*:<stage>`
+  fails otherwise. CI only calls `mise run <stage>`.
 - Questions live in `.copier/questions/`: `common.yml` (`ci` first because
   choice validators can use it, `presets`, whose choice values are tool lists,
   merged into `tools`' default (without the tools `ci` refuses); a preset's list
