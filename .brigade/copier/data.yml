@@ -63,6 +63,10 @@ presets: []
 pypi_index: ""
 release_commands: []
 release_enabled: true
+renovate_automerge: true
+renovate_updates:
+  - "brigade"
+  - "template"
 test_commands: []
 test_enabled: true
 tools:
