@@ -278,6 +278,25 @@ default branch through the forge's API, so commit it):
   `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
   updated: `uv` rewrites it on the next `uv lock` or `uv run`.
 
+Two workflows (`releasaurus_workflow`, see
+[Customize](#customize-a-version-or-a-command)):
+
+- `pr` (default): a release pull request to merge; the next run tags it.
+- `direct`: each push with a releasable commit is released at once, with no
+  pull request (`releasaurus release-direct`): the version and `CHANGELOG.md`
+  are committed to the default branch, then tagged. With the CI's own token, the
+  tag starts no CI: on GitHub and Gitea, set the bot token below so that
+  `deploy` runs. When the default branch is protected, that token must be
+  allowed to push to it (the CI's own token cannot be):
+  - GitHub: add the token's owner to the bypass list (ruleset: "Repository
+    admin"; classic branch protection: leave "Do not allow bypassing the above
+    settings" off, for admins).
+  - GitLab: "Allowed to push and merge" on the protected branch includes the
+    token's role (Maintainers by default: a project token with the Maintainer
+    role).
+  - Gitea, Forgejo: add the token's user to the branch protection's push
+    whitelist.
+
 For your own settings (prereleases, a monorepo, changelog options), set
 `releasaurus_config` to your file, with `tag_prefix = ""` in its `[[package]]`
 to keep the tags brigade's CI deploys. See

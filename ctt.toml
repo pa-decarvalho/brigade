@@ -164,6 +164,9 @@ tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zi
 ci = "github"
 # Vite writes the site to dist/.
 pages_dir = "dist"
+# A direct release on each releasable push, with no release PR.
+customize_tools = true
+releasaurus_workflow = "direct"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
@@ -181,6 +184,12 @@ _post_tasks = [
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
+    # releasaurus:release with releasaurus_workflow "direct", on the local repository (dry run): after 0.1.0, a feat commit is released with package.json bumped.
+    ["git", "tag", "0.1.0"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('src/feature.ts').write_text('export const feature = true;\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "feat: a feature"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import os, subprocess; r = subprocess.run(['mise', 'run', 'releasaurus:release'], capture_output=True, text=True, env={**os.environ, 'RELEASAURUS_FORGE': 'local', 'RELEASAURUS_REPO': '.', 'RELEASAURUS_DRY_RUN': '1'}); out = r.stdout + r.stderr; assert r.returncode == 0 and 'release-direct' in out and 'package.json (Update' in out, out[-3000:]"],
 ]
 
 [output.".ctt/angular-github"]

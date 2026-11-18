@@ -1,14 +1,21 @@
 {%- set config = releasaurus_config or '.brigade/configs/releasaurus.toml' -%}
+{%- if releasaurus_workflow == 'direct' -%}
+{%- set command = 'releasaurus release-direct --auto-approve --config ' ~ config -%}
+{%- else -%}
+{%- set command = 'releasaurus release --config ' ~ config ~ ' && releasaurus release-pr --config ' ~ config -%}
+{%- endif -%}
 [tools]
 # renovate: datasource=github-releases depName=robgonnella/releasaurus
 "aqua:robgonnella/releasaurus" = "{{ releasaurus_version | default('1.4.0', true) }}"
 
-# Tags and publishes a merged release PR, then opens or updates the next one.
-# This order is required: release-pr fails while a merged release PR is not tagged.
+# releasaurus_workflow "pr" (default): tags and publishes a merged release PR, then opens or
+# updates the next one (this order is required: release-pr fails while a merged release PR is
+# not tagged). "direct": commits the version and changelog to the branch, tags and publishes,
+# with no PR. A run with nothing to release does nothing.
 # Needs RELEASAURUS_REPO, RELEASAURUS_FORGE and a token (RELEASAURUS_<FORGE>_TOKEN): CI sets them.
 [tasks."releasaurus:release"]
-description = "Tag and publish a merged release PR, then open or update the next one"
+description = "Release with Releasaurus: a release PR, or a direct release (releasaurus_workflow)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Config: .brigade/configs/releasaurus.toml (brigade's; releasaurus_config for your own), read
 # from the default branch through the forge's API.
-run = '''{{ releasaurus_release_command | default("releasaurus release --config " ~ config ~ " && releasaurus release-pr --config " ~ config, true) }}'''
+run = '''{{ releasaurus_release_command | default(command, true) }}'''
