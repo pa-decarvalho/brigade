@@ -21,7 +21,8 @@ run = '''renovate'''
 
 # Renovate also follows brigade: on a new release, its PR runs brigade:update (Renovate's own
 # change to _commit is undone first, since Copier diffs from the current version), in its own PR
-# (Copier needs a clean tree). Renovate's
+# (Copier needs a clean tree). The pins in brigade's other files (.brigade/, its workflows)
+# come with that update: Renovate leaves them alone. Renovate's
 # handlebars templates are escaped twice: for Copier, then for mise (Tera).
 [tasks."renovate:operate".env]
 RENOVATE_CONFIG = '''{% raw %}{
@@ -38,6 +39,16 @@ RENOVATE_CONFIG = '''{% raw %}{
         "depNameTemplate": "brigade"
     }],
     "packageRules": [{
+        "matchFileNames": [
+            ".miserc.toml",
+            ".brigade/**",
+            ".gitlab-ci.yml",
+            ".github/workflows/{lint,build,test,release,deploy,operate}.yml",
+            ".gitea/workflows/{lint,build,test,release,deploy,operate}.yml"
+        ],
+        "matchDepNames": ["!brigade"],
+        "enabled": false
+    }, {
         "matchDepNames": ["brigade"],
         "groupName": null,
         "commitMessageTopic": "brigade",
@@ -56,4 +67,4 @@ RENOVATE_CONFIG = '''{% raw %}{
 # which mise's trust policy rejects: exempt that one version only. re2 (RE2 regexes, as Renovate
 # validates them) installs its native binary with a script, which runs only when allowed.
 # renovate: datasource=npm depName=renovate
-"npm:renovate" = { version = "44.244.2", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }
+"npm:renovate" = { version = "44.251.0", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"], allow_builds = ["re2"] }

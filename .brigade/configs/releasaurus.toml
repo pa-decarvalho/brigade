@@ -1,0 +1,18 @@
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# For your own settings, set releasaurus_config to your file (keep tag_prefix = "").
+
+# Release on feat, fix, perf, revert and breaking changes only: other commits
+# are left out of the version and CHANGELOG.md.
+[defaults.versioning.named_parsers]
+refactor.skip = true
+documentation.skip = true
+style.skip = true
+test.skip = true
+chore.skip = true
+ci.skip = true
+miscellaneous.skip = true
+
+# The project, tagged X.Y.Z (no "v").
+[[package]]
+path = "."
+tag_prefix = ""

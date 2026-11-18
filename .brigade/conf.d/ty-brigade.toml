@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ty
-ty = "0.0.104"
+ty = "0.0.105"
 
 [tasks."ty:lint"]
 description = "Check Python types with ty"
