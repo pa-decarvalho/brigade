@@ -83,7 +83,9 @@ on a manual run of the Deploy workflow.
 ### Versions and releases
 
 Pinned versions are updated by [Renovate](https://docs.renovatebot.com/)
-(`.github/renovate.json5`), run every Monday by the generated Operate workflow
+(`.brigade/configs/renovate.json`, generated with `renovate_updates: [brigade,
+template]` and `renovate_automerge: true` in `.brigade/copier/data.yml`), run
+every day by the generated Operate workflow
 (`mise run operate`, `operate_schedule`) as one PR,
 `fix(deps): update template`, major updates included: it triggers a release.
 

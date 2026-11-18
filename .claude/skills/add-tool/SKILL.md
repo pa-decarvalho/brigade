@@ -57,8 +57,9 @@ file).
   - `# renovate: datasource=<github-releases|pypi|npm> depName=<owner/repo|package>`
     on the line above
     `<tool> = "{{ <tool_>_version | default('<pin>', true) }}"`. The
-    `customManagers` regex in `.github/renovate.json5` reads it; a pin elsewhere
-    in the line (`uvx_args`...) needs its own entry there.
+    `customManagers` regex of the `template` part of Renovate's config
+    (`template/.brigade/configs/`, `renovate.json`) reads it; a pin elsewhere in
+    the line (`uvx_args`...) needs its own entry there.
   - `[tasks."<tool>:<stage>"]` with `description`,
     `{% raw %}dir = "{{config_root}}/../.."{% endraw %}` and one
     `run = '''{{ <tool_>_<action>_command | default('<command>', true) }}'''`.

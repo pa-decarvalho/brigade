@@ -10,7 +10,7 @@ node = "26.13.1"
 description = "Check the Renovate config"
 dir = "{{config_root}}/../.."
 # The project's Renovate config wherever Renovate reads it (renovate.json, .github/renovate.json5,
-# .renovaterc...): none passes, before Renovate's onboarding PR adds renovate.json.
+# .renovaterc...), which adds to brigade's: none passes.
 run = '''uv run --no-project python .brigade/scripts/brigade_files.py "renovate.json*" ".*/renovate.json*" ".renovaterc*" -- check-jsonschema --builtin-schema vendor.renovate --default-filetype json5'''
 
 # Runs Renovate (needs RENOVATE_TOKEN and RENOVATE_REPOSITORIES: CI sets them). Renovate itself is on the task, so other CI jobs skip it.
@@ -19,48 +19,10 @@ description = "Run Renovate"
 dir = "{{config_root}}/../.."
 run = '''renovate'''
 
-# Renovate also follows brigade: on a new release, its PR runs brigade:update (Renovate's own
-# change to _commit is undone first, since Copier diffs from the current version), in its own PR
-# (Copier needs a clean tree). The pins in brigade's other files (.brigade/, its workflows)
-# come with that update: Renovate leaves them alone. Renovate's
-# handlebars templates are escaped twice: for Copier, then for mise (Tera).
+# Its config: what it updates (renovate_updates), and brigade's updates (a PR running
+# brigade:update on each release).
 [tasks."renovate:operate".env]
-RENOVATE_CONFIG = '''{% raw %}{
-    "allowedCommands": [
-        "^git checkout -- \\.brigade/copier/answers\\.yml$",
-        "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
-    ],
-    "customManagers": [{
-        "customType": "regex",
-        "managerFilePatterns": ["/^\\.brigade/copier/answers\\.yml$/"],
-        "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
-        "datasourceTemplate": "git-tags",
-        "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
-        "depNameTemplate": "brigade"
-    }],
-    "packageRules": [{
-        "matchFileNames": [
-            ".miserc.toml",
-            ".brigade/**",
-            ".gitlab-ci.yml",
-            ".github/workflows/{lint,build,test,release,deploy,operate}.yml",
-            ".gitea/workflows/{lint,build,test,release,deploy,operate}.yml"
-        ],
-        "matchDepNames": ["!brigade"],
-        "enabled": false
-    }, {
-        "matchDepNames": ["brigade"],
-        "groupName": null,
-        "commitMessageTopic": "brigade",
-        "postUpgradeTasks": {
-            "commands": [
-                "git checkout -- .brigade/copier/answers.yml",
-                "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
-            ],
-            "executionMode": "branch"
-        }
-    }]
-}{% endraw %}'''
+RENOVATE_CONFIG_FILE = ".brigade/configs/renovate.json"
 
 [tasks."renovate:operate".tools]
 # @yarnpkg/libzip 3.2.2 has no npm provenance (manual publish of yarnpkg/berry's 2eb9830 release),

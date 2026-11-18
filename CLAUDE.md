@@ -149,8 +149,11 @@ mise fragment with all its tasks, and stages follow from the tools.
   inside a replay (`ACT`, `GITLAB_CI` set), so the replayed test job does not
   loop.
 - Pin versions (mise, tools, Copier). Renovate keeps them up to date
-  (`.github/renovate.json5`): a new pin outside a standard mise/CI location
-  needs a matching `customManagers` entry. Generated projects get new versions
+  (`.brigade/configs/renovate.json`, from the `template` part of
+  `renovate_updates` in brigade's answers; no config of its own): a new pin
+  outside a standard mise/CI location needs a matching `customManagers` entry
+  there, in the template, which applies to brigade after a release and its
+  update. Generated projects get new versions
   through a brigade release and `mise run brigade:update`. Renovate only reads
   `template/` (`includePaths`), in one `fix:` PR, and brigade's own
   `.brigade/copier/answers.yml`, whose `ci:` PR runs `brigade:update` on each

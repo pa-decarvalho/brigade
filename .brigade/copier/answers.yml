@@ -1,6 +1,6 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.28.2
+_commit: 0.30.0
 _src_path: gh:pa-decarvalho/brigade
 build_commands: []
 build_enabled: true
@@ -66,6 +66,10 @@ presets: []
 pypi_index: ''
 release_commands: []
 release_enabled: true
+renovate_automerge: true
+renovate_updates:
+- brigade
+- template
 test_commands: []
 test_enabled: true
 tools:
