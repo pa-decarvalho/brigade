@@ -1,20 +1,23 @@
 {% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Runs on pushes to main (the default branch): mise run release.
+# Runs on pushes to the default branch: mise run release.
 name: Release
 
+# Any branch, since the default branch cannot be named here: the job checks it.
 on:
   push:
-    branches: [main]
+    branches: ["**"]
 
-# A new run waits for the running one: no half-done release.
+# A new run waits for the running one: no half-done release. Per branch, so
+# a push to another branch does not replace a pending release.
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
 {% endraw %}{% with stage = 'release' %}{% if stage in split_stages %}{% include '.copier/ci/run.yml.jinja' %}{% else %}{% raw %}  release:
-{% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
+{% endraw %}{% endif %}{% raw %}    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write

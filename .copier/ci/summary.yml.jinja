@@ -1,6 +1,7 @@
   # The stage's check (branch protection): all its jobs passed.
   {{ stage }}:
-    if: always()
+    # Skipped with its jobs (release, on a branch other than the default one).
+    if: always() && needs.run.result != 'skipped'
     needs: [run]
     runs-on: ubuntu-latest
     permissions: {}

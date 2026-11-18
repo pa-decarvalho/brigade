@@ -18,7 +18,7 @@ and on the `operate_schedule` answer (scheduled pipelines on GitLab).
 
 | File | Role |
 |---|---|
-| `.github/workflows/<stage>.yml` | One workflow per stage, with one job that checks out the code and runs the stage's action: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to `main`, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
+| `.github/workflows/<stage>.yml` | One workflow per stage, with one job that checks out the code and runs the stage's action: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to the default branch, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
 | `.brigade/ci/github/actions/<stage>/action.yml` | The stage's steps: install mise and the tools, then `mise run <stage>` with the stage's environment (Releasaurus, Renovate). Secrets are passed as inputs: `token` (release), `renovate-token` (operate). |
 | `.brigade/ci/github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools, with a cache. `deploy` installs them without a cache. |
 

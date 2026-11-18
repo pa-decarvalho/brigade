@@ -252,7 +252,7 @@ remove `brigade` from your tools.
 
 ## release
 
-CI runs this stage on its own, on pushes to the default branch (`main`): `lint`,
+CI runs this stage on its own, on pushes to the default branch: `lint`,
 `build` and `test` already ran on the pull request.
 
 With `releasaurus`, [Releasaurus](https://releasaurus.rgon.io/) reads the
