@@ -1,3 +1,9 @@
+# [0.30.0](https://github.com/pa-decarvalho/brigade/compare/0.29.0...0.30.0) - 2026-11-18
+
+### 🚀 Features
+
+- renovate_automerge question, and ci commits for brigade updates (#286) [_(34f8712b)_](https://github.com/pa-decarvalho/brigade/commit/34f8712b61de1c6f95d19127affbcab0cd822950)
+
 # [0.29.0](https://github.com/pa-decarvalho/brigade/compare/0.28.2...0.29.0) - 2026-11-18
 
 ### 🚀 Features
