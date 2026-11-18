@@ -1,3 +1,11 @@
+# [0.28.2](https://github.com/pa-decarvalho/brigade/compare/0.28.1...0.28.2) - 2026-11-18
+
+### 🐛 Bug Fixes
+
+- mise's shims on PATH on GitLab and Gitea, for task tools aube builds (#280) [_(0b4115f9)_](https://github.com/pa-decarvalho/brigade/commit/0b4115f9ce2e999f2bd724bc2bc1e5e836100ca3)
+
+- _(deps)_ update template (#277) [_(c2f78add)_](https://github.com/pa-decarvalho/brigade/commit/c2f78add2960453a812860ffbbb979b8f3c2f4e3)
+
 # [0.28.1](https://github.com/pa-decarvalho/brigade/compare/0.28.0...0.28.1) - 2026-11-18
 
 ### 🐛 Bug Fixes
