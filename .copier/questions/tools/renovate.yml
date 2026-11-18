@@ -45,3 +45,9 @@ renovate_updates:
     template (a Copier template's template/ folder, as brigade's): template
   default: [brigade]
   when: "{{ 'renovate' in tools }}"
+
+renovate_automerge:
+  type: bool
+  help: Merge Renovate's PRs once their checks pass
+  default: false
+  when: "{{ 'renovate' in tools }}"
