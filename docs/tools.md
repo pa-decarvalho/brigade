@@ -449,6 +449,11 @@ shows conflicts with your edits as inline markers in the PR: fix them there
 before merging (`brigade:lint` fails until then). On GitHub, the token also
 needs the Workflows permission, since updates change workflow files.
 
+The pins in brigade's own files (`.miserc.toml`, `.brigade/`, its workflows,
+`.gitlab-ci.yml`) come with these updates: Renovate leaves them alone, since a
+change there would fail `brigade:lint`. Your own files (`package.json`,
+`mise.toml`, your workflows...) are updated as usual.
+
 Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task):
 your Renovate config can still change the PR, for example its commit type with a
 `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`,
