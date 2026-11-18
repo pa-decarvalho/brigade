@@ -1,0 +1,123 @@
+{%- set dependencies = 'dependencies' in renovate_updates -%}
+{%- set template = 'template' in renovate_updates -%}
+{
+    // brigade-owned (renovate:operate passes it as RENOVATE_CONFIG_FILE): change what Renovate
+    // updates with the renovate_updates answer, add to it with your own renovate.json, or point
+    // renovate_config to your own file. No renovate.json needed, so no onboarding PR.
+    "onboarding": false,
+    "requireConfig": "optional",
+    "dependencyDashboard": {"enabled": false},
+    "semanticCommits": "enabled",
+{%- if dependencies %}
+    // Your project's dependencies.
+    "extends": ["config:recommended"],
+{%- else %}
+    // Only what renovate_updates lists: your renovate.json can set "enabledManagers": [] (all).
+    "enabledManagers": ["custom.regex"{% if template %}, "mise", "github-actions", "gitlabci"{% endif %}],
+{%- endif %}
+{%- if template and not dependencies %}
+    "includePaths": ["template/**", ".brigade/copier/answers.yml"],
+{%- endif %}
+{%- if 'brigade' in renovate_updates %}
+    // brigade itself: on a new release, its PR runs brigade:update (Renovate's own change to
+    // _commit is undone first, since Copier diffs from the current version), in its own PR
+    // (Copier needs a clean tree).
+    "allowedCommands": [
+        "^git checkout -- \\.brigade/copier/answers\\.yml$",
+        "^mise run brigade:update -- --defaults --vcs-ref [0-9A-Za-z.+-]+$"
+    ],
+{%- endif %}
+{%- if template %}{% raw %}
+    // A Copier template made like brigade's (template/): its file names are Jinja, which the
+    // default file patterns do not match. One PR, major updates included: a release brings it to
+    // the generated projects.
+    "separateMajorMinor": false,
+    // Versions at least 3 days old: mise locks a pipx tool's dependencies only with packages
+    // older than a day, so a fresher pin leaves its entry incomplete, and the next mise run
+    // fills it in (a dirty .brigade/mise.lock).
+    "minimumReleaseAge": "3 days",
+    "mise": {
+        // Tool fragments are Jinja: a customManagers entry reads their pins.
+        "managerFilePatterns": ["/^template/\\.brigade/(conf\\.d/)?[^/]*(\\.toml|\\{% endif %\\})$/"]
+    },
+    "github-actions": {
+        "managerFilePatterns": ["/^template/.*/workflows/[^/]*(\\.yml|\\{% endif %\\})(\\.jinja)?$/", "/^template/.*/actions/[^/]+/action\\.yml$/"]
+    },
+    "gitlabci": {
+        "managerFilePatterns": ["/^template/\\.brigade/ci/[^/]*gitlab[^/]*/[^/]+\\.yml/"]
+    },{% endraw %}
+{%- endif %}
+    "customManagers": [
+{%- if 'brigade' in renovate_updates %}{% raw %}
+        {
+            "customType": "regex",
+            "managerFilePatterns": ["/^\\.brigade/copier/answers\\.yml$/"],
+            "matchStrings": ["_commit: (?<currentValue>\\S+)\\n_src_path: (?<depName>\\S+)"],
+            "datasourceTemplate": "git-tags",
+            "packageNameTemplate": "{{{replace '^gh:' 'https://github.com/' (replace '^gl:' 'https://gitlab.com/' depName)}}}",
+            "depNameTemplate": "brigade"
+        }{% endraw %}{% if template %},{% endif %}
+{%- endif %}
+{%- if template %}{% raw %}
+        {
+            // Python tools pinned inside commands
+            "customType": "regex",
+            "managerFilePatterns": ["/^template/\\.brigade/mise\\.toml$/", "/^template/\\.brigade/conf\\.d/.*(ctt|molecule)-brigade.*\\.jinja$/"],
+            "matchStrings": ["(?<depName>copier-template-tester|copier|molecule-plugins|ansible-core)(?:\\[\\w+\\])?(?:==|@)(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+            "datasourceTemplate": "pypi"
+        },
+        {
+            // mise installed by its script (Gitea/Forgejo action)
+            "customType": "regex",
+            "managerFilePatterns": ["/^template/.*/actions/[^/]+/action\\.yml$/"],
+            "matchStrings": ["MISE_VERSION=v(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+            "depNameTemplate": "jdx/mise",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
+        },
+        {
+            // Tool fragments: the version is brigade's default in the Jinja file.
+            "customType": "regex",
+            "managerFilePatterns": ["/^template/\\.brigade/conf\\.d/.+\\.jinja$/"],
+            "matchStrings": ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
+            "extractVersionTemplate": "^v?(?<version>.*)$"
+        }{% endraw %}
+{%- endif %}
+    ],
+    "packageRules": [
+        {
+            // brigade's own files: their pins come with brigade's updates (a change there would
+            // fail brigade:lint).
+            "matchFileNames": [
+                ".miserc.toml",
+                ".brigade/**",
+                ".gitlab-ci.yml",
+                ".github/workflows/{lint,build,test,release,deploy,operate}.yml",
+                ".gitea/workflows/{lint,build,test,release,deploy,operate}.yml"
+            ],
+            "matchDepNames": ["!brigade"],
+            "enabled": false
+        }
+{%- if 'brigade' in renovate_updates %}{% raw %},
+        {
+            "matchDepNames": ["brigade"],
+            "groupName": null,
+            "commitMessageTopic": "brigade",
+            "postUpgradeTasks": {
+                "commands": [
+                    "git checkout -- .brigade/copier/answers.yml",
+                    "mise run brigade:update -- --defaults --vcs-ref {{{newVersion}}}"
+                ],
+                "executionMode": "branch"
+            }
+        }{% endraw %}
+{%- endif %}
+{%- if template %},
+        {
+            "matchFileNames": ["template/**"],
+            "groupName": "template",
+            "semanticCommitType": "fix"
+        }
+{%- endif %}
+    ]
+}

@@ -52,6 +52,16 @@ own workflows or `.gitlab/ci/*.yml` files.
 See [CI platforms](ci.md). For your own tasks, see
 [Custom tasks](custom-tasks.md).
 
+## From brigade 0.28 and earlier
+
+Since 0.29, Renovate reads `.brigade/configs/renovate.json` and, by default,
+only updates brigade (see [operate](tools.md#operate)):
+
+- To keep your dependencies updated, add `dependencies` to `renovate_updates`
+  in `.brigade/copier/data.yml`.
+- The `renovate.json` of Renovate's onboarding PR is no longer needed: delete
+  it, unless it holds your own settings.
+
 ## From brigade 0.27 and earlier
 
 Since 0.28, `releasaurus` reads `.brigade/configs/releasaurus.toml` (see

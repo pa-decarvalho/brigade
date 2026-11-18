@@ -28,3 +28,20 @@ renovate_node_version:
   help: Node.js version for renovate:operate (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'renovate' in tools }}"
+
+renovate_config:
+  type: str
+  help: Config file of Renovate, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'renovate' in tools }}"
+
+renovate_updates:
+  type: str
+  help: What Renovate updates
+  multiselect: true
+  choices:
+    brigade (its updates, with Copier and tool pins): brigade
+    dependencies (your project's own): dependencies
+    template (a Copier template's template/ folder, as brigade's): template
+  default: [brigade]
+  when: "{{ 'renovate' in tools }}"
