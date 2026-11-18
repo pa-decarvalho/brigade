@@ -19,7 +19,8 @@ Copier asks a few [questions](questions.md): your tools, whether to customize
 their versions and commands, CI platform, optional mirrors. `copier copy` uses
 the latest release; add `--vcs-ref X.Y.Z` to pick a version.
 `mise -C .brigade lock` writes the tools' exact versions and checksums to
-`.brigade/mise.lock` (see [Lockfile](updating.md#lockfile)): commit it.
+`.brigade/mise.lock` (see [Lockfile](updating.md#lockfile)): commit it. If mise
+says the config files are not trusted, run `mise trust` once in the project.
 
 ## Run the stages
 

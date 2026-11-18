@@ -186,7 +186,8 @@ Your `codecept.conf.*` holds your tests, your app's URL, and the server they
 need: CI runs each stage in a fresh job, without the build stage's output, so
 start it in `bootstrap` (and stop it in `teardown`), e.g. a static server on
 your build, or `ng serve`. The task installs Chromium, and on Linux its system
-packages (with `sudo` outside CI).
+packages (with `sudo` outside CI). Add CodeceptJS's `output` folder (e.g.
+`e2e/output/`) to your `.gitignore`.
 
 ## prek
 
@@ -278,10 +279,37 @@ miscellaneous.skip = true
 
 See [Releasaurus commit groups](https://releasaurus.rgon.io/changelog.html).
 
-On GitHub and Gitea, it works with the CI's own token, but the release pull
-request and the tag it makes start no CI: merge the release pull request with a
-bypass of the required checks, and run `deploy` by hand. With a bot token, both
-start the CI as usual. GitLab needs the token.
+On GitHub and Gitea, it works with the CI's own token, with three manual
+steps:
+
+- GitHub: allow the workflow token to open pull requests (Settings → Actions →
+  General → "Allow GitHub Actions to create and approve pull requests", off in
+  new repositories), else the release fails with
+  `Failed to create pull request`:
+
+  ```sh
+  gh api -X PUT repos/<owner>/<repo>/actions/permissions/workflow \
+    -f default_workflow_permissions=read -F can_approve_pull_request_reviews=true
+  ```
+
+- The release pull request starts no checks (GitHub shows failed runs with no
+  job): re-run them, or merge with a bypass of the required checks.
+- The tag starts no CI: run `deploy` by hand after each release.
+
+A bot token avoids all three: the pull request and the tag start the CI as
+usual. GitLab needs the token: until it is set, the first pipeline on the
+default branch fails (`API authentication failed: Token not provided`); once it
+is, retry the failed `release` job ("Run pipeline" only deploys). A project
+token, created and stored without being printed:
+
+```sh
+glab token create releasaurus --access-level maintainer --scope api \
+  --scope write_repository --duration 365d --output text \
+  | glab variable set RELEASAURUS_GITLAB_TOKEN --masked
+```
+
+Merge pull requests with squash, the title being the commit: GitLab's default
+merge commit can leave a branch's older commits out of the next release.
 
 | CI | Secret or CI/CD variable (bot token) | Scopes |
 |---|---|---|
@@ -303,7 +331,17 @@ to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:
 - **GitHub**: the site is pushed to the `gh-pages` branch. In Settings → Pages,
   choose "Deploy from a branch" and `gh-pages`.
 - **GitLab**: the job publishes the `pages_dir` folder with `pages.publish`
-  (GitLab 17.10 or later).
+  (GitLab 17.10 or later). The site is private by default, even in a public
+  project: in Settings → General → Visibility, set Pages to "Everyone"
+  (`glab api -X PUT projects/:id -f pages_access_level=enabled`).
+
+The site's base path depends on the forge: GitHub serves
+`https://<owner>.github.io/<repo>/`; GitLab serves it at the root of a unique
+domain, `https://<project>-<hash>.gitlab.io/` (on by default; without it,
+`https://<namespace>.gitlab.io/<project>/`, whose certificate fails when the
+namespace has a dot). Set it in your build: Vite's `base`, Angular's
+`baseHref`, zensical's `site_url`. Your end-to-end tests serve the build under
+the same base, so they pass either way: check the deployed site once.
 
 Add `site/` and `.cache/` to your `.gitignore`.
 
