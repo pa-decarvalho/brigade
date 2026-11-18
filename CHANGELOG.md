@@ -1,3 +1,11 @@
+# [0.27.1](https://github.com/pa-decarvalho/brigade/compare/0.27.0...0.27.1) - 2026-11-18
+
+### 🐛 Bug Fixes
+
+- release on the repository's default branch on GitHub and Gitea (#270) [_(5361050e)_](https://github.com/pa-decarvalho/brigade/commit/5361050e63e8f6fdf8f9d529ad34e59b439c14c9)
+
+- _(deps)_ update template (#264) [_(db417b7c)_](https://github.com/pa-decarvalho/brigade/commit/db417b7c490773721ba381881d28f0c4ae7c02ca)
+
 # [0.27.0](https://github.com/pa-decarvalho/brigade/compare/0.26.0...0.27.0) - 2026-11-17
 
 ### 🚀 Features
