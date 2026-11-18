@@ -22,6 +22,17 @@ releasaurus_release_type:
     {% if releasaurus_release_type not in ['', 'none', 'node', 'python', 'rust',
     'go', 'java', 'php', 'ruby', 'helm'] %}unknown release type{% endif %}
 
+releasaurus_workflow:
+  type: str
+  help: >-
+    Release workflow of releasaurus: a release PR to merge (pr), or a release on
+    each releasable push (direct)
+  choices:
+    - pr
+    - direct
+  default: pr
+  when: "{{ customize_tools and 'releasaurus' in tools }}"
+
 releasaurus_release_command:
   type: str
   help: Command of releasaurus:release (empty for brigade's)
