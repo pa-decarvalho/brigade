@@ -62,7 +62,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `editorconfig-checker` | `editorconfig-checker:lint` | `editorconfig-checker`, without `.mise/` (mise's lock sidecars) (needs your `.editorconfig`; [config](#tool-configs)) |
 | `taplo` | `taplo:lint` | `taplo fmt --check` on `.brigade/*.toml`, `.brigade/*/*.toml` and `.miserc.toml` ([config](#tool-configs)) |
 | `renovate` | `renovate:lint` | `check-jsonschema --builtin-schema vendor.renovate` on your Renovate config, wherever Renovate reads it (`renovate.json`, `.github/renovate.json5`, `.renovaterc`...); none: passes |
-| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)); also opens a PR updating brigade on each release |
+| | `renovate:operate` | `renovate` (needs `RENOVATE_TOKEN` and `RENOVATE_REPOSITORIES`: see [operate](#operate)): a PR updating brigade on each release, and what `renovate_updates` adds ([config](#tool-configs)) |
 | `ruff` | `ruff:lint` | `ruff check && ruff format --check` ([config](#tool-configs)) |
 | `ty` | `ty:lint` | `ty check` ([config](#tool-configs)). It reads the project's `.venv` for its dependencies: CI has none, so a project with dependencies creates it first (`ty_lint_command: "uv sync && ty check --config-file .brigade/configs/ty.toml"`), else their imports fail (`import-not-found`) |
 | `shellcheck` | `shellcheck:lint` | `shellcheck` on every `*.sh` and `*.bash` (outside hidden folders); none: nothing to check |
@@ -168,6 +168,7 @@ relative to the project root.
 | `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | yours | `.ls-lint.yml`: not read |
 | `releasaurus` | `.brigade/configs/releasaurus.toml` | brigade's (`releasaurus_config`) | `releasaurus.toml`: not read |
+| `renovate` | `.brigade/configs/renovate.json` | brigade's (`renovate_config`) | `renovate.json`, `.github/renovate.json5`...: still read, yours wins |
 
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
 `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`,
@@ -430,10 +431,22 @@ with `mise run operate`, or in CI:
 - **GitLab**: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now),
   since "Run pipeline" deploys.
 
-On its first run on a repository, Renovate opens an onboarding PR, "Configure
-Renovate", which adds `renovate.json` (`config:recommended`) and previews the
-updates to come: review it, adjust the config if needed, and merge it; the next
-runs update your dependencies.
+Renovate reads brigade's config, `.brigade/configs/renovate.json`
+(`RENOVATE_CONFIG_FILE`): no `renovate.json` is needed, so there is no
+onboarding PR. What it updates is the `renovate_updates` answer, a list:
+
+- `brigade` (the default): brigade's updates, see
+  [brigade updates](#brigade-updates);
+- `dependencies`: your project's own (`package.json`, `pyproject.toml`, your
+  workflows...), with Renovate's `config:recommended`;
+- `template`: the pins of a Copier template's `template/` folder made like
+  brigade's (brigade's own repository), in one `fix:` PR.
+
+Your own Renovate config (`renovate.json`, `.github/renovate.json5`...) adds to
+it and wins, e.g. `"automerge": true`; without `dependencies`,
+`"enabledManagers": []` there also updates your dependencies. To replace it
+all, point `renovate_config` to your own file (keep brigade's
+`customManagers` and `packageRules` entries for brigade's updates).
 
 For Renovate, CI sets the platform, the endpoint and the repository; add a
 `RENOVATE_TOKEN` secret (CI/CD variable on GitLab). On GitHub, the job commits
@@ -452,9 +465,9 @@ needs the Workflows permission, since updates change workflow files.
 The pins in brigade's own files (`.miserc.toml`, `.brigade/`, its workflows,
 `.gitlab-ci.yml`) come with these updates: Renovate leaves them alone, since a
 change there would fail `brigade:lint`. Your own files (`package.json`,
-`mise.toml`, your workflows...) are updated as usual.
+`mise.toml`, your workflows...) are updated with `dependencies`.
 
-Renovate reads this from its global config (`RENOVATE_CONFIG`, set by the task):
+Renovate reads this from brigade's config (`.brigade/configs/renovate.json`):
 your Renovate config can still change the PR, for example its commit type with a
 `packageRules` entry on `matchDepNames: ["brigade"]`. If it sets `includePaths`,
 add `.brigade/copier/answers.yml`. Keep `brigade` out of groups (such as

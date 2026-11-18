@@ -21,6 +21,7 @@ mise fragment with all its tasks, and stages follow from the tools.
   config path (`-c`...) and brigade passes it settings
   (`template/.brigade/configs/{% if '<tool>' in tools %}<file>{% endif %}`, no
   Jinja inside unless a setting depends on the answers, then a `.jinja` file:
+  `renovate.json`'s parts, from `renovate_updates`;
   `releasaurus.toml`'s `release_type`, from `releasaurus_release_type` or the
   ecosystem tool; paths relative to the project root): brigade-owned, the
   task's path being
@@ -134,8 +135,12 @@ mise fragment with all its tasks, and stages follow from the tools.
   (`HEAD` for a local `_src_path`) with the answers and fails when a
   brigade-owned file differs (`.brigade/scripts/brigade_lint.py`); it also
   prints a notice, never a failure, when `copier check-update` finds a newer
-  release. `renovate:operate` sets `RENOVATE_CONFIG` (global config, escaped for
-  Copier then for mise's Tera): a regex manager on `.brigade/copier/answers.yml`
+  release. `renovate:operate` sets `RENOVATE_CONFIG_FILE` to
+  `.brigade/configs/renovate.json` (global config, Jinja: what it updates is the
+  `renovate_updates` answer, `brigade` by default, also `dependencies` (the
+  project's, `config:recommended`) and `template` (brigade's `template/`);
+  `onboarding: false`, so no `renovate.json` is needed): a regex manager on
+  `.brigade/copier/answers.yml`
   (`_commit`, `_src_path`, `git-tags`) whose `postUpgradeTasks` undo Renovate's
   `_commit` change and run
   `mise run brigade:update -- --defaults --vcs-ref <version>`, so each release

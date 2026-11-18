@@ -16,8 +16,8 @@ _post_tasks = [
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
-    # The project's files: a test, the docs source, an .editorconfig (editorconfig-checker), renovate.json.
-    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_hello():\\n    assert demo.hello()\\n'); pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \\\"demo\\\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n'); pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n'); pathlib.Path('renovate.json').write_text('{}\\n'); pathlib.Path('README.md').write_text('# Demo\\n\\nA demo package.\\n')"],
+    # The project's files: a test, the docs source, an .editorconfig (editorconfig-checker); no renovate.json: brigade's config is enough.
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; p = pathlib.Path('tests'); p.mkdir(); (p / 'test_smoke.py').write_text('import demo\\n\\n\\ndef test_hello():\\n    assert demo.hello()\\n'); pathlib.Path('docs').mkdir(); pathlib.Path('docs/index.md').write_text('# Demo\\n'); pathlib.Path('zensical.toml').write_text('[project]\\nsite_name = \\\"demo\\\"\\n'); open('.gitignore', 'a').write('\\nsite/\\n.cache/\\n'); pathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n'); pathlib.Path('README.md').write_text('# Demo\\n\\nA demo package.\\n')"],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "lint"],
@@ -127,6 +127,8 @@ tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zi
 ci = "github"
 # node:deploy publishes the package on each release.
 npm_publish = true
+# Renovate also updates the project's dependencies (package.json).
+renovate_updates = ["brigade", "dependencies"]
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.

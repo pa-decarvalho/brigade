@@ -370,6 +370,7 @@ python = "3.14"
 version = "0.1.2"
 backend = "pipx:zensical"
 specifiers = ["0.1.2"]
+uv = { path = ".mise/locks/pipx-zensical/0.1.2~913ef963", digest = "sha256:b73f27aab01eb86942959e95f91bb11f6b092ffc52af1821813339effbb13e33" }
 
 [tools."pipx:zensical".options]
 python = "3.14"
