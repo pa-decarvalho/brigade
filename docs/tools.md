@@ -457,7 +457,8 @@ elsewhere, set `gitAuthor` in your Renovate config if needed. See
 ### brigade updates
 
 `renovate:operate` also follows brigade: on a new release, it opens a PR that
-runs `mise run brigade:update` to that version, on every CI platform. Copier
+runs `mise run brigade:update` to that version, on every CI platform, as a
+`ci(deps):` commit (no release). Copier
 shows conflicts with your edits as inline markers in the PR: fix them there
 before merging (`brigade:lint` fails until then). On GitHub, the token also
 needs the Workflows permission, since updates change workflow files.
@@ -474,8 +475,8 @@ add `.brigade/copier/answers.yml`. Keep `brigade` out of groups (such as
 `group:all`): Copier needs a clean tree, so the update must be its own PR.
 
 To update every day and merge automatically once the checks pass, answer
-`operate_schedule: "0 5 * * *"`, add `automerge: true` to your Renovate config
-and make your checks required (GitHub: a branch ruleset, and "Allow auto-merge"
+`operate_schedule: "0 5 * * *"` and `renovate_automerge: true`, and make your
+checks required (GitHub: a branch ruleset, and "Allow auto-merge"
 in Settings). A failing check, or Copier's conflict markers in a brigade update,
 keep the PR open.
 

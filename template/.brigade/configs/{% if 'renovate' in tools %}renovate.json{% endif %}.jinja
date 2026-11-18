@@ -8,6 +8,12 @@
     "requireConfig": "optional",
     "dependencyDashboard": {"enabled": false},
     "semanticCommits": "enabled",
+{%- if renovate_automerge %}
+    // Merged once the checks pass (on GitHub, by the next run unless they are required and
+    // auto-merge is allowed); a failing check, or Copier's conflict markers in a brigade update,
+    // keep the PR open.
+    "automerge": true,
+{%- endif %}
 {%- if dependencies %}
     // Your project's dependencies.
     "extends": ["config:recommended"],
@@ -103,6 +109,8 @@
             "matchDepNames": ["brigade"],
             "groupName": null,
             "commitMessageTopic": "brigade",
+            // CI tooling: no release.
+            "semanticCommitType": "ci",
             "postUpgradeTasks": {
                 "commands": [
                     "git checkout -- .brigade/copier/answers.yml",
