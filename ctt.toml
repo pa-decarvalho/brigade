@@ -142,6 +142,12 @@ _post_tasks = [
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
+    # releasaurus:release's config: after 0.1.0, a feat commit makes a release PR that bumps package.json (release_type from node).
+    ["git", "tag", "0.1.0"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('src/feature.ts').write_text('export const feature = true;\\n')"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "feat: a feature"],
+    ["mise", "exec", "--", "uv", "run", "--no-project", "python", "-c", "import subprocess; r = subprocess.run(['releasaurus', 'release-pr', '--forge', 'local', '--repo', '.', '--config', '.brigade/configs/releasaurus.toml', '--dry-run'], capture_output=True, text=True); out = r.stdout + r.stderr; assert r.returncode == 0 and 'package.json (Update' in out, out[-3000:]"],
     # node:deploy to a local npm registry (Verdaccio in Docker, on 127.0.0.1 only, npm's packages proxied).
     ["docker", "rm", "-f", "brigade-ctt-npm"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib, subprocess\nconf = pathlib.Path('.git/verdaccio.yaml').resolve()\nconf.write_text('storage: /verdaccio/storage/data\\nuplinks:\\n  npmjs:\\n    url: https://registry.npmjs.org/\\npackages:\\n  \"@brigade-ctt/*\":\\n    access: $all\\n    publish: $all\\n  \"**\":\\n    access: $all\\n    proxy: npmjs\\nlog: {type: stdout, format: pretty, level: warn}\\n')\nsubprocess.run(['docker', 'run', '-d', '--name', 'brigade-ctt-npm', '-p', '127.0.0.1:4873:4873', '-v', f'{conf}:/verdaccio/conf/config.yaml', 'verdaccio/verdaccio:6.1.6'], check=True)"],

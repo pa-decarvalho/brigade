@@ -20,10 +20,13 @@ mise fragment with all its tasks, and stages follow from the tools.
 - Tool config goes in `.brigade/configs/<tool>.<ext>` when the tool takes a
   config path (`-c`...) and brigade passes it settings
   (`template/.brigade/configs/{% if '<tool>' in tools %}<file>{% endif %}`, no
-  Jinja inside, paths relative to the project root): brigade-owned, the task's
-  path being `{%- set config = <tool>_config or '.brigade/configs/<file>' -%}`
-  (a `<tool>_config` answer points to the project's own file); except configs
-  that hold the project's content (`goreleaser`, `container-structure-test`,
+  Jinja inside unless a setting depends on the answers, then a `.jinja` file:
+  `releasaurus.toml`'s `release_type`, from `releasaurus_release_type` or the
+  ecosystem tool; paths relative to the project root): brigade-owned, the
+  task's path being
+  `{%- set config = <tool>_config or '.brigade/configs/<file>' -%}` (a
+  `<tool>_config` answer points to the project's own file); except configs that
+  hold the project's content (`goreleaser`, `container-structure-test`,
   `ls-lint`, `sqlfluff`, `prek`): created once, then the project's
   (`_skip_if_exists` in `.copier/settings.yml`, `PROJECT_CONFIGS` skipped by
   `brigade:lint`). A setting brigade needs goes in the brigade-owned config, or

@@ -52,6 +52,20 @@ own workflows or `.gitlab/ci/*.yml` files.
 See [CI platforms](ci.md). For your own tasks, see
 [Custom tasks](custom-tasks.md).
 
+## From brigade 0.27 and earlier
+
+Since 0.28, `releasaurus` reads `.brigade/configs/releasaurus.toml` (see
+[release](tools.md#release)):
+
+- A `releasaurus.toml` at the root is no longer read: move it (e.g. to
+  `.github/releasaurus.toml`), add `tag_prefix = ""` to a `[[package]]` with
+  `path = "."`, and set `releasaurus_config` to it in
+  `.brigade/copier/data.yml`.
+- Only `feat`, `fix`, `perf`, `revert` and breaking changes make a release.
+- The release pull request also updates your manifests (`package.json`,
+  `pyproject.toml`, `Cargo.toml`...): a version left at `0.0.0` jumps to the
+  next release's.
+
 ## From brigade 0.25 and earlier
 
 Since 0.26, git hooks come from the `prek` tool: `brigade:hooks` and
