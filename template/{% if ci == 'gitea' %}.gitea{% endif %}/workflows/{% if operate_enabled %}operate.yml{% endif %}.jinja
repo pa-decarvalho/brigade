@@ -26,6 +26,7 @@ jobs:
 {% endraw %}{% raw %}        with:
 {% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
 {% endraw %}{% endif %}{% raw %}          renovate-token: ${{ secrets.RENOVATE_TOKEN }}
+          renovate-github-com-token: ${{ secrets.RENOVATE_GITHUB_COM_TOKEN }}
           ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 {% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

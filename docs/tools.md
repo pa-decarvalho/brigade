@@ -454,6 +454,14 @@ as the token's owner, with their noreply address (`RENOVATE_GIT_AUTHOR`);
 elsewhere, set `gitAuthor` in your Renovate config if needed. See
 [Renovate's token permissions](https://docs.renovatebot.com/modules/platform/).
 
+Off GitHub, also add a `RENOVATE_GITHUB_COM_TOKEN` secret (CI/CD variable on
+GitLab): many dependencies live on github.com (mise's `github:` and `aqua:`
+tools, `github-releases`, npm packages' repositories), whose API without a
+token soon hits its rate limit, so Renovate skips some lookups and opens PRs
+without release notes. Any github.com token works, with no permissions: a
+fine-grained token with "Public repositories" access. See
+[Renovate's github.com token](https://docs.renovatebot.com/getting-started/running/#githubcom-token-for-changelogs-and-tools).
+
 ### brigade updates
 
 `renovate:operate` also follows brigade: on a new release, it opens a PR that
