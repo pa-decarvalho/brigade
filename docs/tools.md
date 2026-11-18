@@ -167,6 +167,7 @@ relative to the project root.
 | `container-structure-test` | `.brigade/configs/container-structure-test.yaml` | yours | none: your image's tests |
 | `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | yours | `.ls-lint.yml`: not read |
+| `releasaurus` | `.brigade/configs/releasaurus.toml` | brigade's (`releasaurus_config`) | `releasaurus.toml`: not read |
 
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
 `stylua.toml`, `lychee.toml`, `.markdownlint-cli2.yaml`, `.prettierrc`,
@@ -262,22 +263,25 @@ request, with the next version and a `CHANGELOG.md`. Once you merge it, the next
 run tags `X.Y.Z` (no `v`) and publishes the release on your forge. It works on
 GitHub, GitLab, Gitea and Forgejo.
 
-By default, every Conventional Commit (`ci:`, `docs:`, `chore:`...) makes a
-release. To release on `feat` and `fix` only, add a `releasaurus.toml` that
-skips the other groups, which also leaves them out of `CHANGELOG.md`:
+Its config, `.brigade/configs/releasaurus.toml` (brigade's, read from the
+default branch through the forge's API, so commit it):
 
-```toml
-[defaults.versioning.named_parsers]
-refactor.skip = true
-documentation.skip = true
-style.skip = true
-test.skip = true
-chore.skip = true
-ci.skip = true
-miscellaneous.skip = true
-```
+- Releases on `feat`, `fix`, `perf`, `revert` and breaking changes only: other
+  commits (`ci:`, `docs:`, `chore:`...) are left out of the version and
+  `CHANGELOG.md`.
+- Tags `X.Y.Z`, with no `v`.
+- Updates your manifests to the new version in the release pull request
+  (`release_type`), from your tools: `uv` → `pyproject.toml`, `node` →
+  `package.json` and `package-lock.json`, `rust` → `Cargo.toml` and
+  `Cargo.lock`, `go` → `version.go`. With none or several of them, none.
+  `releasaurus_release_type` picks another (`java`, `php`, `ruby`, `helm`...) or
+  `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
+  updated: `uv` rewrites it on the next `uv lock` or `uv run`.
 
-See [Releasaurus commit groups](https://releasaurus.rgon.io/changelog.html).
+For your own settings (prereleases, a monorepo, changelog options), set
+`releasaurus_config` to your file, with `tag_prefix = ""` in its `[[package]]`
+to keep the tags brigade's CI deploys. See
+[Releasaurus configuration](https://releasaurus.rgon.io/configuration.html).
 
 On GitHub and Gitea, it works with the CI's own token, with three manual
 steps:

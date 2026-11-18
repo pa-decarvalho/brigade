@@ -5,6 +5,23 @@ releasaurus_version:
   default: ""
   when: "{{ customize_tools and 'releasaurus' in tools }}"
 
+releasaurus_config:
+  type: str
+  help: Config file of releasaurus, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'releasaurus' in tools }}"
+
+releasaurus_release_type:
+  type: str
+  help: >-
+    Manifests releasaurus updates (node, python, rust, go, java, php, ruby,
+    helm; none; empty: from your tools)
+  default: ""
+  when: "{{ customize_tools and 'releasaurus' in tools }}"
+  validator: >-
+    {% if releasaurus_release_type not in ['', 'none', 'node', 'python', 'rust',
+    'go', 'java', 'php', 'ruby', 'helm'] %}unknown release type{% endif %}
+
 releasaurus_release_command:
   type: str
   help: Command of releasaurus:release (empty for brigade's)
