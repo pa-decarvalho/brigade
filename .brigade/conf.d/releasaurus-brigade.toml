@@ -2,10 +2,14 @@
 # renovate: datasource=github-releases depName=robgonnella/releasaurus
 "aqua:robgonnella/releasaurus" = "1.4.0"
 
-# Tags and publishes a merged release PR, then opens or updates the next one (tags X.Y.Z, no "v").
-# This order is required: release-pr fails while a merged release PR is not tagged.
+# releasaurus_workflow "pr" (default): tags and publishes a merged release PR, then opens or
+# updates the next one (this order is required: release-pr fails while a merged release PR is
+# not tagged). "direct": commits the version and changelog to the branch, tags and publishes,
+# with no PR. A run with nothing to release does nothing.
 # Needs RELEASAURUS_REPO, RELEASAURUS_FORGE and a token (RELEASAURUS_<FORGE>_TOKEN): CI sets them.
 [tasks."releasaurus:release"]
-description = "Tag and publish a merged release PR, then open or update the next one"
+description = "Release with Releasaurus: a release PR, or a direct release (releasaurus_workflow)"
 dir = "{{config_root}}/../.."
-run = '''releasaurus release && releasaurus release-pr --tag-prefix '''''
+# Config: .brigade/configs/releasaurus.toml (brigade's; releasaurus_config for your own), read
+# from the default branch through the forge's API.
+run = '''releasaurus release --config .brigade/configs/releasaurus.toml && releasaurus release-pr --config .brigade/configs/releasaurus.toml'''
