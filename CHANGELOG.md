@@ -1,3 +1,11 @@
+# [0.28.0](https://github.com/pa-decarvalho/brigade/compare/0.27.1...0.28.0) - 2026-11-18
+
+### 🚀 Features
+
+- a direct release workflow for releasaurus (#274) [_(3bbe671c)_](https://github.com/pa-decarvalho/brigade/commit/3bbe671c675ed3c19c32e6519bfe3044aad155dd)
+
+- Releasaurus config in .brigade/configs, with release_type from the tools (#272) [_(0a9b4cce)_](https://github.com/pa-decarvalho/brigade/commit/0a9b4cce3be6dfd78cd4ed560e5163983983a2d4)
+
 # [0.27.1](https://github.com/pa-decarvalho/brigade/compare/0.27.0...0.27.1) - 2026-11-18
 
 ### 🐛 Bug Fixes
