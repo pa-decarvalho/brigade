@@ -1,3 +1,13 @@
+# [0.31.0](https://github.com/pa-decarvalho/brigade/compare/0.30.0...0.31.0) - 2026-11-18
+
+### 🚀 Features
+
+- forge CLIs (gh, glab, tea) with a check of the repository's settings (#292) [_(15e2f9ab)_](https://github.com/pa-decarvalho/brigade/commit/15e2f9aba3df8b8bd94dda2e515ee7ad5d4f051b)
+
+### 🐛 Bug Fixes
+
+- github.com token for Renovate off GitHub (RENOVATE_GITHUB_COM_TOKEN) (#289) [_(54eda9b3)_](https://github.com/pa-decarvalho/brigade/commit/54eda9b38f55de728daaa76ebc74caaaec0fcc2c)
+
 # [0.30.0](https://github.com/pa-decarvalho/brigade/compare/0.29.0...0.30.0) - 2026-11-18
 
 ### 🚀 Features
