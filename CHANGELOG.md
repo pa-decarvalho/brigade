@@ -1,3 +1,9 @@
+# [0.29.0](https://github.com/pa-decarvalho/brigade/compare/0.28.2...0.29.0) - 2026-11-18
+
+### 🚀 Features
+
+- Renovate config in .brigade/configs, with a renovate_updates question (#284) [_(9e6c2732)_](https://github.com/pa-decarvalho/brigade/commit/9e6c27322592e05bcf501d0efbdaadf863c485f7)
+
 # [0.28.2](https://github.com/pa-decarvalho/brigade/compare/0.28.1...0.28.2) - 2026-11-18
 
 ### 🐛 Bug Fixes
