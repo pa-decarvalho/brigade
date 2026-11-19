@@ -10,3 +10,9 @@ glab_check_command:
   help: Command of glab:check (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'glab' in tools }}"
+
+glab_setup_command:
+  type: str
+  help: Command of glab:setup (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'glab' in tools }}"

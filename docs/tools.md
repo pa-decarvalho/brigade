@@ -122,9 +122,9 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
 | `prek` | `prek:install` | `prek install --force`: the git hooks of `.brigade/configs/prek.yaml`, in place of any hook already there (local use, not a stage): see [prek](#prek) |
 | | `prek:run` | `prek run --all-files`: the hooks on every file |
-| `gh` | `gh:check` | GitHub: checks the repository's settings for the selected tools, changing nothing (local use, not a stage): see [Repository settings](#repository-settings) |
-| `glab` | `glab:check` | GitLab: the same for the project |
-| `tea` | `tea:check` | Gitea, Forgejo: the same for the repository |
+| `gh` | `gh:check`, `gh:setup` | GitHub: checks the repository's settings for the selected tools, or changes them (local use, not a stage): see [Repository settings](#repository-settings) |
+| `glab` | `glab:check`, `glab:setup` | GitLab: the same for the project |
+| `tea` | `tea:check`, `tea:setup` | Gitea, Forgejo: the same for the repository |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
@@ -239,6 +239,15 @@ fails when a required one is missing, with where to change it:
 Secrets and CI/CD variables are looked up in the repository and its
 organization or group. Only admins (maintainers on GitLab) can list them: for
 others, they show as `unknown`.
+
+`gh:setup`, `glab:setup` and `tea:setup` change the missing settings that need
+no secret value (merge method, auto-merge, Actions allowed to create pull
+requests, Pages once the first deploy has pushed `gh-pages`), then report the
+others as the check does: set the secrets yourself, as printed.
+Run it once on a new repository, as an admin.
+
+`mise run brigade:update` runs the check at the end, outside CI, as a notice
+that never fails the update: a new tool may need a new setting.
 
 ## Platforms
 

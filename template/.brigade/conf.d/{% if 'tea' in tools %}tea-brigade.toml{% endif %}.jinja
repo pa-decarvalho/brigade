@@ -10,3 +10,9 @@
 description = "Check the Gitea repository's settings for the selected tools"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 run = '''{{ tea_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py tea ' ~ checks | join(' ')) | trim, true) }}'''
+
+# Changes the missing settings that need no secret value, and reports the others.
+[tasks."tea:setup"]
+description = "Change the Gitea repository's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ tea_setup_command | default(('uv run --no-project python .brigade/scripts/repo_check.py --apply tea ' ~ checks | join(' ')) | trim, true) }}'''
