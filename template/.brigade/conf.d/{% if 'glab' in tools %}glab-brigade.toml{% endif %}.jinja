@@ -9,3 +9,9 @@ glab = "{{ glab_version | default('1.131.0', true) }}"
 description = "Check the GitLab project's settings for the selected tools"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 run = '''{{ glab_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py glab ' ~ checks | join(' ')) | trim, true) }}'''
+
+# Changes the missing settings that need no secret value, and reports the others.
+[tasks."glab:setup"]
+description = "Change the GitLab project's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ glab_setup_command | default(('uv run --no-project python .brigade/scripts/repo_check.py --apply glab ' ~ checks | join(' ')) | trim, true) }}'''

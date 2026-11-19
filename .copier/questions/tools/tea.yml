@@ -10,3 +10,9 @@ tea_check_command:
   help: Command of tea:check (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'tea' in tools }}"
+
+tea_setup_command:
+  type: str
+  help: Command of tea:setup (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'tea' in tools }}"

@@ -11,3 +11,9 @@ gh = "{{ gh_version | default('2.105.0', true) }}"
 description = "Check the GitHub repository's settings for the selected tools"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 run = '''{{ gh_check_command | default(('uv run --no-project python .brigade/scripts/repo_check.py gh ' ~ checks | join(' ')) | trim, true) }}'''
+
+# Changes the missing settings that need no secret value, and reports the others.
+[tasks."gh:setup"]
+description = "Change the GitHub repository's settings for the selected tools"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ gh_setup_command | default(('uv run --no-project python .brigade/scripts/repo_check.py --apply gh ' ~ checks | join(' ')) | trim, true) }}'''
