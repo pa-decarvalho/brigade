@@ -1,0 +1,28 @@
+---
+# What every forge shares, included by <forge>/compose.yml: the network and the
+# registries deploys publish to (no auth). Jobs reach them by service name on
+# the brigade-forges network. Throwaway setup, for local tests only.
+networks:
+  default:
+    name: brigade-forges
+
+services:
+  # Python packages (uv:deploy).
+  pypi:
+    image: pypiserver/pypiserver:v2.4.3
+    command: [run, -a, ., -P, ., /data/packages]
+    ports: ["127.0.0.1:8099:8080"]
+
+  # npm packages (node:deploy): @brigade-forges/* published here, the rest
+  # proxied from npmjs.
+  verdaccio:
+    image: verdaccio/verdaccio:6.1.6
+    volumes: [./verdaccio.yaml:/verdaccio/conf/config.yaml:ro]
+    ports: ["127.0.0.1:4873:4873"]
+
+  # Images (docker:deploy). Jobs build and push with the host's Docker daemon
+  # (the runners mount its socket), which reaches this registry as
+  # localhost:5099 only (plain HTTP is allowed on localhost).
+  registry:
+    image: registry:3.0.0
+    ports: ["127.0.0.1:5099:5000"]

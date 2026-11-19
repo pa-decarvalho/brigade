@@ -55,7 +55,7 @@ first, the Renovate config path), and the lint settings skipping `template/` and
 `.ctt/` in `.brigade/configs/`. `mise run brigade:update` updates them after a
 release. brigade's own settings (the `.ctt/` env, the `forges:*` tasks) live in
 `mise.toml`: brigade is tested with the tools it ships, except the end-to-end
-tests on local forges (`tests/forges/`, see below).
+tests on local forges (`tests/e2e/`, see below).
 
 ### Lint
 
@@ -79,33 +79,31 @@ brigade's CI runs these tests on Linux only.
 
 ### Local forges
 
-`mise run forges:test -- <forge>` runs brigade end to end on a local forge
-(`tests/forges/`, Docker Compose, local only): `gitea`, `forgejo`, `gitlab`,
-`github` (a `ci: github` project on Gitea, whose runner runs GitHub Actions
-workflows: its pull request only, since the rest calls GitHub's API), or `all`,
-one after the other. Each forge starts alone with its runner (GitLab needs about
-4 GB of RAM and a few minutes, behind a TLS proxy with a local CA, since
-Releasaurus only calls GitLab over HTTPS), then pytest runs the steps in a
-workstation container on the same Docker network:
+`mise run forges:test -- --forge <forge>` runs brigade end to end on a local
+forge with its runner (Docker Compose, local only): `gitea`, `forgejo`,
+`gitlab`, or `github` (a `ci: github` project on Gitea, whose runner runs GitHub
+Actions workflows). pytest runs on this machine, one test per project type of
+`tests/e2e/projects.py` (`python`, `node`, `docker`; `-k <type>` for one), each
+in a temporary folder:
 
-1. brigade's checkout (`HEAD`, committed changes only) pushed to the forge, with
-   a test tag, the next patch version;
-2. a new Python project with brigade's latest release;
-3. its secrets, `<cli>:setup` and `<cli>:check`, then the push;
-4. a pull request: lint, build, test;
-5. its merge: the release PR, then the `X.Y.Z` tag;
-6. its deploy, to a local package index (pypiserver, the same for every forge);
-7. Renovate: the update PR to the test tag;
-8. its merge, with green CI.
+1. the project, created with its ecosystem's tool, brigade applied from this
+   checkout at its latest tag;
+2. its settings (secrets, `<cli>:setup` and `<cli>:check`), then the push;
+3. a pull request: lint, build, test;
+4. its merge: the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's
+   API);
+5. the deploy, to a local registry (`tests/fixtures/compose.yml`);
+6. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
+   passes.
 
-A failed step skips the next ones, except the deploy, which none depends on.
-Each run writes a note in `.forges/`: every step's result and time, the failed
-jobs' log lines before the failure, what was done by hand, and a "To improve"
-section to fill and turn into issues. The forge stays up to
-look around: Gitea on `127.0.0.1:3001`, Forgejo on
-`127.0.0.1:3002`, GitLab on `127.0.0.1:8929` (user `brigade`,
-`root` on GitLab, credentials in `tests/forges/`). `mise run forges:down` stops
-them and deletes their data.
+The checkout is the projects' `_src_path`, mounted at the same path in the
+jobs, uncommitted changes included. The forge starts on first use
+(`tests/e2e/up.py`; GitLab needs about 4 GB of RAM, a few minutes, and a TLS
+proxy since Releasaurus only calls GitLab over HTTPS, #301) and stays up for
+the next runs: `mise run forges:up -- <forge>` prints its URL and login, `mise
+run forges:down` stops them all and deletes their data. Each test writes a
+note in `.forges/`: every step's result and time, the failed jobs' last log
+lines, and a "To improve" section to turn into issues.
 
 `mise run build` builds this site in strict mode, which fails on broken links.
 CI deploys it (`pages:deploy`, to the `gh-pages` branch) on each release tag and

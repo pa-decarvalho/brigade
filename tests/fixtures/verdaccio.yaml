@@ -1,0 +1,14 @@
+---
+# The local npm registry (compose.yml): publish needs no account.
+storage: /verdaccio/storage/data
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  "@brigade-forges/*":
+    access: $all
+    publish: $all
+  "**":
+    access: $all
+    proxy: npmjs
+log: {type: stdout, format: pretty, level: warn}

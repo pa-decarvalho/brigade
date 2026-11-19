@@ -6,12 +6,16 @@
 MISE_TRUSTED_CONFIG_PATHS = "{{ config_root }}/.ctt"
 MISE_CEILING_PATHS = "{{ config_root }}/.ctt"
 
-# End-to-end tests on local forges (tests/forges/, Docker): see docs/contributing.md.
+# End-to-end tests on local forges (tests/e2e/, tests/fixtures/, Docker): see docs/contributing.md.
 [tasks."forges:test"]
-description = "Run brigade end to end on local forges (gitea, github, forgejo, gitlab, all)"
-run = "uv run --no-project python tests/forges/run.py"
+description = "Run brigade end to end on a local forge (-- --forge <forge> [-k <project>])"
+env = { PYTHONDONTWRITEBYTECODE = "1" }
+run = "uv run --no-project --python 3.14 --with pytest==9.2.0 pytest tests/e2e -p no:cacheprovider -v"
+
+[tasks."forges:up"]
+description = "Start a local forge with its runner, to open its UI (-- <gitea|forgejo|gitlab>)"
+run = "uv run --no-project python tests/e2e/up.py"
 
 [tasks."forges:down"]
 description = "Stop the local forges and delete their data"
-dir = "{{ config_root }}/tests/forges"
-run = "docker compose --profile gitea --profile forgejo --profile gitlab down --volumes"
+run = "uv run --no-project python tests/e2e/up.py down"
