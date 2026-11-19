@@ -1,3 +1,9 @@
+# [0.32.1](https://github.com/pa-decarvalho/brigade/compare/0.32.0...0.32.1) - 2026-11-19
+
+### 🐛 Bug Fixes
+
+- uv:deploy drops empty UV_PUBLISH_* variables (#304) [_(c9c442da)_](https://github.com/pa-decarvalho/brigade/commit/c9c442da9a07e3b060f474ea59b857c500f70411)
+
 # [0.32.0](https://github.com/pa-decarvalho/brigade/compare/0.31.0...0.32.0) - 2026-11-19
 
 ### 🚀 Features
