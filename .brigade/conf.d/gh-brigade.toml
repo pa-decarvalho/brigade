@@ -7,3 +7,9 @@ gh = "2.105.0"
 description = "Check the GitHub repository's settings for the selected tools"
 dir = "{{config_root}}/../.."
 run = '''uv run --no-project python .brigade/scripts/repo_check.py gh releasaurus renovate automerge pages'''
+
+# Changes the missing settings that need no secret value, and reports the others.
+[tasks."gh:setup"]
+description = "Change the GitHub repository's settings for the selected tools"
+dir = "{{config_root}}/../.."
+run = '''uv run --no-project python .brigade/scripts/repo_check.py --apply gh releasaurus renovate automerge pages'''
