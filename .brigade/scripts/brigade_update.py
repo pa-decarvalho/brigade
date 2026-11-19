@@ -6,11 +6,13 @@ Copier), then the task's extra arguments. Copier refuses a dirty tree: when data
 is the only change, its edits are set aside in .git/brigade-data.yml, data.yml is
 restored, and Copier reads the edits from there. Then brigade_data.py writes all the
 answers back to data.yml, so the edits and the update end up in one diff, and mise
--C .brigade lock writes the tools' pins and checksums to .brigade/mise.lock. On
+-C .brigade lock writes the tools' pins and checksums to .brigade/mise.lock, and,
+outside CI, the forge CLI's check (gh, glab or tea) lists missing settings. On
 failure or Ctrl+C, the edits are put back; after a killed run, the next run puts
 them back first.
 """
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -79,7 +81,21 @@ def update(command: list[str], data: str) -> int:
             "brigade:update: mise -C .brigade lock failed, run it again",
             file=sys.stderr,
         )
+    check()
     return 0
+
+
+def check() -> None:
+    """Run the forge CLI's check, as a notice: an update can add a tool that needs
+    a repository setting. Locally only (CI's token cannot read them all)."""
+    if os.environ.get("CI"):
+        return
+    for cli in ("gh", "glab", "tea"):
+        if pathlib.Path(f".brigade/conf.d/{cli}-brigade.toml").exists():
+            print(
+                f"brigade:update: the repository's settings ({cli}:check):", flush=True
+            )
+            subprocess.call(["mise", "run", "--quiet", f"{cli}:check"])
 
 
 if __name__ == "__main__":
