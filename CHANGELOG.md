@@ -1,3 +1,9 @@
+# [0.32.2](https://github.com/pa-decarvalho/brigade/compare/0.32.1...0.32.2) - 2026-11-19
+
+### 🐛 Bug Fixes
+
+- lock Renovate in .brigade/mise.lock, installed with the other tools (#306) [_(d517c50c)_](https://github.com/pa-decarvalho/brigade/commit/d517c50c5946e911294d575e83fb431618894789)
+
 # [0.32.1](https://github.com/pa-decarvalho/brigade/compare/0.32.0...0.32.1) - 2026-11-19
 
 ### 🐛 Bug Fixes
