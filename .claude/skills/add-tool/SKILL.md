@@ -13,6 +13,10 @@ language; files in English.
 - `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else
   `pipx:`/`npm:`. Latest version:
   `gh release view -R <owner>/<repo> --json tagName`.
+  - Pin a version published at least 3 days ago (Renovate's
+    `minimumReleaseAge` for the template): `mise lock` takes only packages
+    older than a day, so a fresher pin leaves its lockfile entry pruned (npm)
+    or incomplete (pipx) after `brigade:update`.
   - aqua's registry can miss platforms the release has (dotenv-linter: no
     linux/arm64, which act uses on Apple Silicon): compare with
     `gh release view <tag> -R <owner>/<repo> --json assets`, and use
