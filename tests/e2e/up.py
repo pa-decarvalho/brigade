@@ -144,7 +144,7 @@ r = Ci::Runners::CreateRunnerService.new(user: u, params: {
 puts "#{t.token} #{r.token}"
 """
     script = "cat > /tmp/seed.rb && gitlab-rails runner /tmp/seed.rb"
-    token, runner = shell(server, "gitlab-app", script, stdin=ruby).split()
+    token, runner = shell(server, "gitlab", script, stdin=ruby).split()
     # One runner: those of earlier seeds, still in the volume, would take jobs.
     compose(server, "run", "--rm", "gitlab-runner", "unregister", "--all-runners")
     compose(
@@ -155,8 +155,6 @@ puts "#{t.token} #{r.token}"
         "--docker-volumes", f"{ROOT}:{ROOT}:ro",
         "--docker-volumes", f"{TEMPLATES}:{TEMPLATES}:ro",
         "--docker-volumes", "/var/run/docker.sock:/var/run/docker.sock",
-        "--docker-volumes", "brigade-forges_gitlab-certs:/certs:ro",
-        "--env", "SSL_CERT_FILE=/certs/bundle.pem",
     )  # fmt: skip
     compose(server, "up", "-d", "gitlab-runner")
     return token
