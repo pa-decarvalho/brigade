@@ -34,7 +34,8 @@ API). No Renovate: its update is what `brigade:update` does.
   notification.
 - `mise run forges:up -- <forge>` prints the UI's URL and login; links the forge
   writes use its Docker name (`http://gitea:3000`): replace with the URL.
-- `mise run forges:down` stops everything and deletes the data.
+- `mise run forges:down` removes the forges and their data, then everything
+  Docker no longer uses, Docker-wide (`docker system prune --all --volumes`).
 
 ## Read the results
 

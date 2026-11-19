@@ -101,9 +101,11 @@ jobs, uncommitted changes included. The forge starts on first use
 (`tests/e2e/up.py`; GitLab needs about 4 GB of RAM, a few minutes, and a TLS
 proxy since Releasaurus only calls GitLab over HTTPS, #301) and stays up for
 the next runs: `mise run forges:up -- <forge>` prints its URL and login, `mise
-run forges:down` stops them all and deletes their data. Each test writes a
-note in `.forges/`: every step's result and time, the failed jobs' last log
-lines, and a "To improve" section to turn into issues.
+run forges:down` removes them with their data, then everything Docker no longer
+uses, Docker-wide (`docker system prune --all --volumes`: stopped containers,
+unused images, anonymous volumes; images are pulled again when needed). Each
+test writes a note in `.forges/`: every step's result and time, the failed
+jobs' last log lines, and a "To improve" section to turn into issues.
 
 `mise run build` builds this site in strict mode, which fails on broken links.
 CI deploys it (`pages:deploy`, to the `gh-pages` branch) on each release tag and

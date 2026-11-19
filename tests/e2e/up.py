@@ -1,8 +1,8 @@
 """Start a local forge with its runner, and the admin token the tests use.
 
-Usage: up.py <gitea|forgejo|gitlab> (or down: stop them all, delete their
-data). Starts tests/fixtures/<forge>/compose.yml, waits until it answers,
-creates the admin and a token, registers the runner, and writes
+Usage: up.py <gitea|forgejo|gitlab>, or up.py down: removes them all with
+their data, then everything Docker no longer uses (docker system prune). Starts tests/fixtures/<forge>/compose.yml, waits until it
+answers, creates the admin and a token, registers the runner, and writes
 .forges/<forge>.json. Run again, it reuses a forge that is up. The tests call
 ensure() themselves: running up.py is only needed to open a forge's UI.
 """
@@ -149,10 +149,25 @@ puts "#{t.token} #{r.token}"
     return token
 
 
+def docker(*args: str) -> list[str]:
+    """A docker command's output, as words; failures ignored (nothing to clean)."""
+    result = subprocess.run(
+        ["docker", *args], capture_output=True, text=True, check=False
+    )
+    return result.stdout.split()
+
+
 def down() -> None:
+    """The forges and their data, then all Docker no longer uses (a dev machine:
+    images are pulled again when needed)."""
     for server in SERVERS:
         compose(server, "--profile", "runner", "down", "--volumes", "--remove-orphans")
         (STATE / f"{server}.json").unlink(missing_ok=True)
+    # Stopped containers (the jobs'), unused images, networks, build cache and
+    # anonymous volumes; then the forges' volumes a job container still held.
+    docker("system", "prune", "--all", "--force", "--volumes")
+    if volumes := docker("volume", "ls", "-q", "--filter", "name=brigade-forges_"):
+        docker("volume", "rm", "-f", *volumes)
 
 
 if __name__ == "__main__":

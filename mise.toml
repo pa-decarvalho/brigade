@@ -17,5 +17,5 @@ description = "Start a local forge with its runner, to open its UI (-- <gitea|fo
 run = "uv run --no-project python tests/e2e/up.py"
 
 [tasks."forges:down"]
-description = "Stop the local forges and delete their data"
+description = "Remove the local forges and their data, then docker system prune --all --volumes"
 run = "uv run --no-project python tests/e2e/up.py down"
