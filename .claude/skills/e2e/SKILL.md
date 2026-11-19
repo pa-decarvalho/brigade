@@ -13,10 +13,11 @@ pushed anywhere but the local forge.
 `tests/e2e/test_projects.py`, one test per project type (`tests/e2e/projects.py`),
 in a temporary folder: the project created with its ecosystem's tool, brigade
 applied from this checkout at its latest tag, pushed to the forge, then:
-`<cli>:setup` and `<cli>:check`, a pull request (lint, build, test), the
-release (release PR, `X.Y.Z` tag), the deploy to a local registry
-(`tests/fixtures/compose.yml`: pypi, verdaccio, registry), and
-`brigade:update` to the checkout's `HEAD` in a pull request whose CI passes.
+`<cli>:setup` and `<cli>:check`, a pull request (lint, build, test),
+`brigade:update` to the checkout's `HEAD` in a pull request whose CI passes
+(both merged), then the release (release PR, `X.Y.Z` tag) and the deploy to a
+local registry (`tests/fixtures/compose.yml`: pypi, verdaccio, registry), both
+made by the checkout's files: a fix to them is tested before its release.
 The checkout is the projects' `_src_path`, mounted at the same path in the
 jobs: uncommitted changes are in it.
 

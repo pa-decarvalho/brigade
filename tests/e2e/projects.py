@@ -80,12 +80,13 @@ HEALTHCHECK NONE
 ENTRYPOINT ["/app/.venv/bin/demo"]
 """
 
-STRUCTURE_TEST = """---
-schemaVersion: 2.0.0
-metadataTest: {user: "65534", entrypoint: [/app/.venv/bin/demo]}
-commandTests:
-- {name: the app runs, command: /app/.venv/bin/demo, expectedOutput: [Hello from demo!]}
-"""
+# One string: the indentation of YAML in a Python block breaks editorconfig's.
+STRUCTURE_TEST = (
+    "---\nschemaVersion: 2.0.0\nmetadataTest:\n"
+    '  user: "65534"\n  entrypoint: [/app/.venv/bin/demo]\n'
+    "commandTests:\n  - name: the app runs\n    command: /app/.venv/bin/demo\n"
+    "    expectedOutput: [Hello from demo!]\n"
+)
 
 PROJECTS = {
     # A library published to a Python index (pypi).

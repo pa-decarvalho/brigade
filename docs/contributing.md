@@ -89,12 +89,14 @@ in a temporary folder:
 1. the project, created with its ecosystem's tool, brigade applied from this
    checkout at its latest tag;
 2. its settings (secrets, `<cli>:setup` and `<cli>:check`), then the push;
-3. a pull request: lint, build, test;
-4. its merge: the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's
-   API);
-5. the deploy, to a local registry (`tests/fixtures/compose.yml`);
-6. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
-   passes.
+3. a pull request: lint, build, test; merged;
+4. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
+   passes; merged;
+5. the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's API);
+6. the deploy, to a local registry (`tests/fixtures/compose.yml`).
+
+The release and the deploy run with the checkout's files: a fix to them is
+tested before it is released.
 
 The checkout is the projects' `_src_path`, mounted at the same path in the
 jobs, uncommitted changes included. The forge starts on first use
