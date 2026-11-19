@@ -1,0 +1,9 @@
+[tools]
+# renovate: datasource=github-releases depName=cli/cli
+gh = "2.105.0"
+
+# Not a stage name: stays out of the pipeline. Needs your login (gh auth login).
+[tasks."gh:check"]
+description = "Check the GitHub repository's settings for the selected tools"
+dir = "{{config_root}}/../.."
+run = '''uv run --no-project python .brigade/scripts/repo_check.py gh releasaurus renovate automerge pages'''
