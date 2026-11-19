@@ -1,0 +1,71 @@
+---
+# GitLab and its runner (registered by tests/e2e/up.py, which mounts brigade's
+# checkout in the jobs). Releasaurus calls GitLab's API on https://<host> only:
+# gitlab is a proxy in front of gitlab-app, plain on port 80, TLS on 443 with a
+# local CA that the jobs trust (SSL_CERT_FILE). ponytail: drop the proxy and
+# the certs once Releasaurus takes an http:// URL (#301).
+name: brigade-forges
+include: [../compose.yml]
+
+volumes:
+  gitlab-config:
+  gitlab-data:
+  gitlab-certs:
+  gitlab-runner:
+
+services:
+  gitlab-certs:
+    image: alpine:3.22
+    volumes: [gitlab-certs:/certs]
+    working_dir: /certs
+    command:
+      - sh
+      - -c
+      - >-
+        [ -f bundle.pem ] && exit 0;
+        apk add -q openssl ca-certificates &&
+        openssl req -x509 -newkey rsa:2048 -nodes -days 365
+        -subj /CN=brigade-forges -keyout ca.key -out ca.crt &&
+        openssl req -newkey rsa:2048 -nodes -subj /CN=gitlab
+        -addext subjectAltName=DNS:gitlab -keyout gitlab.key -out gitlab.csr &&
+        openssl x509 -req -in gitlab.csr -CA ca.crt -CAkey ca.key
+        -CAcreateserial -days 365 -copy_extensions copy -out gitlab.crt &&
+        cat gitlab.crt gitlab.key > gitlab.pem &&
+        cat /etc/ssl/certs/ca-certificates.crt ca.crt > bundle.pem
+
+  gitlab:
+    image: haproxy:3.2.27-alpine
+    depends_on:
+      gitlab-certs: {condition: service_completed_successfully}
+      gitlab-app: {condition: service_healthy}
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - gitlab-certs:/certs:ro
+
+  gitlab-app:
+    image: gitlab/gitlab-ce:19.5.5-ce.0
+    hostname: gitlab
+    shm_size: 256m
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab'
+        gitlab_rails['initial_root_password'] = 'brigade-local-forges-1'
+        puma['worker_processes'] = 0
+        sidekiq['concurrency'] = 10
+        prometheus_monitoring['enable'] = false
+        registry['enable'] = false
+        gitlab_kas['enable'] = false
+    ports: ["127.0.0.1:8929:80"]
+    volumes: [gitlab-config:/etc/gitlab, gitlab-data:/var/opt/gitlab]
+    healthcheck:
+      test: [CMD, curl, -fs, http://localhost/-/readiness]
+      interval: 10s
+      retries: 60
+      start_period: 120s
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine-v19.5.3
+    profiles: [runner]
+    volumes:
+      - gitlab-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
