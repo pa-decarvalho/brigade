@@ -368,6 +368,9 @@ specifiers = ["44.252.0"]
 allow_builds = '["re2"]'
 trust_policy_excludes = '["@yarnpkg/libzip@3.2.2"]'
 
+[tools."npm:renovate".provenance]
+repository = "github.com/renovatebot/renovate"
+
 [[tools."pipx:check-jsonschema"]]
 version = "0.39.0"
 backend = "pipx:check-jsonschema"
