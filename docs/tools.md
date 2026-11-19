@@ -440,7 +440,9 @@ needs Docker in CI, which brigade's GitLab image does not have: `docker` and
 tag at the checked out commit.
 
 `uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the
-Python package built by uv (`uv build --clear && uv publish`), once per tag: the
+Python package built by uv (`uv build --clear`, then `uv publish` without the
+empty `UV_PUBLISH_*` variables, which GitHub and Gitea pass for a secret that is
+not set), once per tag: the
 version is the one in `pyproject.toml`, which Releasaurus bumps in the release
 PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus,
 Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`

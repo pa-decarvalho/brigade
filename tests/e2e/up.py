@@ -17,6 +17,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]  # brigade's checkout
 FIXTURES = ROOT / "tests" / "fixtures"
 STATE = ROOT / ".forges"
+# brigade at its tags (the tests' templates): outside the checkout, whose
+# linters would read them; mounted in the jobs too (BRIGADE_TEMPLATES).
+TEMPLATES = Path("/tmp/brigade-forges").resolve()
 SERVERS = ("gitea", "forgejo", "gitlab")
 # The admin, its password, and the API as seen from this machine.
 USER = {"gitea": "brigade", "forgejo": "brigade", "gitlab": "root"}
@@ -37,7 +40,11 @@ def compose(server: str, *args: str, stdin: str | None = None) -> str:
         input=stdin,
         capture_output=True,
         text=True,
-        env={**os.environ, "BRIGADE_SRC": str(ROOT)},
+        env={
+            **os.environ,
+            "BRIGADE_SRC": str(ROOT),
+            "BRIGADE_TEMPLATES": str(TEMPLATES),
+        },
         check=False,
     )
     if result.returncode:
@@ -70,10 +77,15 @@ def works(server: str, token: str) -> bool:
 
 def ensure(server: str) -> dict:
     """The forge up, with its runner; returns {url, user, token}."""
+    TEMPLATES.mkdir(exist_ok=True)
     saved = STATE / f"{server}.json"
     if saved.exists():
         forge = json.loads(saved.read_text())
         if works(server, forge["token"]):
+            # Seeded: the runner recreated, for changes to its config (compose
+            # does not see them); GitLab's is registered in seed() only.
+            if server != "gitlab":
+                compose(server, "up", "-d", "--force-recreate", f"{server}-runner")
             return forge
     print(f"starting {server} (GitLab: a few minutes)...", flush=True)
     compose(server, "up", "-d", "--wait")
@@ -84,16 +96,16 @@ def ensure(server: str) -> dict:
 
 
 def reset_registries(server: str) -> None:
-    """Empty registries (compose.yml's keep nothing on disk)."""
+    """Empty registries: new containers, new anonymous volumes (their images')."""
+    registries = ["pypi", "verdaccio", "registry"]
     compose(
         server,
         "up",
         "-d",
         "--wait",
         "--force-recreate",
-        "pypi",
-        "verdaccio",
-        "registry",
+        "--renew-anon-volumes",
+        *registries,
     )
 
 
@@ -141,6 +153,7 @@ puts "#{t.token} #{r.token}"
         "--docker-image", "alpine:3.22", "--docker-network-mode", "brigade-forges",
         "--clone-url", "http://gitlab",
         "--docker-volumes", f"{ROOT}:{ROOT}:ro",
+        "--docker-volumes", f"{TEMPLATES}:{TEMPLATES}:ro",
         "--docker-volumes", "/var/run/docker.sock:/var/run/docker.sock",
         "--docker-volumes", "brigade-forges_gitlab-certs:/certs:ro",
         "--env", "SSL_CERT_FILE=/certs/bundle.pem",

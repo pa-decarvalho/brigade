@@ -1,7 +1,7 @@
 ---
-# Forgejo and its runner. BRIGADE_SRC, set by tests/e2e/up.py, is brigade's
-# checkout, mounted read-only at the same path in the jobs: the projects'
-# _src_path.
+# Forgejo and its runner. BRIGADE_SRC (brigade's checkout) and
+# BRIGADE_TEMPLATES (its tags' clones), set by tests/e2e/up.py, are mounted
+# read-only at the same paths in the jobs: the projects' _src_path.
 name: brigade-forges
 include: [../compose.yml]
 
@@ -21,8 +21,10 @@ configs:
       container:
         network: brigade-forges
         docker_host: automount
-        options: -v ${BRIGADE_SRC:?}:${BRIGADE_SRC}:ro
-        valid_volumes: ["${BRIGADE_SRC}"]
+        options: >-
+          -v ${BRIGADE_SRC:?}:${BRIGADE_SRC}:ro
+          -v ${BRIGADE_TEMPLATES:?}:${BRIGADE_TEMPLATES}:ro
+        valid_volumes: ["${BRIGADE_SRC}", "${BRIGADE_TEMPLATES}"]
 
 services:
   forgejo:

@@ -1,10 +1,10 @@
 """One project of each type, from brigade's latest release to the checkout.
 
 In a temporary folder: the project, brigade applied from this checkout at its
-latest tag, then pushed to the forge. Its pull request, its release and deploy,
-then brigade:update to the checkout (HEAD) in a pull request whose CI passes.
-The checkout is the projects' _src_path, mounted at the same path in the jobs
-(tests/fixtures/).
+latest tag, then pushed to the forge. Its pull request, then brigade:update to
+the checkout (HEAD) in a pull request whose CI passes, both merged; then the
+release and the deploy, made by the checkout's files. The checkout is the
+projects' _src_path, mounted at the same path in the jobs (tests/fixtures/).
 """
 
 import json
@@ -27,6 +27,29 @@ def latest_tag() -> str:
     tags = sh("git", "tag", "-l", cwd=up.ROOT).split()
     semver = [t for t in tags if SEMVER.fullmatch(t)]
     return max(semver, key=lambda t: tuple(map(int, t.split("."))))
+
+
+def template_at(tag: str) -> str:
+    """brigade at a tag, cloned in up.TEMPLATES (mounted in the jobs).
+
+    The project starts from it, so brigade:lint, which renders a local template
+    at its HEAD, compares to that release until the update moves _src_path to
+    the checkout.
+    """
+    clone = up.TEMPLATES / f"brigade-{tag}"
+    if not clone.exists():
+        sh(
+            "git",
+            "clone",
+            "-q",
+            "--no-local",
+            "--branch",
+            tag,
+            str(up.ROOT),
+            str(clone),
+            cwd=up.ROOT,
+        )
+    return str(clone)
 
 
 def fetch(url: str) -> str:
@@ -72,8 +95,8 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         if not full:  # no deploy without a release
             data = {k: v for k, v in data.items() if not k.endswith("_publish")}
         run("git", "init", "-q", "-b", "main")
-        run(*COPIER, "copy", "--trust", "--defaults", "--vcs-ref", latest_tag(),
-            *data_args(data), str(up.ROOT), ".")  # fmt: skip
+        template = template_at(latest_tag())
+        run(*COPIER, "copy", "--trust", "--defaults", *data_args(data), template, ".")
         for name, text in project.files.items():
             (path / name).parent.mkdir(parents=True, exist_ok=True)
             (path / name).write_text(text)
@@ -112,54 +135,60 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         names = () if forge.server == "gitlab" else ("lint", "test")
         forge.wait_runs(repo, sha, "pull_request", names)
 
-    if full:
-        with note.step("release"):
-            before = forge.head(repo)
-            forge.merge_pr(repo, pr, "feat: say hello")
-            forge.wait_runs(repo, forge.moved(repo, before), "push")
-            release, title, sha = wait_for(
-                "release PR", lambda: forge.find_pr(repo, "release"), 300
-            )
-            assert title.startswith("chore(main): release"), title
-            forge.wait_runs(repo, sha, "pull_request", names)
-            before = forge.head(repo)
-            forge.merge_pr(repo, release, title)
-            tag_sha = forge.moved(repo, before)
-            tags = wait_for(
-                "X.Y.Z tag",
-                lambda: [t for t in forge.tags(repo) if SEMVER.fullmatch(t)],
-                600,
-            )
-            assert all(SEMVER.fullmatch(t) for t in forge.tags(repo)), forge.tags(repo)
-
-        with note.step("deploy", go_on=True):
-            tag = tags[0]
-            forge.wait_runs(
-                repo,
-                tag_sha,
-                "push",
-                (tag,) if forge.server == "gitlab" else ("deploy",),
-            )
-            url, text = project.deployed
-            page = wait_for("deployed release", lambda: fetch(url), 120)
-            assert text.format(tag=tag) in page, page
-
-    else:
-        note.skip("release", "deploy", reason="not covered: they call GitHub's API")
-
     with note.step("update"):
+        before = forge.head(repo)
+        forge.merge_pr(repo, pr, "feat: say hello")
+        merged = forge.moved(repo, before)
+        if full:  # release, on pushes to main
+            forge.wait_runs(repo, merged, "push")
         run("git", "switch", "-q", "main")
         run("git", "pull", "-q", "origin", "main")
         run("git", "switch", "-q", "-c", "update")
+        answers = path / ".brigade/copier/answers.yml"
+        answers.write_text(answers.read_text().replace(template, str(up.ROOT)))
+        run("git", "commit", "-qam", "ci: brigade from the checkout")
         run("mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD")
-        answers = (path / ".brigade/copier/answers.yml").read_text()
-        assert f"_commit: {latest_tag()}\n" not in answers, "HEAD is the latest tag"
+        assert f"_commit: {latest_tag()}\n" not in answers.read_text(), (
+            "HEAD is the tag"
+        )
         run("git", "add", "-A")
         run("git", "commit", "-qm", "ci: update brigade")
         run("git", "push", "-q", "-u", "origin", "update")
-        forge.open_pr(repo, "update", "ci: update brigade")
-        forge.wait_runs(
-            repo, run("git", "rev-parse", "HEAD").strip(), "pull_request", names
+        update = forge.open_pr(repo, "update", "ci: update brigade")
+        sha = run("git", "rev-parse", "HEAD").strip()
+        forge.wait_runs(repo, sha, "pull_request", names)
+        before = forge.head(repo)
+        forge.merge_pr(repo, update, "ci: update brigade")
+        merged = forge.moved(repo, before)
+        if full:
+            forge.wait_runs(repo, merged, "push")
+
+    if not full:
+        note.skip("release", "deploy", reason="not covered: they call GitHub's API")
+        return
+
+    with note.step("release"):
+        release, title, sha = wait_for(
+            "release PR", lambda: forge.find_pr(repo, "release"), 300
         )
+        assert title.startswith("chore(main): release"), title
+        forge.wait_runs(repo, sha, "pull_request", names)
+        before = forge.head(repo)
+        forge.merge_pr(repo, release, title)
+        tag_sha = forge.moved(repo, before)
+        tags = wait_for(
+            "X.Y.Z tag",
+            lambda: [t for t in forge.tags(repo) if SEMVER.fullmatch(t)],
+            600,
+        )
+        assert all(SEMVER.fullmatch(t) for t in forge.tags(repo)), forge.tags(repo)
+
+    with note.step("deploy", go_on=True):
+        tag = tags[0]
+        names = (tag,) if forge.server == "gitlab" else ("deploy",)
+        forge.wait_runs(repo, tag_sha, "push", names)
+        url, text = project.deployed
+        page = wait_for("deployed release", lambda: fetch(url), 120)
+        assert text.format(tag=tag) in page, page
 
     assert not note.failed, f"failed steps: {note.failed}"

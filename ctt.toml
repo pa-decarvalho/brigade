@@ -26,11 +26,12 @@ _post_tasks = [
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
     # uv:deploy against a local index (pypiserver in Docker, on 127.0.0.1 only), twice:
-    # the second run skips the files already there (UV_PUBLISH_CHECK_URL).
+    # the second run skips the files already there (UV_PUBLISH_CHECK_URL). An empty
+    # UV_PUBLISH_TOKEN, as GitHub and Gitea pass a secret that is not set (#298).
     ["docker", "rm", "-f", "brigade-ctt-pypi"],
     ["docker", "run", "-d", "--name", "brigade-ctt-pypi", "-p", "127.0.0.1:8099:8080", "pypiserver/pypiserver:v2.4.3", "run", "-a", ".", "-P", ".", "/data/packages"],
     ["uv", "run", "--no-project", "python", "-c", "import time, urllib.request\nfor _ in range(60):\n    try:\n        urllib.request.urlopen('http://127.0.0.1:8099/simple/'); break\n    except OSError:\n        time.sleep(1)\nelse:\n    raise SystemExit('pypiserver did not start')"],
-    ["env", "UV_PUBLISH_URL=http://127.0.0.1:8099/", "UV_PUBLISH_CHECK_URL=http://127.0.0.1:8099/simple/", "UV_PUBLISH_USERNAME=ctt", "UV_PUBLISH_PASSWORD=ctt", "mise", "run", "uv:deploy"],
+    ["env", "UV_PUBLISH_URL=http://127.0.0.1:8099/", "UV_PUBLISH_CHECK_URL=http://127.0.0.1:8099/simple/", "UV_PUBLISH_TOKEN=", "UV_PUBLISH_USERNAME=ctt", "UV_PUBLISH_PASSWORD=ctt", "mise", "run", "uv:deploy"],
     ["env", "UV_PUBLISH_URL=http://127.0.0.1:8099/", "UV_PUBLISH_CHECK_URL=http://127.0.0.1:8099/simple/", "UV_PUBLISH_USERNAME=ctt", "UV_PUBLISH_PASSWORD=ctt", "mise", "run", "uv:deploy"],
     ["uv", "run", "--no-project", "python", "-c", "import urllib.request; page = urllib.request.urlopen('http://127.0.0.1:8099/simple/demo/').read().decode(); assert 'demo-0.1.0.tar.gz' in page and 'demo-0.1.0-py3-none-any.whl' in page, page"],
     ["docker", "rm", "-f", "brigade-ctt-pypi"],
