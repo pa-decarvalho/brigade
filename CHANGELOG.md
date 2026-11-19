@@ -1,3 +1,9 @@
+# [0.32.0](https://github.com/pa-decarvalho/brigade/compare/0.31.0...0.32.0) - 2026-11-19
+
+### 🚀 Features
+
+- <cli>:setup task, and the forge check after brigade:update (#295) [_(c812f065)_](https://github.com/pa-decarvalho/brigade/commit/c812f065a6ab3e31e18474d1d38f4e80bfa81989)
+
 # [0.31.0](https://github.com/pa-decarvalho/brigade/compare/0.30.0...0.31.0) - 2026-11-18
 
 ### 🚀 Features
