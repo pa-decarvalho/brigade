@@ -106,14 +106,16 @@ runs on this machine, one test per project type of `tests/e2e/projects.py`
 4. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
    passes; merged;
 5. the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's API);
-6. the deploy, to a local registry (`tests/fixtures/compose.yml`).
+6. the deploy, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm
+   and image repositories, each deploy logged in as a deploy user.
 
 The release and the deploy run with the checkout's files: a fix to them is
 tested before it is released.
 
 The checkout is the projects' `_src_path`, mounted at the same path in the
-jobs, uncommitted changes included. GitLab needs about 4 GB of RAM and a few
-minutes to start; `github:up` and `github:down` act on Gitea, the same server.
+jobs, uncommitted changes included. GitLab takes a few minutes to start; with
+Nexus and the jobs, it peaks at about 3.2 GB of RAM (Docker needs 4 GB).
+`github:up` and `github:down` act on Gitea, the same server.
 Each test writes a note in `.forges/`: every step's result and
 time, the failed jobs' last log lines, and a "To improve" section to turn into
 issues.

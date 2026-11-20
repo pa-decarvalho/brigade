@@ -13,11 +13,13 @@ tasks run it:
 The tests call ensure() themselves: run starts a forge that is not up.
 """
 
+import base64
 import json
 import os
 import shutil
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -38,6 +40,17 @@ URL = {
 }
 PASSWORD = "brigade-local-forges-1"
 RUNNER_SECRET = "0123456789abcdef0123456789abcdef01234567"  # forgejo/compose.yml, a dummy  # gitleaks:allow
+# Nexus (tests/fixtures/compose.yml) from this machine, its deploy user and
+# password, and its repositories by name (their format), emptied before each test.
+NEXUS = "http://localhost:8099"
+DEPLOY = ("deploy", "brigade-deploy-1")
+REPOSITORIES = {
+    "pypi": {},
+    "npm": {},
+    "docker": {
+        "docker": {"v1Enabled": False, "forceBasicAuth": False, "httpPort": 5000}
+    },
+}
 
 
 def compose(server: str, *args: str, stdin: str | None = None) -> str:
@@ -103,18 +116,93 @@ def ensure(server: str) -> dict:
     return forge
 
 
-def reset_registries(server: str) -> None:
-    """Empty registries: new containers, new anonymous volumes (their images')."""
-    registries = ["pypi", "verdaccio", "registry"]
-    compose(
+def nexus(method: str, path: str, body=None, auth=("admin", PASSWORD)):
+    """A call to Nexus as admin (a str body as text); its JSON, None when empty
+    or absent (404)."""
+    text = isinstance(body, str)
+    data = None if body is None else (body if text else json.dumps(body)).encode()
+    request = urllib.request.Request(f"{NEXUS}{path}", data=data, method=method)
+    request.add_header("Content-Type", "text/plain" if text else "application/json")
+    if auth:
+        basic = base64.b64encode(":".join(auth).encode()).decode()
+        request.add_header("Authorization", f"Basic {basic}")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            answer = response.read()
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return None
+        sys.exit(f"nexus {method} {path}: {error.code} {error.read()[:500]!r}")
+    return json.loads(answer) if answer else None
+
+
+def reset_registries(server: str) -> dict:
+    """Nexus set up on first use, its repositories emptied (each run publishes
+    demo's 0.1.0 again); the deploys' secrets, for projects.Project.secrets."""
+    compose(server, "up", "-d", "--wait", "nexus")  # a forge up before Nexus
+    api = "/service/rest/v1"
+    # Only a new Nexus has it (a setup cut short: down, then up again).
+    initial = compose(
         server,
-        "up",
-        "-d",
-        "--wait",
-        "--force-recreate",
-        "--renew-anon-volumes",
-        *registries,
+        "exec",
+        "-T",
+        "nexus",
+        "sh",
+        "-c",
+        "cat /nexus-data/admin.password || true",
+    ).strip()
+    if initial:
+        change = f"{api}/security/users/admin/change-password"
+        nexus("PUT", change, PASSWORD, auth=("admin", initial))
+        nexus(
+            "POST",
+            f"{api}/system/eula",
+            {**nexus("GET", f"{api}/system/eula"), "accepted": True},
+        )
+        anonymous = {
+            "enabled": True,
+            "userId": "anonymous",
+            "realmName": "NexusAuthorizingRealm",
+        }
+        nexus("PUT", f"{api}/security/anonymous", anonymous)  # the deployed checks
+        realms = ["NexusAuthenticatingRealm", "NpmToken", "DockerToken"]
+        nexus("PUT", f"{api}/security/realms/active", realms)
+        role = {
+            "id": "deploy",
+            "name": "deploy",
+            "description": "Deploys",
+            "privileges": ["nx-repository-view-*-*-*"],
+            "roles": [],
+        }
+        nexus("POST", f"{api}/security/roles", role)
+        user = {
+            "userId": DEPLOY[0],
+            "firstName": "deploy",
+            "lastName": "deploy",
+            "emailAddress": "deploy@example.com",
+            "password": DEPLOY[1],
+            "status": "active",
+            "roles": ["deploy"],
+        }
+        nexus("POST", f"{api}/security/users", user)
+    storage = {
+        "blobStoreName": "default",
+        "strictContentTypeValidation": True,
+        "writePolicy": "allow_once",
+    }
+    for name, settings in REPOSITORIES.items():
+        nexus("DELETE", f"{api}/repositories/{name}")
+        repository = {"name": name, "online": True, "storage": storage, **settings}
+        nexus("POST", f"{api}/repositories/{name}/hosted", repository)
+    login = {"name": DEPLOY[0], "password": DEPLOY[1]}
+    npm = nexus(
+        "PUT", f"/repository/npm/-/user/org.couchdb.user:{DEPLOY[0]}", login, auth=None
     )
+    return {
+        "deploy_user": DEPLOY[0],
+        "deploy_password": DEPLOY[1],
+        "npm_token": npm["token"],
+    }
 
 
 def seed(server: str) -> str:

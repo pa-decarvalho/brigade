@@ -16,8 +16,9 @@ applied from this checkout at its latest tag, pushed to the forge, then:
 `<cli>:setup` and `<cli>:check`, a pull request (lint, build, test),
 `brigade:update` to the checkout's `HEAD` in a pull request whose CI passes
 (both merged), then the release (release PR, `X.Y.Z` tag) and the deploy to a
-local registry (`tests/fixtures/compose.yml`: pypi, verdaccio, registry), both
-made by the checkout's files: a fix to them is tested before its release.
+local Nexus (`tests/fixtures/compose.yml`: pypi, npm and docker repositories,
+logged in as its deploy user), both made by the checkout's files: a fix to them
+is tested before its release.
 The checkout is the projects' `_src_path`, mounted at the same path in the
 jobs: uncommitted changes are in it.
 
@@ -32,8 +33,8 @@ API). No Renovate: its update is what `brigade:update` does.
   `node`, `docker`; all by default), `<forge>:down`
   (remove it, then everything Docker no longer uses, volumes included),
   `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
-  needed, `down` at the end. GitLab takes a few minutes and about 4 GB: one
-  forge at a time.
+  needed, `down` at the end. GitLab takes a few minutes and, with Nexus and
+  the jobs, about 3.2 GB at peak: one forge at a time.
 - Each type takes 5 to 10 minutes: run it in the background and wait for the
   notification.
 - `<forge>:up` prints the UI's URL and login; links the forge writes use its
@@ -63,9 +64,11 @@ user.
   variant's), files, commands (run with `mise exec` after `mise install`), the
   registry env and secrets, the deployed URL (from this machine) and the text
   it must hold, `not_on` for the forges brigade refuses it on.
-- A registry it needs: a service in `tests/fixtures/compose.yml` (reset before
-  each test by `up.reset_registries`), its URL by service name in `env` (the
-  jobs) and by `localhost` in `deployed` (this machine).
+- A registry it needs: a Nexus hosted repository in `up.REPOSITORIES` (emptied
+  before each test by `up.reset_registries`), its URL by service name in `env`
+  (`http://nexus:8081/repository/<name>/`, the jobs) and by `localhost:8099` in
+  `deployed` (this machine, anonymous reads); its login from the secrets'
+  `{deploy_user}`, `{deploy_password}` or `{npm_token}`.
 - Its test id (`CASES` in `projects.py`, the type's name) in the help of the
   `<forge>:run` and `<forge>:test` tasks (`mise.toml`, `usage`): mise cannot
   list choices for a repeatable argument, `up.py` checks the names.
