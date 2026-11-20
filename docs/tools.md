@@ -124,7 +124,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `prek:run` | `prek run --all-files`: the hooks on every file |
 | `gh` | `gh:check`, `gh:setup` | GitHub: checks the repository's settings for the selected tools, or changes them (local use, not a stage): see [Repository settings](#repository-settings) |
 | `glab` | `glab:check`, `glab:setup` | GitLab: the same for the project |
-| `tea` | `tea:check`, `tea:setup` | Gitea (not Forgejo yet, #299): the same for the repository |
+| `tea` | `tea:check`, `tea:setup` | Gitea, Forgejo: the same for the repository |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
@@ -224,15 +224,15 @@ for one commit with `git commit --no-verify`.
 ## Repository settings
 
 Each forge's CLI comes with a check, for local use (not a stage): `gh:check`
-(GitHub), `glab:check` (GitLab), `tea:check` (Gitea). It reads the
+(GitHub), `glab:check` (GitLab), `tea:check` (Gitea, Forgejo). It reads the
 repository's settings that the selected tools need, with your login
 (`gh auth login`, `glab auth login`, `tea login add`), changes nothing, and
 fails when a required one is missing, with where to change it:
 
-| Tool | GitHub | GitLab | Gitea |
+| Tool | GitHub | GitLab | Gitea, Forgejo |
 |---|---|---|---|
 | always | squash merge only, the pull request title as the commit | squash commits required | squash merge only |
-| `releasaurus` | `RELEASAURUS_GITHUB_TOKEN`, else Actions allowed to create pull requests | `RELEASAURUS_GITLAB_TOKEN` | `RELEASAURUS_GITEA_TOKEN` (advised) |
+| `releasaurus` | `RELEASAURUS_GITHUB_TOKEN`, else Actions allowed to create pull requests | `RELEASAURUS_GITLAB_TOKEN` | `RELEASAURUS_GITEA_TOKEN`, `RELEASAURUS_FORGEJO_TOKEN` on Forgejo (advised) |
 | `renovate` | `RENOVATE_TOKEN`; auto-merge allowed with `renovate_automerge` | `RENOVATE_TOKEN`; `RENOVATE_GITHUB_COM_TOKEN` and an active pipeline schedule (advised) | `RENOVATE_TOKEN`; `RENOVATE_GITHUB_COM_TOKEN` (advised) |
 | `pages` | Pages published from `gh-pages` | Pages enabled | |
 

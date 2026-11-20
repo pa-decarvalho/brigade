@@ -18,6 +18,7 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        FORGEJO_TOKEN: "" # not sent to the tools' forges (see ../mise)
 {% endraw %}        RELEASAURUS_FORGE: {{ ci }}
 {% raw %}        RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
 {% endraw %}        RELEASAURUS_{{ ci | upper }}_TOKEN: {% raw %}${{ inputs.token || github.token }}

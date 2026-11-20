@@ -138,7 +138,9 @@ Forgejo) and `.brigade/ci/gitea/actions/`, the same for both.
   had `ci: forgejo`) fails its release once a release PR is open: set
   `ci: forgejo` in `.brigade/copier/data.yml`, run `mise run brigade:update`,
   and rename the `RELEASAURUS_GITEA_TOKEN` secret to `RELEASAURUS_FORGEJO_TOKEN`.
-- `tea` is not offered on Forgejo yet: its install fails in Forgejo's CI (#299).
+- Forgejo Actions sets `FORGEJO_TOKEN` in every job (the job's token): brigade's
+  actions empty it for mise, whose `forgejo:` backend would send it to the
+  forge a tool is released on (gitea.com for `tea`), which refuses it.
 - mise is installed with its install script: Forgejo resolves actions from its
   own mirror, which has `actions/checkout` but not mise-action, and act (local
   runs) refuses full URLs. The script checks the archive against a checksum file

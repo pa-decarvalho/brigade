@@ -25,6 +25,7 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        FORGEJO_TOKEN: "" # not sent to the tools' forges (see ../mise)
 {% endraw %}        RENOVATE_PLATFORM: {{ ci }}
 {% raw %}        RENOVATE_ENDPOINT: ${{ github.server_url }}/api/v1
         RENOVATE_REPOSITORIES: ${{ github.repository }}

@@ -93,7 +93,6 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     with note.step("create"):
         tools = list(project.tools)
         tools += ["releasaurus"] if full else []
-        tools += [forge.cli] if forge.cli else []
         template = template_at(latest_tag())
         # A release without this ci (forgejo before 0.33): ci: gitea, then the update
         # moves to it, as docs/ci.md says.
@@ -108,7 +107,33 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         if not full:  # no deploy without a release
             data = {k: v for k, v in data.items() if not k.endswith("_publish")}
         run("git", "init", "-q", "-b", "main")
-        run(*COPIER, "copy", "--trust", "--defaults", *data_args(data), template, ".")
+        # A release refusing the forge's CLI (tea on Forgejo before 0.33.1): the
+        # update adds it.
+        cli_later = False
+        try:
+            with_cli = {**data, "tools": [*tools, forge.cli] if forge.cli else tools}
+            run(
+                *COPIER,
+                "copy",
+                "--trust",
+                "--defaults",
+                *data_args(with_cli),
+                template,
+                ".",
+            )
+        except AssertionError as error:
+            if not forge.cli or "Invalid choice for 'tools'" not in str(error):
+                raise
+            cli_later = True
+            run(
+                *COPIER,
+                "copy",
+                "--trust",
+                "--defaults",
+                *data_args(data),
+                template,
+                ".",
+            )
         for name, text in project.files.items():
             (path / name).parent.mkdir(parents=True, exist_ok=True)
             (path / name).write_text(text)
@@ -131,10 +156,14 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
             for name, value in secrets.items():
                 value = value.format(user=forge.user, token=forge.token)
                 forge.set_secret(repo, name, value)
-        if forge.cli:
+
+        def cli_settings() -> None:
             run("mise", "exec", "--", *forge.login())
             run("mise", "run", f"{forge.cli}:setup")
             run("mise", "run", f"{forge.cli}:check")
+
+        if forge.cli and not cli_later:
+            cli_settings()
         run("git", "push", "-q", "-u", "origin", "main")
         if full:  # release, on pushes to main
             forge.wait_runs(repo, run("git", "rev-parse", "HEAD").strip(), "push")
@@ -165,12 +194,17 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         answers = path / ".brigade/copier/answers.yml"
         answers.write_text(answers.read_text().replace(template, str(up.ROOT)))
         run("git", "commit", "-qam", "ci: brigade from the checkout")
+        data_file = path / ".brigade/copier/data.yml"
+        text = data_file.read_text()
         if ci != forge.ci:
-            data_file = path / ".brigade/copier/data.yml"
-            text = data_file.read_text()
             assert f'ci: "{ci}"' in text, text
-            data_file.write_text(text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"'))
+            text = text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"')
+        if cli_later:
+            text = text.replace("tools:\n", f'tools:\n  - "{forge.cli}"\n', 1)
+        data_file.write_text(text)
         run("mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD")
+        if cli_later:
+            cli_settings()
         if ci != forge.ci:  # Copier moved the workflows
             assert (path / f".{forge.ci}/workflows/lint.yml").exists()
             assert not (path / f".{ci}/workflows").exists()
