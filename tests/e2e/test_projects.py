@@ -92,10 +92,6 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         tools += ["releasaurus"] if full else []
         tools += [forge.cli] if forge.cli else []
         data = {**project.data, "ci": forge.ci, "tools": tools}
-        if forge.server == "gitlab":
-            # ponytail: Releasaurus calls http:// GitLab URLs from 1.4.1 (#301);
-            # drop this answer once brigade pins it.
-            data |= {"customize_tools": True, "releasaurus_version": "1.4.1"}
         if not full:  # no deploy without a release
             data = {k: v for k, v in data.items() if not k.endswith("_publish")}
         run("git", "init", "-q", "-b", "main")
