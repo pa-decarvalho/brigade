@@ -5,6 +5,12 @@ ls_lint_version:
   default: ""
   when: "{{ customize_tools and 'ls-lint' in tools }}"
 
+ls_lint_config:
+  type: str
+  help: Config file of ls-lint, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'ls-lint' in tools }}"
+
 ls_lint_lint_command:
   type: str
   help: Command of ls-lint:lint (empty for brigade's)

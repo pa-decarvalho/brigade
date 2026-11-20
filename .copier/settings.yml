@@ -9,6 +9,5 @@ _skip_if_exists:
   # others are brigade's (<tool>_config points a tool to the project's own).
   - .brigade/configs/goreleaser.yaml
   - .brigade/configs/container-structure-test.yaml
-  - .brigade/configs/ls-lint.yml
   - .brigade/configs/sqlfluff.cfg
   - .brigade/configs/prek.yaml

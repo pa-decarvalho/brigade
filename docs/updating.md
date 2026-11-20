@@ -47,6 +47,15 @@ own workflows or `.gitlab/ci/*.yml` files.
 See [CI platforms](ci.md). For your own tasks, see
 [Custom tasks](custom-tasks.md).
 
+## From brigade 0.33 and earlier
+
+Since 0.34, `.brigade/configs/ls-lint.yml` is brigade's, with naming rules per
+language (see [Tool configs](tools.md#tool-configs)), instead of a starting
+point with no rules. If you wrote your own rules in it, move them to your own
+file first, set `ls_lint_config` to it in `.brigade/copier/data.yml`, then run
+`mise run brigade:update`. Otherwise, the update brings brigade's rules: fix
+the names `ls-lint:lint` reports, or keep your own file as above.
+
 ## From brigade 0.28 and earlier
 
 Since 0.29, Renovate reads `.brigade/configs/renovate.json` and, by default,
