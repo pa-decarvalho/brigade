@@ -21,6 +21,7 @@ presets:
     go (golangci-lint): [golangci-lint]
     node (node, biome): [node, biome]
     rust (rust): [rust]
+    java (maven): [maven]
     terraform (tflint, checkov, opentofu): [tflint, checkov, opentofu]
     ansible (ansible-lint, molecule, ansible): [ansible-lint, molecule, ansible]
     shell (shellcheck, shfmt): [shellcheck, shfmt]
@@ -79,6 +80,7 @@ tools:
     go (build, test): go
     rust (lint, build, test): rust
     node (lint, build, test): node
+    maven (build, test): maven
     docker (build, deploy):
       value: docker
       validator: >-

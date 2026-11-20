@@ -17,6 +17,9 @@ jobs:
     - name: "python-docker-github"
       run:
         - "mise run ctt:test -- -t .ctt/python-docker-github"
+    - name: "java-github"
+      run:
+        - "mise run ctt:test -- -t .ctt/java-github"
     - name: "node-github"
       run:
         - "mise run ctt:test -- -t .ctt/node-github"
