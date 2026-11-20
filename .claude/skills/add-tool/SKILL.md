@@ -13,10 +13,10 @@ language; files in English.
 - `mise registry <tool>`: prefer an `aqua:`/`github:` binary, else
   `pipx:`/`npm:`. Latest version:
   `gh release view -R <owner>/<repo> --json tagName`.
-  - Pin a version published at least 3 days ago (Renovate's
-    `minimumReleaseAge` for the template): `mise lock` takes only packages
-    older than a day, so a fresher pin leaves its lockfile entry incomplete
-    (pipx) after `brigade:update`.
+  - Pin a version published at least a day ago, two for a `pipx:` tool
+    (Renovate's `minimumReleaseAge` for the template): `mise lock` takes only
+    packages older than a day, so a fresher pipx pin leaves its lockfile entry
+    incomplete after `brigade:update`.
   - Pin in the fragment's `[tools]`, not on a task (`[tasks.<name>.tools]`):
     `mise lock` locks `[tools]` only and prunes the rest.
   - aqua's registry can miss platforms the release has (dotenv-linter: no

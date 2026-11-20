@@ -50,8 +50,8 @@ error), the failed jobs' last log lines. For each failure:
    ctt variant could have seen it, then fix it or open an issue with the
    `issue` skill (the note's log lines as evidence).
 3. A known limit (a validator refusing a tool on a CI, #299 tea on Forgejo,
-   #301 the GitLab TLS proxy): `not_on` in `projects.py`, or a comment, never a
-   silent skip.
+   #302 Releasaurus on Forgejo): `not_on` in `projects.py`, or a comment,
+   never a silent skip.
 
 Fill the note's "To improve" section, then report the table forge × type to the
 user.

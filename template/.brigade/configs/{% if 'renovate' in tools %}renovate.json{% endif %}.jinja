@@ -38,10 +38,9 @@
     // default file patterns do not match. One PR, major updates included: a release brings it to
     // the generated projects.
     "separateMajorMinor": false,
-    // Versions at least 3 days old: mise locks a pipx tool's dependencies only with packages
-    // older than a day, so a fresher pin leaves its entry incomplete, and the next mise run
-    // fills it in (a dirty .brigade/mise.lock).
-    "minimumReleaseAge": "3 days",
+    // Versions at least a day old, time for a broken release to be pulled; PyPI ones two days
+    // (packageRules below).
+    "minimumReleaseAge": "1 day",
     "mise": {
         // Tool fragments are Jinja: a customManagers entry reads their pins.
         "managerFilePatterns": ["/^template/\\.brigade/(conf\\.d/)?[^/]*(\\.toml|\\{% endif %\\})$/"]
@@ -125,6 +124,14 @@
             "matchFileNames": ["template/**"],
             "groupName": "template",
             "semanticCommitType": "fix"
+        },
+        {
+            // mise locks a pipx tool's dependencies only with packages older than a day, so a
+            // fresher pin leaves its entry incomplete, and the next mise run fills it in (a dirty
+            // .brigade/mise.lock).
+            "matchFileNames": ["template/**"],
+            "matchDatasources": ["pypi"],
+            "minimumReleaseAge": "2 days"
         }
 {%- endif %}
     ]
