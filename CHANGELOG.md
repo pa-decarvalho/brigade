@@ -1,3 +1,9 @@
+# [0.32.3](https://github.com/pa-decarvalho/brigade/compare/0.32.2...0.32.3) - 2026-11-20
+
+### 🐛 Bug Fixes
+
+- Releasaurus 1.4.1, local GitLab without the TLS proxy (#309) [_(4fd565ec)_](https://github.com/pa-decarvalho/brigade/commit/4fd565ec05ab5fa0e4a9b72c133c749c27c56311)
+
 # [0.32.2](https://github.com/pa-decarvalho/brigade/compare/0.32.1...0.32.2) - 2026-11-19
 
 ### 🐛 Bug Fixes
