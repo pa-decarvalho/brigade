@@ -1,3 +1,9 @@
+# [0.33.1](https://github.com/pa-decarvalho/brigade/compare/0.33.0...0.33.1) - 2026-11-20
+
+### 🐛 Bug Fixes
+
+- tea on Forgejo, FORGEJO_TOKEN kept from mise's installs (#318) [_(f56eb18f)_](https://github.com/pa-decarvalho/brigade/commit/f56eb18f00e6838e10f4e4f8fcd8e04599189678)
+
 # [0.33.0](https://github.com/pa-decarvalho/brigade/compare/0.32.3...0.33.0) - 2026-11-20
 
 ### 🚀 Features
