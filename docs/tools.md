@@ -355,6 +355,7 @@ steps:
 
 - The release pull request starts no checks (GitHub shows failed runs with no
   job): re-run them, or merge with a bypass of the required checks.
+
 - The tag starts no CI: run `deploy` by hand after each release.
 
 A bot token avoids all three: the pull request and the tag start the CI as

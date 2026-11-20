@@ -90,6 +90,40 @@ STRUCTURE_TEST = (
     "    expectedOutput: [Hello from demo!]\n"
 )
 
+# Maven's layout; Releasaurus bumps <version> on each release (release_type java).
+JAVA_POM = """<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>demo</groupId>
+    <artifactId>demo</artifactId>
+    <version>0.1.0</version>
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.13.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+"""
+
+JAVA_HELLO = (
+    "package demo;\n\npublic final class Hello {\n    private Hello() {\n    }\n\n"
+    '    public static String hello() {\n        return "Hello from demo!";\n    }\n}\n'
+)
+
+JAVA_TEST = (
+    "package demo;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n"
+    "import org.junit.jupiter.api.Test;\n\nclass HelloTest {\n    @Test\n"
+    '    void hello() {\n        assertEquals("Hello from demo!", Hello.hello());\n'
+    "    }\n}\n"
+)
+
 PROJECTS = {
     # A library published to a Python index (Nexus' pypi repository).
     "python": Project(
@@ -162,6 +196,28 @@ PROJECTS = {
         deployed=("http://localhost:5099/v2/demo/tags/list", '"{tag}"'),
         # The docker tool's validator: no Docker daemon in GitLab's CI yet.
         not_on=("gitlab",),
+    ),
+    # A Java library deployed to a Maven repository (Nexus' maven repository).
+    "java": Project(
+        tools=[*BASE, "maven"],
+        data={"maven_publish": True},
+        files={
+            "pom.xml": JAVA_POM,
+            "src/main/java/demo/Hello.java": JAVA_HELLO,
+            "src/test/java/demo/HelloTest.java": JAVA_TEST,
+            ".gitignore": "target/\n",
+            "README.md": "# Demo\n\nA demo Java library.\n",
+        },
+        commands=[],
+        env={"MAVEN_REPOSITORY_URL": "http://nexus:8081/repository/maven/"},
+        secrets={
+            "MAVEN_USERNAME": "{deploy_user}",
+            "MAVEN_PASSWORD": "{deploy_password}",
+        },
+        deployed=(
+            "http://localhost:8099/repository/maven/demo/demo/maven-metadata.xml",
+            "<version>{tag}</version>",
+        ),
     ),
 }
 

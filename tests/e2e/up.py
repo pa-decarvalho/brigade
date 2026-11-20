@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -50,6 +51,7 @@ REPOSITORIES = {
     "docker": {
         "docker": {"v1Enabled": False, "forceBasicAuth": False, "httpPort": 5000}
     },
+    "maven": {"maven": {"versionPolicy": "RELEASE", "layoutPolicy": "STRICT"}},
 }
 
 
@@ -118,7 +120,7 @@ def ensure(server: str) -> dict:
 
 def nexus(method: str, path: str, body=None, auth=("admin", PASSWORD)):
     """A call to Nexus as admin (a str body as text); its JSON, None when empty
-    or absent (404)."""
+    or absent (404). Retried on 401 and 429: a new admin password takes a moment."""
     text = isinstance(body, str)
     data = None if body is None else (body if text else json.dumps(body)).encode()
     request = urllib.request.Request(f"{NEXUS}{path}", data=data, method=method)
@@ -126,14 +128,17 @@ def nexus(method: str, path: str, body=None, auth=("admin", PASSWORD)):
     if auth:
         basic = base64.b64encode(":".join(auth).encode()).decode()
         request.add_header("Authorization", f"Basic {basic}")
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            answer = response.read()
-    except urllib.error.HTTPError as error:
-        if error.code == 404:
-            return None
-        sys.exit(f"nexus {method} {path}: {error.code} {error.read()[:500]!r}")
-    return json.loads(answer) if answer else None
+    for attempt in range(30):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                answer = response.read()
+            return json.loads(answer) if answer else None
+        except urllib.error.HTTPError as error:
+            if error.code == 404:
+                return None
+            if error.code not in (401, 429) or attempt == 29:
+                sys.exit(f"nexus {method} {path}: {error.code} {error.read()[:500]!r}")
+            time.sleep(2)
 
 
 def reset_registries(server: str) -> dict:

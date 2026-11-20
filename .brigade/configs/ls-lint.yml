@@ -1,21 +1,69 @@
 ---
 # ls-lint config: ls-lint --config .brigade/configs/ls-lint.yml
-# Yours: brigade created it once and never changes it.
-# It replaces the project's .ls-lint.yml.
+# brigade-owned: updated by mise run brigade:update.
+# For your own rules, set ls_lint_config to your file (start from a copy).
 # Paths are relative to the project root.
-# The project's naming rules (https://ls-lint.org/), none until set:
-#   ls:
-#     .dir: kebab-case
-#     .py: snake_case
-#     .md: SCREAMING_SNAKE_CASE | kebab-case
-ls: {}
-# ls-lint walks hidden folders too; CI folders have fixed names.
+#
+# Each name is checked against the rule of its extension: the part after the
+# first dot (app.config.ts: .config.ts, matched by .*.ts). Files without one
+# (Dockerfile, LICENSE) are not checked.
+ls:
+  # Folders: kebab-case, snake_case (Python packages, Go, Rust), or hidden
+  # (.vscode).
+  .dir: kebab-case | snake_case | regex:\.[a-z0-9_-]+
+  # Any other file: kebab-case.
+  .*: kebab-case
+  .*.*: kebab-case
+  # README.md, CHANGELOG.md, CONTRIBUTING.md...
+  .md: kebab-case | SCREAMING_SNAKE_CASE
+  .py: snake_case
+  .pyi: snake_case
+  .go: snake_case
+  .rs: snake_case
+  # Java classes; package-info.java, module-info.java.
+  .java: PascalCase | kebab-case
+  .c: snake_case
+  .h: snake_case
+  # JavaScript and TypeScript: kebab-case, camelCase, or snake_case (CodeceptJS'
+  # home_test.js); components (.tsx, .jsx) also in PascalCase.
+  .ts: kebab-case | camelCase | snake_case
+  .*.ts: kebab-case | camelCase | snake_case
+  .js: kebab-case | camelCase | snake_case
+  .*.js: kebab-case | camelCase | snake_case
+  .tsx: kebab-case | PascalCase
+  .*.tsx: kebab-case | PascalCase
+  .jsx: kebab-case | PascalCase
+  .yml: kebab-case | snake_case
+  .yaml: kebab-case | snake_case
+  .toml: kebab-case | snake_case | regex:Cargo
+  .lock: kebab-case | regex:Cargo
+  .sql: kebab-case | snake_case
+  .tf: kebab-case | snake_case
+  .sh: kebab-case | snake_case
+  .lua: kebab-case | snake_case
+# ls-lint walks every folder, ignored by git or not: CI folders have fixed
+# names, caches and build outputs are the tools'. A folder here is ignored at
+# the root only, unless written **/<name>.
 ignore:
   - .git
   - .brigade
   - .github
   - .gitea
+  - .forgejo
   - .gitlab
+  - .gitlab-ci-local
   - .mise-data
   - .venv
-  - node_modules
+  - .cache
+  - .pytest_cache
+  - .ruff_cache
+  - .mypy_cache
+  - .angular
+  - "**/__pycache__"
+  - "**/node_modules"
+  - target
+  - dist
+  - site
+  # A Copier template: its file names are Jinja; ctt renders it in .ctt/.
+  - template
+  - .ctt

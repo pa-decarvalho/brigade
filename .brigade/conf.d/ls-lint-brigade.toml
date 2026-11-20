@@ -5,5 +5,5 @@ ls-lint = "2.3.2"
 [tasks."ls-lint:lint"]
 description = "Check file and folder names with ls-lint"
 dir = "{{config_root}}/../.."
-# Config: .brigade/configs/ls-lint.yml (the project's: its naming rules).
+# Config: .brigade/configs/ls-lint.yml (brigade's; ls_lint_config for your own).
 run = '''ls-lint --config .brigade/configs/ls-lint.yml'''

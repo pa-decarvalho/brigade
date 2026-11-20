@@ -16,7 +16,8 @@ applied from this checkout at its latest tag, pushed to the forge, then:
 `<cli>:setup` and `<cli>:check`, a pull request (lint, build, test),
 `brigade:update` to the checkout's `HEAD` in a pull request whose CI passes
 (both merged), then the release (release PR, `X.Y.Z` tag) and the deploy to a
-local Nexus (`tests/fixtures/compose.yml`: pypi, npm and docker repositories,
+local Nexus (`tests/fixtures/compose.yml`: pypi, npm, maven and docker
+repositories,
 logged in as its deploy user), both made by the checkout's files: a fix to them
 is tested before its release.
 The checkout is the projects' `_src_path`, mounted at the same path in the
@@ -30,7 +31,7 @@ API). No Renovate: its update is what `brigade:update` does.
 - Per forge (`gitea`, `github`, `forgejo`, `gitlab`; `tests/e2e/up.py`):
   `<forge>:up` (start, admin token, runner; `.forges/<server>.json`),
   `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
-  `node`, `docker`; all by default), `<forge>:down`
+  `node`, `docker`, `java`; all by default), `<forge>:down`
   (remove it, then everything Docker no longer uses, volumes included),
   `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
   needed, `down` at the end. GitLab takes a few minutes and, with Nexus and
