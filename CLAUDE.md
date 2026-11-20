@@ -101,8 +101,10 @@ mise fragment with all its tasks, and stages follow from the tools.
   them): conditions go in file names or in pin-free files.
 - Add a stage (build, release, deploy...) only when a tool needs it.
 - brigade-owned CI files only install mise and call `mise run <task>`.
-  GitHub/Gitea: each workflow checks out, then calls its stage's composite
-  action `.brigade/ci/<ci>/actions/<stage>` (mise via `actions/mise`,
+  Forgejo (`ci: forgejo`) uses Gitea's files (`.forgejo/workflows/`, the same
+  `.brigade/ci/gitea/actions/`), with its own Releasaurus forge and Renovate
+  platform. GitHub/Gitea: each workflow checks out, then calls its stage's
+  composite action `.brigade/ci/<ci>/actions/<stage>` (mise via `actions/mise`,
   `mise run <stage>`, the stage's env; secrets as inputs, since actions cannot
   read them); `deploy` calls mise-action itself with `cache: false`, because
   jactionlint does not follow a nested action's inputs; each CI platform lints

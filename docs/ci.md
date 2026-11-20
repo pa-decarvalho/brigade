@@ -127,11 +127,18 @@ Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate` now,
 use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline
 schedule on GitLab.
 
-## Gitea and Forgejo (`ci: gitea`)
+## Gitea (`ci: gitea`) and Forgejo (`ci: forgejo`)
 
-Same layout as GitHub: `.gitea/workflows/<stage>.yml` and
-`.brigade/ci/gitea/actions/`.
+Same layout as GitHub: `.gitea/workflows/<stage>.yml` (`.forgejo/workflows/` on
+Forgejo) and `.brigade/ci/gitea/actions/`, the same for both.
 
+- Forgejo forked Gitea and their APIs differ: on Forgejo, Releasaurus and
+  Renovate use their `forgejo` forge and platform, and the release bot token is
+  `RELEASAURUS_FORGEJO_TOKEN`. A Forgejo project on `ci: gitea` (before brigade
+  had `ci: forgejo`) fails its release once a release PR is open: set
+  `ci: forgejo` in `.brigade/copier/data.yml`, run `mise run brigade:update`,
+  and rename the `RELEASAURUS_GITEA_TOKEN` secret to `RELEASAURUS_FORGEJO_TOKEN`.
+- `tea` is not offered on Forgejo yet: its install fails in Forgejo's CI (#299).
 - mise is installed with its install script: Forgejo resolves actions from its
   own mirror, which has `actions/checkout` but not mise-action, and act (local
   runs) refuses full URLs. The script checks the archive against a checksum file

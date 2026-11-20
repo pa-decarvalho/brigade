@@ -35,9 +35,9 @@ jobs:
     - name: "template-gitlab"
       run:
         - "mise run ctt:test -- -t .ctt/template-gitlab"
-    - name: "template-gitea"
+    - name: "template-forgejo"
       run:
-        - "mise run ctt:test -- -t .ctt/template-gitea"
+        - "mise run ctt:test -- -t .ctt/template-forgejo"
     - name: "python-gitea"
       run:
         - "mise run ctt:test -- -t .ctt/python-gitea"

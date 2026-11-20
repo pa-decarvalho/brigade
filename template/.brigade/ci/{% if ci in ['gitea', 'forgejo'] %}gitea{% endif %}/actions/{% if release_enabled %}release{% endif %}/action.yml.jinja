@@ -1,4 +1,4 @@
----
+{% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 name: release
 description: mise run release (Releasaurus), with the project's tools
@@ -18,8 +18,8 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        RELEASAURUS_FORGE: gitea
-        RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
-        RELEASAURUS_GITEA_TOKEN: ${{ inputs.token || github.token }}
+{% endraw %}        RELEASAURUS_FORGE: {{ ci }}
+{% raw %}        RELEASAURUS_REPO: ${{ github.server_url }}/${{ github.repository }}
+{% endraw %}        RELEASAURUS_{{ ci | upper }}_TOKEN: {% raw %}${{ inputs.token || github.token }}
         TASK: ${{ inputs.task }}
-      run: mise run "$TASK"
+      run: mise run "$TASK"{% endraw %}
