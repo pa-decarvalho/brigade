@@ -1,3 +1,9 @@
+# [0.33.0](https://github.com/pa-decarvalho/brigade/compare/0.32.3...0.33.0) - 2026-11-20
+
+### 🚀 Features
+
+- ci: forgejo, with Releasaurus' and Renovate's Forgejo support (#313) [_(6d5bef37)_](https://github.com/pa-decarvalho/brigade/commit/6d5bef374c49d5ffb2f2eee37baa43469d880a5e)
+
 # [0.32.3](https://github.com/pa-decarvalho/brigade/compare/0.32.2...0.32.3) - 2026-11-20
 
 ### 🐛 Bug Fixes
