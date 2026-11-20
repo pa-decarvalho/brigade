@@ -1,3 +1,13 @@
+# [0.35.0](https://github.com/pa-decarvalho/brigade/compare/0.34.0...0.35.0) - 2026-11-20
+
+### 🚀 Features
+
+- add maven to the tool catalog (Java with Maven) (#328) [_(4febb340)_](https://github.com/pa-decarvalho/brigade/commit/4febb340dd8fd6b0433fa9fd50c1abd446dc99da)
+
+### 🐛 Bug Fixes
+
+- act:test replays without racing on shared actions (act's new action cache) (#326) [_(6395dfbf)_](https://github.com/pa-decarvalho/brigade/commit/6395dfbfece0b71ecfc1370c24e22a5f4e09a4a2)
+
 # [0.34.0](https://github.com/pa-decarvalho/brigade/compare/0.33.1...0.34.0) - 2026-11-20
 
 ### 🚀 Features
