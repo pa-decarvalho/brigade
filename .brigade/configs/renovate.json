@@ -79,7 +79,8 @@
                 ".brigade/**",
                 ".gitlab-ci.yml",
                 ".github/workflows/{lint,build,test,release,deploy,operate}.yml",
-                ".gitea/workflows/{lint,build,test,release,deploy,operate}.yml"
+                ".gitea/workflows/{lint,build,test,release,deploy,operate}.yml",
+                ".forgejo/workflows/{lint,build,test,release,deploy,operate}.yml"
             ],
             "matchDepNames": ["!brigade"],
             "enabled": false
