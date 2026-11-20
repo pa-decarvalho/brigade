@@ -41,8 +41,8 @@ jobs:
             task: test-python-gitlab
           - name: template-gitlab
             task: test-template-gitlab
-          - name: template-gitea
-            task: test-template-gitea
+          - name: template-forgejo
+            task: test-template-forgejo
           - name: python-gitea
             task: test-python-gitea
           - name: python-mirror
