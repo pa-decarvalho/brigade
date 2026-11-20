@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=github-releases depName=robgonnella/releasaurus
-"aqua:robgonnella/releasaurus" = "1.4.0"
+"aqua:robgonnella/releasaurus" = "1.4.1"
 
 # releasaurus_workflow "pr" (default): tags and publishes a merged release PR, then opens or
 # updates the next one (this order is required: release-pr fails while a merged release PR is

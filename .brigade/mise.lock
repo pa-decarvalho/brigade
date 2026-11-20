@@ -97,45 +97,45 @@ url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/ly
 url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/409959491"
 
 [[tools."aqua:robgonnella/releasaurus"]]
-version = "1.4.0"
+version = "1.4.1"
 backend = "aqua:robgonnella/releasaurus"
-specifiers = ["1.4.0"]
+specifiers = ["1.4.1"]
 
 [tools."aqua:robgonnella/releasaurus"."platforms.linux-arm64"]
-checksum = "sha256:02bf734acfadc53942f6ce15dbfb4845f4b6568df482ee2b6b143e32dc43d1d8"
+checksum = "sha256:df2ff0d7720ffbeaa97bbdf388e6fff6034702db8f6f006e64d0679f421372cc"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-aarch64-unknown-linux-musl.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793724"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-aarch64-unknown-linux-musl.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480177"
 
 [tools."aqua:robgonnella/releasaurus"."platforms.linux-arm64-musl"]
-checksum = "sha256:02bf734acfadc53942f6ce15dbfb4845f4b6568df482ee2b6b143e32dc43d1d8"
+checksum = "sha256:df2ff0d7720ffbeaa97bbdf388e6fff6034702db8f6f006e64d0679f421372cc"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-aarch64-unknown-linux-musl.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793724"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-aarch64-unknown-linux-musl.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480177"
 
 [tools."aqua:robgonnella/releasaurus"."platforms.linux-x64"]
-checksum = "sha256:a8cdcf5eea263748e120551fb4a2826aef1af4a557415a35b895c57f55c3f4c0"
+checksum = "sha256:5a6f99e4fc59de723b6386bdef3a250a79f07f4b8a1b0692a1731c2eeccba276"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-x86_64-unknown-linux-musl.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793447"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-x86_64-unknown-linux-musl.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480024"
 
 [tools."aqua:robgonnella/releasaurus"."platforms.linux-x64-musl"]
-checksum = "sha256:a8cdcf5eea263748e120551fb4a2826aef1af4a557415a35b895c57f55c3f4c0"
+checksum = "sha256:5a6f99e4fc59de723b6386bdef3a250a79f07f4b8a1b0692a1731c2eeccba276"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-x86_64-unknown-linux-musl.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793447"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-x86_64-unknown-linux-musl.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480024"
 
 [tools."aqua:robgonnella/releasaurus"."platforms.macos-arm64"]
-checksum = "sha256:e0ea4f9d57d7df71001e2b6fa81c412aaa858a1f7ceee4e79ceee29d8b7da975"
+checksum = "sha256:c48e8d581d2a82e3d1d12c8999754b3570ee15a7f0a72af48c12f37da4171759"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-aarch64-apple-darwin.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793857"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-aarch64-apple-darwin.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480265"
 
 [tools."aqua:robgonnella/releasaurus"."platforms.windows-x64"]
-checksum = "sha256:c29decc79a7851a9293a36e36162564ba5a37853d0bd35ab61214b892ad6bc0b"
+checksum = "sha256:0d516dd7645b989a2fde2cfdb42fc5d4703f0761282bf7d92949af7552ec741c"
 checksum_source = "mise-versions"
-url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.0/releasaurus-v1.4.0-x86_64-pc-windows-msvc.tgz"
-url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/754793579"
+url = "https://github.com/robgonnella/releasaurus/releases/download/v1.4.1/releasaurus-v1.4.1-x86_64-pc-windows-msvc.tgz"
+url_api = "https://api.github.com/repos/robgonnella/releasaurus/releases/assets/769480090"
 
 [[tools.editorconfig-checker]]
 version = "4.0.2"
