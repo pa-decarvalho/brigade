@@ -233,7 +233,6 @@ class GitHubOnGitea(Gitea):
 
 class Forgejo(Gitea):
     name = server = ci = "forgejo"
-    cli = ""  # tea fails to install in Forgejo's CI (#299)
     releasaurus_secret = "RELEASAURUS_FORGEJO_TOKEN"
 
 

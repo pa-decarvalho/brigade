@@ -122,8 +122,9 @@ tools:
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
     tea (repository settings, local):
       value: tea
-      # Not on Forgejo yet: its install fails in Forgejo's CI (#299).
-      validator: "{% if ci != 'gitea' %}needs Gitea{% endif %}"
+      validator: >-
+        {% if ci not in ['gitea', 'forgejo'] %}needs Gitea
+        or Forgejo{% endif %}
     prek (git hooks, local): prek
   # brigade's defaults, then the presets' tools, without those the CI
   # platform refuses (see their validator).
@@ -132,7 +133,7 @@ tools:
       'github': ['gitlab-ci-local'],
       'gitlab': ['zizmor', 'act'],
       'gitea': ['zizmor', 'pages', 'gitlab-ci-local'],
-      'forgejo': ['zizmor', 'pages', 'gitlab-ci-local', 'tea'],
+      'forgejo': ['zizmor', 'pages', 'gitlab-ci-local'],
       'none': ['zizmor', 'pages', 'act', 'gitlab-ci-local'],
     }[ci] -%}
     {{ (['brigade', 'yamllint', 'gitleaks', 'typos'] + presets | sum(start=[]))

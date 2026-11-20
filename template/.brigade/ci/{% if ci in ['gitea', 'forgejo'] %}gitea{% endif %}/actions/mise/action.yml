@@ -24,6 +24,10 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        # Forgejo Actions sets it (this Forgejo's token): mise's forgejo:
+        # backend would send it to the tools' own forge (gitea.com for tea),
+        # which refuses it (401). Gitea sets none.
+        FORGEJO_TOKEN: ""
       run: |
         mise trust
         mise install
