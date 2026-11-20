@@ -26,17 +26,18 @@ API). No Renovate: its update is what `brigade:update` does.
 
 ## Run
 
-- `mise run forges:test -- --forge <gitea|github|forgejo|gitlab>`: every
-  project type; `-k <type>` for one. The forge starts on first use
-  (`tests/e2e/up.py`, `.forges/<forge>.json`) and stays up: the next runs reuse
-  it. GitLab takes a few minutes and about 4 GB: one forge at a time
-  (`mise run forges:down` between them).
+- Per forge (`gitea`, `github`, `forgejo`, `gitlab`; `tests/e2e/up.py`):
+  `<forge>:up` (start, admin token, runner; `.forges/<server>.json`),
+  `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
+  `node`, `docker`; all by default), `<forge>:down`
+  (remove it, then everything Docker no longer uses, volumes included),
+  `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
+  needed, `down` at the end. GitLab takes a few minutes and about 4 GB: one
+  forge at a time.
 - Each type takes 5 to 10 minutes: run it in the background and wait for the
   notification.
-- `mise run forges:up -- <forge>` prints the UI's URL and login; links the forge
-  writes use its Docker name (`http://gitea:3000`): replace with the URL.
-- `mise run forges:down` removes the forges and their data, then everything
-  Docker no longer uses, Docker-wide (`docker system prune --all --volumes`).
+- `<forge>:up` prints the UI's URL and login; links the forge writes use its
+  Docker name (`http://gitea:3000`): replace with the URL.
 
 ## Read the results
 
@@ -65,4 +66,7 @@ user.
 - A registry it needs: a service in `tests/fixtures/compose.yml` (reset before
   each test by `up.reset_registries`), its URL by service name in `env` (the
   jobs) and by `localhost` in `deployed` (this machine).
+- Its test id (`CASES` in `projects.py`, the type's name) in the help of the
+  `<forge>:run` and `<forge>:test` tasks (`mise.toml`, `usage`): mise cannot
+  list choices for a repeatable argument, `up.py` checks the names.
 - Run it on gitea, then the other forges.

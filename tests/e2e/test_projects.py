@@ -18,7 +18,7 @@ import pytest  # ty: ignore[import-not-found]  # run with uv run --with pytest
 import up
 from conftest import Note, sh
 from forges import Forge, wait_for
-from projects import PROJECTS
+from projects import CASES, PROJECTS
 
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
 COPIER = ["uvx", "copier@9.19.1"]  # .copier/settings.yml's pin
@@ -68,17 +68,7 @@ def data_args(data: dict) -> list[str]:
     return [arg for k, v in values.items() for arg in ("--data", f"{k}={v}")]
 
 
-# (project type, Releasaurus workflow): each forge runs both workflows, on python.
-CASES = [
-    ("python", "pr"),
-    ("python", "direct"),
-    *((k, "pr") for k in PROJECTS if k != "python"),
-]
-
-
-@pytest.mark.parametrize(
-    ("kind", "workflow"), CASES, ids=[k if w == "pr" else f"{k}-{w}" for k, w in CASES]
-)
+@pytest.mark.parametrize(("kind", "workflow"), CASES.values(), ids=CASES.keys())
 def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -> None:
     """pr: the release PR opens on the feat merge, the update merge updates it.
     direct: the update merges first, then the feat merge releases at once."""

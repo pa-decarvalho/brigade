@@ -1,7 +1,7 @@
 """brigade end to end on a local forge: the forge, the steps, the note.
 
 Run on this machine: pytest tests/e2e --forge <gitea|github|forgejo|gitlab>
-(mise run forges:test). The forge starts on first use (up.py) and stays up.
+(mise run <forge>:run, or <forge>:test). The forge starts on first use (up.py).
 Each test writes .forges/<date>-<forge>-<project>.md: every step's result and
 time, and the failed jobs' last log lines.
 """

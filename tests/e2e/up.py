@@ -1,18 +1,27 @@
-"""Start a local forge with its runner, and the admin token the tests use.
+"""A local forge for the end-to-end tests: up, run, test, down.
 
-Usage: up.py <gitea|forgejo|gitlab>, or up.py down: removes them all with
-their data, then everything Docker no longer uses (docker system prune). Starts tests/fixtures/<forge>/compose.yml, waits until it
-answers, creates the admin and a token, registers the runner, and writes
-.forges/<forge>.json. Run again, it reuses a forge that is up. The tests call
-ensure() themselves: running up.py is only needed to open a forge's UI.
+Usage: up.py <forge> <action> [type...], forge gitea, forgejo, gitlab or
+github (a ci: github project on Gitea, the same server), as mise's <forge>:<action>
+tasks run it:
+- up: starts tests/fixtures/<server>/compose.yml, waits until it answers,
+    creates the admin and a token, registers the runner, writes
+    .forges/<server>.json; reuses a forge that is up;
+- run: the tests on it, all or the given ids of projects.CASES;
+- down: removes the forge and its data, then everything Docker no longer
+    uses, Docker-wide (containers, images, networks, build cache, volumes);
+- test: up, run, then down, even when the tests fail.
+The tests call ensure() themselves: run starts a forge that is not up.
 """
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import urllib.request
 from pathlib import Path
+
+from projects import CASES
 
 ROOT = Path(__file__).resolve().parents[2]  # brigade's checkout
 FIXTURES = ROOT / "tests" / "fixtures"
@@ -20,7 +29,6 @@ STATE = ROOT / ".forges"
 # brigade at its tags (the tests' templates): outside the checkout, whose
 # linters would read them; mounted in the jobs too (BRIGADE_TEMPLATES).
 TEMPLATES = Path("/tmp/brigade-forges").resolve()
-SERVERS = ("gitea", "forgejo", "gitlab")
 # The admin, its password, and the API as seen from this machine.
 USER = {"gitea": "brigade", "forgejo": "brigade", "gitlab": "root"}
 URL = {
@@ -168,25 +176,63 @@ def docker(*args: str) -> list[str]:
     return result.stdout.split()
 
 
-def down() -> None:
-    """The forges and their data, then all Docker no longer uses (a dev machine:
+def down(server: str) -> None:
+    """The forge and its data, then all Docker no longer uses (a dev machine:
     images are pulled again when needed)."""
-    for server in SERVERS:
-        compose(server, "--profile", "runner", "down", "--volumes", "--remove-orphans")
-        (STATE / f"{server}.json").unlink(missing_ok=True)
-    # Stopped containers (the jobs'), unused images, networks, build cache and
-    # anonymous volumes; then the forges' volumes a job container still held.
-    docker("system", "prune", "--all", "--force", "--volumes")
-    if volumes := docker("volume", "ls", "-q", "--filter", "name=brigade-forges_"):
-        docker("volume", "rm", "-f", *volumes)
+    compose(server, "--profile", "runner", "down", "--volumes", "--remove-orphans")
+    (STATE / f"{server}.json").unlink(missing_ok=True)
+    shutil.rmtree(TEMPLATES, ignore_errors=True)
+    # Stopped containers (the jobs'), unused images, networks, build cache, then
+    # every unused volume, named ones included (the runners' caches).
+    docker("system", "prune", "--all", "--force")
+    docker("volume", "prune", "--all", "--force")
+
+
+def run(forge: str, types: list[str]) -> int:
+    """pytest on the forge, for the given test ids (all when none); its exit code."""
+    unknown = set(types) - set(CASES)
+    if unknown:
+        sys.exit(f"unknown types {sorted(unknown)}: {', '.join(CASES)}")
+    test = ROOT / "tests/e2e/test_projects.py"
+    targets = [f"{test}::test_project[{t}]" for t in types] or [str(test)]
+    pytest = [
+        "uv",
+        "run",
+        "--no-project",
+        "--python",
+        "3.14",
+        "--with",
+        "pytest==9.2.0",
+    ]
+    pytest += ["pytest", *targets, "--forge", forge, "-p", "no:cacheprovider", "-v"]
+    env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+    return subprocess.call(pytest, cwd=ROOT, env=env)
+
+
+FORGES = {"gitea": "gitea", "github": "gitea", "forgejo": "forgejo", "gitlab": "gitlab"}
+ACTIONS = ("up", "run", "down", "test")
+
+
+def main(args: list[str]) -> int:
+    if len(args) < 2 or args[0] not in FORGES or args[1] not in ACTIONS:
+        sys.exit(f"usage: up.py <{'|'.join(FORGES)}> <{'|'.join(ACTIONS)}> [type...]")
+    forge, action, types = args[0], args[1], args[2:]
+    server = FORGES[forge]
+    if action == "up":
+        found = ensure(server)
+        print(f"{found['url']}: {found['user']} / {PASSWORD}")
+        return 0
+    if action == "run":
+        return run(forge, types)
+    if action == "down":
+        down(server)
+        return 0
+    ensure(server)
+    try:
+        return run(forge, types)
+    finally:
+        down(server)
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    if args == ["down"]:
-        down()
-    elif len(args) == 1 and args[0] in SERVERS:
-        forge = ensure(args[0])
-        print(f"{forge['url']}: {forge['user']} / {PASSWORD}")
-    else:
-        sys.exit(f"usage: up.py <{'|'.join(SERVERS)}|down>")
+    sys.exit(main(sys.argv[1:]))
