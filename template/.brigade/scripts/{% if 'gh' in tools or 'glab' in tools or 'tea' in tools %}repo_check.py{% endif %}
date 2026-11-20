@@ -269,7 +269,11 @@ def gitea(checks: set[str]) -> None:
         api("tea", f"orgs/{owner}/actions/secrets"),
     )
     if "releasaurus" in checks:
-        secret = "RELEASAURUS_FORGEJO_TOKEN" if "forgejo" in checks else "RELEASAURUS_GITEA_TOKEN"
+        secret = (
+            "RELEASAURUS_FORGEJO_TOKEN"
+            if "forgejo" in checks
+            else "RELEASAURUS_GITEA_TOKEN"
+        )
         report(
             has(secrets, secret),
             f"{secret} secret (else the CI token: release PRs start"
