@@ -1,3 +1,13 @@
+# [0.34.0](https://github.com/pa-decarvalho/brigade/compare/0.33.1...0.34.0) - 2026-11-20
+
+### 🚀 Features
+
+- ls-lint with brigade's naming rules per language, an ls_lint_config answer (#322) [_(89a55966)_](https://github.com/pa-decarvalho/brigade/commit/89a55966e4302b8afe46943a3a7ff44a044b147d)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#320) [_(f6d24109)_](https://github.com/pa-decarvalho/brigade/commit/f6d2410999904200ebbf317b18ae98ebd5e2c2d4)
+
 # [0.33.1](https://github.com/pa-decarvalho/brigade/compare/0.33.0...0.33.1) - 2026-11-20
 
 ### 🐛 Bug Fixes
