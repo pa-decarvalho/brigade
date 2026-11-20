@@ -75,7 +75,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     project = PROJECTS[kind]
     if forge.server in project.not_on:
         pytest.skip(f"brigade refuses {kind} on {forge.server}")
-    up.reset_registries(forge.server)  # each run publishes demo's 0.1.0 again
+    registry = up.reset_registries(forge.server)
     path, repo = tmp_path / "demo", f"demo-{kind}-{int(time.time())}"
     path.mkdir()
     full = forge.name != "github"  # github on Gitea: GitHub's API is not there
@@ -154,7 +154,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
             if ci != forge.ci:  # the secret's name before the move
                 secrets[f"RELEASAURUS_{ci.upper()}_TOKEN"] = "{token}"
             for name, value in secrets.items():
-                value = value.format(user=forge.user, token=forge.token)
+                value = value.format(user=forge.user, token=forge.token, **registry)
                 forge.set_secret(repo, name, value)
 
         def cli_settings() -> None:

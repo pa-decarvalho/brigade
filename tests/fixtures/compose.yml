@@ -1,28 +1,28 @@
 ---
 # What every forge shares, included by <forge>/compose.yml: the network and the
-# registries deploys publish to (no auth). Jobs reach them by service name on
-# the brigade-forges network. Throwaway setup, for local tests only.
+# registry deploys publish to. Jobs reach it by service name on the
+# brigade-forges network. Throwaway setup, for local tests only.
 networks:
   default:
     name: brigade-forges
 
 services:
-  # Python packages (uv:deploy).
-  pypi:
-    image: pypiserver/pypiserver:v2.4.3
-    command: [run, -a, ., -P, ., /data/packages]
-    ports: ["127.0.0.1:8099:8080"]
-
-  # npm packages (node:deploy): @brigade-forges/* published here, the rest
-  # proxied from npmjs.
-  verdaccio:
-    image: verdaccio/verdaccio:6.1.6
-    volumes: [./verdaccio.yaml:/verdaccio/conf/config.yaml:ro]
-    ports: ["127.0.0.1:4873:4873"]
-
-  # Images (docker:deploy). Jobs build and push with the host's Docker daemon
-  # (the runners mount its socket), which reaches this registry as
-  # localhost:5099 only (plain HTTP is allowed on localhost).
-  registry:
-    image: registry:3.0.0
-    ports: ["127.0.0.1:5099:5000"]
+  # Nexus, as companies run it: Python (uv:deploy), npm (node:deploy) and image
+  # (docker:deploy) repositories, each deploy logged in as a deploy user,
+  # anonymous reads (tests/e2e/up.py sets it up). Images are pushed by the
+  # host's Docker daemon (the runners mount its socket), which reaches the
+  # docker repository as localhost:5099 only (plain HTTP is allowed on
+  # localhost).
+  nexus:
+    image: sonatype/nexus3:3.98.3
+    environment:
+      INSTALL4J_ADD_VM_PARAMS: -Xms768m -Xmx768m -XX:MaxDirectMemorySize=512m
+    ports: ["127.0.0.1:8099:8081", "127.0.0.1:5099:5000"]
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fs
+        - http://localhost:8081/service/rest/v1/status/writable
+      interval: 3s
+      retries: 100

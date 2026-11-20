@@ -1,8 +1,8 @@
 """The project types the tests create: their tools, files and deploy.
 
 Each one is created with its ecosystem's tools on top of brigade, deploys to a
-registry of tests/fixtures/compose.yml on its release tag, and its deploy is
-checked there.
+Nexus repository (tests/fixtures/compose.yml) on its release tag, logged in
+as its deploy user, and its deploy is checked there.
 """
 
 from dataclasses import dataclass, field
@@ -16,7 +16,9 @@ class Project:
     files: dict[str, str]  # written after Copier
     commands: list[list[str]]  # then run with mise exec (uv init, npm install...)
     env: dict[str, str]  # the project's mise.toml [env]: its registry, from CI
-    secrets: dict[str, str]  # CI secrets; "{user}" and "{token}": the admin's
+    # CI secrets; "{user}" and "{token}": the admin's; "{deploy_user}",
+    # "{deploy_password}" and "{npm_token}": Nexus' (up.reset_registries)
+    secrets: dict[str, str]
     deployed: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
     data: dict = field(default_factory=dict)  # more Copier answers
     not_on: tuple[str, ...] = ()  # forges brigade refuses it on
@@ -89,7 +91,7 @@ STRUCTURE_TEST = (
 )
 
 PROJECTS = {
-    # A library published to a Python index (pypi).
+    # A library published to a Python index (Nexus' pypi repository).
     "python": Project(
         tools=[*BASE, "ruff", "pytest", "uv"],
         data={"uv_publish": True},
@@ -98,11 +100,14 @@ PROJECTS = {
             ["uv", "init", "-q", "--lib", "--vcs", "none", "--name", "demo"],
             ["uv", "add", "-q", "--dev", "pytest==9.2.0"],
         ],
-        env={"UV_PUBLISH_URL": "http://pypi:8080/"},
-        secrets={"UV_PUBLISH_USERNAME": "{user}", "UV_PUBLISH_PASSWORD": "{token}"},
-        deployed=("http://localhost:8099/simple/demo/", "demo-{tag}"),
+        env={"UV_PUBLISH_URL": "http://nexus:8081/repository/pypi/"},
+        secrets={
+            "UV_PUBLISH_USERNAME": "{deploy_user}",
+            "UV_PUBLISH_PASSWORD": "{deploy_password}",
+        },
+        deployed=("http://localhost:8099/repository/pypi/simple/demo/", "demo-{tag}"),
     ),
-    # A TypeScript library published to an npm registry (verdaccio).
+    # A TypeScript library published to an npm registry (Nexus' npm repository).
     "node": Project(
         tools=[*BASE, "biome", "node"],
         data={"npm_publish": True},
@@ -113,24 +118,20 @@ PROJECTS = {
             "\treturn `Hello, ${name}!`;\n}\n",
             "test/index.test.ts": NODE_TEST,
             ".gitignore": "node_modules/\ndist/\n",
-            ".npmrc": "//verdaccio:4873/:_authToken=${NPM_TOKEN}\n",
+            # The scope's registry, its token; the rest from npmjs.
+            ".npmrc": "@brigade-forges:registry=http://nexus:8081/repository/npm/\n"
+            "//nexus:8081/repository/npm/:_authToken=${NPM_TOKEN}\n",
             "README.md": "# Demo\n\nA demo TypeScript library.\n",
         },
-        # This machine resolves packages from npmjs (verdaccio is the jobs').
-        commands=[
-            [
-                "env",
-                "NPM_CONFIG_REGISTRY=https://registry.npmjs.org/",
-                "npm",
-                "install",
-                "--package-lock-only",
-            ],
-        ],
-        env={"NPM_CONFIG_REGISTRY": "http://verdaccio:4873/"},
-        secrets={"NPM_TOKEN": "{token}"},
-        deployed=("http://localhost:4873/@brigade-forges%2fdemo", '"{tag}"'),
+        commands=[["npm", "install", "--package-lock-only"]],
+        env={},
+        secrets={"NPM_TOKEN": "{npm_token}"},
+        deployed=(
+            "http://localhost:8099/repository/npm/@brigade-forges%2fdemo",
+            '"{tag}"',
+        ),
     ),
-    # A Python app shipped as an image, pushed to a registry (registry).
+    # A Python app shipped as an image, pushed to a registry (Nexus' docker repository).
     "docker": Project(
         tools=[
             *BASE,
@@ -152,9 +153,12 @@ PROJECTS = {
             ["uv", "init", "-q", "--package", "--vcs", "none", "--name", "demo"],
             ["uv", "add", "-q", "--dev", "pytest==9.2.0"],
         ],
-        # The host's Docker daemon pushes (compose.yml's registry).
+        # The host's Docker daemon pushes (compose.yml's nexus).
         env={"DOCKER_IMAGE": "localhost:5099/demo"},
-        secrets={},
+        secrets={
+            "DOCKER_USERNAME": "{deploy_user}",
+            "DOCKER_PASSWORD": "{deploy_password}",
+        },
         deployed=("http://localhost:5099/v2/demo/tags/list", '"{tag}"'),
         # The docker tool's validator: no Docker daemon in GitLab's CI yet.
         not_on=("gitlab",),
