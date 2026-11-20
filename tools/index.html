@@ -1,0 +1,2165 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Copier template that adds mise tooling and CI to a project">
+      
+      
+      
+        <link rel="canonical" href="https://pa-decarvalho.github.io/brigade/tools/">
+      
+      
+      
+        <link rel="prev" href="../questions/">
+      
+      
+        <link rel="next" href="../ci/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="zensical-0.1.2">
+    
+    
+      
+        <title>Tools - brigade</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ebb7f775.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="./.." title="brigade" class="md-header__button md-logo" aria-label="brigade" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="brigade">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navigation</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            brigade
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tools
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Search</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/pa-decarvalho/brigade" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pa-decarvalho/brigade
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./.." title="brigade" class="md-nav__button md-logo" aria-label="brigade" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="brigade">
+
+    </a>
+    brigade
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pa-decarvalho/brigade" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    pa-decarvalho/brigade
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Home
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Getting started
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../questions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Questions
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Tools
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Tools
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Stages
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Catalog
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-configs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Tool configs
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codeceptjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        codeceptjs
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prek" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        prek
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Repository settings
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Platforms
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brigade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        brigade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        release
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        deploy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        operate
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="operate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brigade-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        brigade updates
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ansible
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Toolchain
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#molecule" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Molecule
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-ci-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Run the CI locally
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customize-a-version-or-a-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Customize a version or a command
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  CI platforms
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mirrors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Mirrors
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Updating
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Custom tasks
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Recipes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Contributing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Stages
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Presets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Catalog
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-configs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Tool configs
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codeceptjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        codeceptjs
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prek" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        prek
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Repository settings
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Platforms
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brigade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        brigade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        release
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        deploy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        operate
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="operate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#brigade-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        brigade updates
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ansible
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Toolchain
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#molecule" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Molecule
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-ci-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Run the CI locally
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customize-a-version-or-a-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Customize a version or a command
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+  
+
+
+<h1 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">&para;</a></h1>
+<p><em>The stations of the brigade, and who works at each one.</em></p>
+<p>Pick your tools in one list when applying brigade. A tool brings its version and
+all its tasks, in one file: <code>.brigade/conf.d/&lt;tool&gt;-brigade.toml</code>, listed in
+<code>.miserc.toml</code>. Its tasks run at the project root.</p>
+<p>Tasks are named <code>&lt;tool&gt;:&lt;action&gt;</code>. Stages run in this order: <code>lint</code>, <code>build</code>,
+<code>test</code>, <code>release</code>, <code>deploy</code>, <code>operate</code>, and each runs every <code>&lt;tool&gt;:&lt;stage&gt;</code>
+task. Any other action, such as <code>zensical:serve</code>, stays out of the pipeline.</p>
+<h2 id="stages">Stages<a class="headerlink" href="#stages" title="Permanent link">&para;</a></h2>
+<p>For each stage, Copier asks whether to keep it, then its commands.</p>
+<ul>
+<li>Answer no to remove the stage: no mise task, no CI job.</li>
+<li>Leave the commands empty to run all the stage's tools. A stage without tools
+  does nothing.</li>
+<li>Give commands to run them instead, in order, locally and in CI:</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">lint_commands</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"mise</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">ruff:lint"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"mise</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">typos:lint"</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+<h2 id="presets">Presets<a class="headerlink" href="#presets" title="Permanent link">&para;</a></h2>
+<p>The <code>presets</code> question, asked before <code>tools</code>, pre-selects tools: tick or untick
+them in <code>tools</code> before going on. Only <code>tools</code> decides what the project gets; a
+preset changed in a later brigade release does not change existing projects. A
+preset's tools never change: its answer is checked against the choices on each
+<code>brigade:update</code>, so a new list is a new preset. A preset's answer is its tool
+list, e.g. <code>presets: [[ruff, ty, pytest, uv]]</code> in <code>.brigade/copier/data.yml</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python</code></td>
+<td><code>ruff</code>, <code>ty</code>, <code>pytest</code>, <code>uv</code></td>
+</tr>
+<tr>
+<td><code>go</code></td>
+<td><code>golangci-lint</code></td>
+</tr>
+<tr>
+<td><code>node</code></td>
+<td><code>node</code>, <code>biome</code> (JavaScript or TypeScript)</td>
+</tr>
+<tr>
+<td><code>rust</code></td>
+<td><code>rust</code></td>
+</tr>
+<tr>
+<td><code>java</code></td>
+<td><code>maven</code> (Java with Maven)</td>
+</tr>
+<tr>
+<td><code>terraform</code></td>
+<td><code>tflint</code>, <code>checkov</code>, <code>opentofu</code></td>
+</tr>
+<tr>
+<td><code>ansible</code></td>
+<td><code>ansible-lint</code>, <code>molecule</code>, <code>ansible</code></td>
+</tr>
+<tr>
+<td><code>shell</code></td>
+<td><code>shellcheck</code>, <code>shfmt</code></td>
+</tr>
+<tr>
+<td><code>docker</code></td>
+<td><code>hadolint</code></td>
+</tr>
+<tr>
+<td><code>lua</code></td>
+<td><code>stylua</code></td>
+</tr>
+<tr>
+<td><code>docs</code></td>
+<td><code>rumdl</code>, <code>zensical</code>, <code>pages</code> (GitHub, GitLab)</td>
+</tr>
+<tr>
+<td><code>copier-template</code></td>
+<td><code>ctt</code></td>
+</tr>
+<tr>
+<td><code>security</code></td>
+<td><code>osv-scanner</code>, <code>checkov</code>, <code>zizmor</code> (GitHub)</td>
+</tr>
+<tr>
+<td><code>ci</code></td>
+<td><code>act</code> (GitHub, Gitea, Forgejo) or <code>gitlab-ci-local</code> (GitLab): replays the CI</td>
+</tr>
+<tr>
+<td><code>maintenance</code></td>
+<td><code>renovate</code>, <code>releasaurus</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="catalog">Catalog<a class="headerlink" href="#catalog" title="Permanent link">&para;</a></h2>
+<p><code>brigade</code>, <code>yamllint</code>, <code>gitleaks</code> and <code>typos</code> are selected by default.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>brigade</code></td>
+<td><code>brigade:lint</code></td>
+<td>Fails when a brigade-owned file was edited or deleted: see <a href="#brigade">brigade</a></td>
+</tr>
+<tr>
+<td><code>yamllint</code></td>
+<td><code>yamllint:lint</code></td>
+<td><code>yamllint --strict</code> (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>gitleaks</code></td>
+<td><code>gitleaks:lint</code></td>
+<td><code>gitleaks git</code> (history and staged changes)</td>
+</tr>
+<tr>
+<td><code>typos</code></td>
+<td><code>typos:lint</code></td>
+<td><code>typos</code>, without <code>.mise/</code> (mise's lock sidecars) (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>editorconfig-checker</code></td>
+<td><code>editorconfig-checker:lint</code></td>
+<td><code>editorconfig-checker</code>, without <code>.mise/</code> (mise's lock sidecars) (needs your <code>.editorconfig</code>; <a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td><code>taplo:lint</code></td>
+<td><code>taplo fmt --check</code> on <code>.brigade/*.toml</code>, <code>.brigade/*/*.toml</code> and <code>.miserc.toml</code> (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>renovate</code></td>
+<td><code>renovate:lint</code></td>
+<td><code>check-jsonschema --builtin-schema vendor.renovate</code> on your Renovate config, wherever Renovate reads it (<code>renovate.json</code>, <code>.github/renovate.json5</code>, <code>.renovaterc</code>...); none: passes</td>
+</tr>
+<tr>
+<td></td>
+<td><code>renovate:operate</code></td>
+<td><code>renovate</code> (needs <code>RENOVATE_TOKEN</code> and <code>RENOVATE_REPOSITORIES</code>: see <a href="#operate">operate</a>): a PR updating brigade on each release, and what <code>renovate_updates</code> adds (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>ruff</code></td>
+<td><code>ruff:lint</code></td>
+<td><code>ruff check &amp;&amp; ruff format --check</code> (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>ty</code></td>
+<td><code>ty:lint</code></td>
+<td><code>ty check</code> (<a href="#tool-configs">config</a>). It reads the project's <code>.venv</code> for its dependencies: CI has none, so a project with dependencies creates it first (<code>ty_lint_command: "uv sync &amp;&amp; ty check --config-file .brigade/configs/ty.toml"</code>), else their imports fail (<code>import-not-found</code>)</td>
+</tr>
+<tr>
+<td><code>shellcheck</code></td>
+<td><code>shellcheck:lint</code></td>
+<td><code>shellcheck</code> on every <code>*.sh</code> and <code>*.bash</code> (outside hidden folders); none: nothing to check</td>
+</tr>
+<tr>
+<td><code>shfmt</code></td>
+<td><code>shfmt:lint</code></td>
+<td><code>shfmt --diff</code> on the same files (style: your <code>.editorconfig</code>)</td>
+</tr>
+<tr>
+<td><code>rumdl</code></td>
+<td><code>rumdl:lint</code></td>
+<td><code>rumdl check --no-cache .</code> (Markdown: rumdl's rules, lines of 80 columns; <code>CHANGELOG.md</code>, written by the release tool, skipped; HTML only without a Markdown equivalent, or in <code>&lt;p&gt;</code> and <code>&lt;h1&gt;</code> blocks for a centered README header; <a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>markdownlint</code></td>
+<td><code>markdownlint:lint</code></td>
+<td><code>markdownlint-cli2 "**/*.md"</code>, without <code>.mise-data/</code>, <code>.venv/</code> and <code>node_modules/</code>; reads your <code>.markdownlint-cli2.*</code> or <code>.markdownlint.*</code>. Same rules as <code>rumdl</code>: pick one</td>
+</tr>
+<tr>
+<td><code>vale</code></td>
+<td><code>vale:lint</code></td>
+<td><code>vale sync &amp;&amp; vale .</code> (prose in Markdown, with Vale's built-in style), without <code>.mise-data/</code>, <code>.venv/</code> and <code>node_modules/</code> (<a href="#tool-configs">config</a>; <code>vale sync</code> downloads the style packages it lists)</td>
+</tr>
+<tr>
+<td><code>lychee</code></td>
+<td><code>lychee:lint</code></td>
+<td><code>lychee --no-progress .</code> (links in Markdown, HTML and text files, outside hidden folders and <code>CHANGELOG.md</code>, whose release PR links to a tag not made yet); reads your <code>lychee.toml</code>. Checks external links: a dead link fails an unchanged project</td>
+</tr>
+<tr>
+<td><code>codespell</code></td>
+<td><code>codespell:lint</code></td>
+<td><code>codespell</code>, outside hidden folders (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>cspell</code></td>
+<td><code>cspell:lint</code></td>
+<td><code>cspell lint .</code>, outside hidden folders (<a href="#tool-configs">config</a>). Checks every word against its dictionaries, unlike <code>typos</code> and <code>codespell</code>: add your project's words to the config's <code>words</code>, listed by <code>mise exec -- cspell lint --words-only --unique .</code></td>
+</tr>
+<tr>
+<td><code>ls-lint</code></td>
+<td><code>ls-lint:lint</code></td>
+<td><code>ls-lint</code>: file and folder names, brigade's naming rules per language (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>sqlfluff</code></td>
+<td><code>sqlfluff:lint</code></td>
+<td><code>sqlfluff lint</code> on every <code>*.sql</code> (outside hidden folders); none: nothing to check (<a href="#tool-configs">config</a>: set your SQL dialect)</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td><code>prettier:lint</code></td>
+<td><code>prettier --check .</code> (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without <code>.mise-data/</code>, <code>.mise/</code>, <code>.venv/</code> and <code>.brigade/</code>; reads your <code>.prettierrc</code> and <code>.prettierignore</code></td>
+</tr>
+<tr>
+<td><code>biome</code></td>
+<td><code>biome:lint</code></td>
+<td><code>biome ci .</code> (JavaScript, TypeScript, JSON, CSS, Markdown: lint and formatting), without what git ignores, <code>.mise-data/</code>, <code>.mise/</code>, <code>.venv/</code> and <code>.brigade/</code> (<a href="#tool-configs">config</a>). Formats the same files as <code>prettier</code>: pick one</td>
+</tr>
+<tr>
+<td><code>clang-format</code></td>
+<td><code>clang-format:lint</code></td>
+<td><code>clang-format --dry-run --Werror</code> on every C and C++ file (outside hidden folders), with your <code>.clang-format</code> (else LLVM style); none: nothing to check</td>
+</tr>
+<tr>
+<td><code>trivy</code></td>
+<td><code>trivy:lint</code></td>
+<td><code>trivy fs .</code>: vulnerable dependencies and secrets, without <code>.mise-data/</code> and <code>.mise/</code> (<a href="#tool-configs">config</a>); downloads its vulnerability database, so a new vulnerability can fail an unchanged project</td>
+</tr>
+<tr>
+<td><code>osv-scanner</code></td>
+<td><code>osv-scanner:lint</code></td>
+<td><code>osv-scanner scan source --recursive</code> on your lockfiles (<code>uv.lock</code>, <code>package-lock.json</code>...), without <code>.mise-data/</code> and <code>.mise/</code> (the tools' locked dependencies); queries osv.dev, so a new vulnerability can fail an unchanged project</td>
+</tr>
+<tr>
+<td><code>golangci-lint</code></td>
+<td><code>golangci-lint:lint</code></td>
+<td><code>golangci-lint run</code> (needs Go: the <code>go</code> tool, or <code>go</code> pinned in your <code>mise.toml</code>)</td>
+</tr>
+<tr>
+<td><code>revive</code></td>
+<td><code>revive:lint</code></td>
+<td><code>revive -set_exit_status ./...</code> (Go, golint's rules; faster than <code>golangci-lint</code>, which can run revive too), outside hidden folders; <code>-config revive.toml</code> in your command for your rules</td>
+</tr>
+<tr>
+<td><code>tflint</code></td>
+<td><code>tflint:lint</code></td>
+<td><code>tflint --recursive</code> (Terraform)</td>
+</tr>
+<tr>
+<td><code>opentofu</code></td>
+<td><code>opentofu:lint</code></td>
+<td><code>tofu fmt -check -recursive</code> (Terraform and OpenTofu formatting), outside hidden folders</td>
+</tr>
+<tr>
+<td><code>checkov</code></td>
+<td><code>checkov:lint</code></td>
+<td><code>checkov</code> on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>cfn-lint</code></td>
+<td><code>cfn-lint:lint</code></td>
+<td><code>cfn-lint</code> on every YAML or JSON file holding <code>AWSTemplateFormatVersion</code> (CloudFormation and SAM templates, outside hidden folders); none: nothing to check</td>
+</tr>
+<tr>
+<td><code>dotenv-linter</code></td>
+<td><code>dotenv-linter:lint</code></td>
+<td><code>dotenv-linter check --recursive .</code> (<code>.env</code> files), without <code>.mise-data/</code></td>
+</tr>
+<tr>
+<td><code>stylua</code></td>
+<td><code>stylua:lint</code></td>
+<td><code>stylua --check .</code> (Lua)</td>
+</tr>
+<tr>
+<td><code>ansible-lint</code></td>
+<td><code>ansible-lint:lint</code></td>
+<td><code>ansible-lint --strict</code> (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>hadolint</code></td>
+<td><code>hadolint:lint</code></td>
+<td><code>hadolint</code> on every <code>*Dockerfile*</code> and <code>*Containerfile*</code> (outside hidden folders); none: nothing to check</td>
+</tr>
+<tr>
+<td><code>zizmor</code></td>
+<td><code>zizmor:lint</code></td>
+<td>GitHub: <code>zizmor --offline .</code> audits the workflows and actions for security issues. brigade's own files pass; their <code># zizmor: ignore[...]</code> comments keep <code>./</code> for local actions (act has no <code>$/</code> syntax) and allow fixed values written to <code>GITHUB_ENV</code></td>
+</tr>
+<tr>
+<td><code>go</code></td>
+<td><code>go:build</code></td>
+<td>Installs Go; <code>go build ./...</code> (a main package at the root writes its binary there: ignore it)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>go:test</code></td>
+<td><code>go test ./...</code></td>
+</tr>
+<tr>
+<td><code>rust</code></td>
+<td><code>rust:lint</code></td>
+<td>Installs Rust (rustup, then the toolchain with rustfmt and Clippy); <code>cargo fmt --check &amp;&amp; cargo clippy --all-targets -- -D warnings</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>rust:build</code></td>
+<td><code>cargo build</code> (into <code>target/</code>: ignore it)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>rust:test</code></td>
+<td><code>cargo test</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>rust:deploy</code></td>
+<td>With <code>cargo_publish: true</code>: <code>cargo publish</code>, the crate to crates.io or another registry on each release: see <a href="#deploy">deploy</a></td>
+</tr>
+<tr>
+<td><code>docker</code></td>
+<td><code>docker:build</code></td>
+<td>GitHub, Gitea, none: <code>docker build .</code> (Docker from the machine or the runner)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>docker:deploy</code></td>
+<td>Builds the image of the tag and pushes <code>X.Y.Z</code> and <code>latest</code> to its registry: see <a href="#deploy">deploy</a></td>
+</tr>
+<tr>
+<td><code>node</code></td>
+<td><code>node:lint</code></td>
+<td>Installs Node.js; <code>npm ci &amp;&amp; npm run lint --if-present</code>, for linters that are project dependencies (ESLint and its plugins)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>node:build</code></td>
+<td><code>npm ci &amp;&amp; npm run build --if-present</code> (JavaScript or TypeScript: your <code>package.json</code> scripts; needs <code>package-lock.json</code>)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>node:test</code></td>
+<td><code>npm ci &amp;&amp; npm test --if-present</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>node:deploy</code></td>
+<td>With <code>npm_publish: true</code>: <code>npm ci &amp;&amp; npm publish</code>, the package to npm or another registry on each release: see <a href="#deploy">deploy</a></td>
+</tr>
+<tr>
+<td><code>maven</code></td>
+<td><code>maven:build</code></td>
+<td>Installs Java (Eclipse Temurin) and Maven; <code>mvn --batch-mode --no-transfer-progress package -DskipTests</code> (your <code>pom.xml</code>, into <code>target/</code>: ignore it)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>maven:test</code></td>
+<td><code>mvn --batch-mode --no-transfer-progress verify</code>: the tests, and the checks your <code>pom.xml</code> binds to <code>verify</code> (Checkstyle, Spotless...)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>maven:deploy</code></td>
+<td>With <code>maven_publish: true</code>: <code>mvn ... deploy -DskipTests</code>, the artifacts to a Maven repository on each release: see <a href="#deploy">deploy</a> (<a href="#tool-configs">config</a>)</td>
+</tr>
+<tr>
+<td><code>uv</code></td>
+<td><code>uv:build</code></td>
+<td><code>uv build</code> (into <code>dist/</code>)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>uv:deploy</code></td>
+<td>With <code>uv_publish: true</code>: <code>uv build --clear &amp;&amp; uv publish</code>, the package to PyPI or another index on each release: see <a href="#deploy">deploy</a></td>
+</tr>
+<tr>
+<td><code>zensical</code></td>
+<td><code>zensical:build</code></td>
+<td><code>zensical build --strict</code> (needs your <code>zensical.toml</code> and <code>docs/</code>: <code>zensical new .</code>)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>zensical:serve</code></td>
+<td><code>zensical serve --open</code>, to preview the site</td>
+</tr>
+<tr>
+<td><code>container-structure-test</code></td>
+<td><code>container-structure-test:test</code></td>
+<td>GitHub, Gitea, none: builds the image, then checks its content with your tests (<a href="#tool-configs">config</a>: a placeholder test until you write yours)</td>
+</tr>
+<tr>
+<td><code>pytest</code></td>
+<td><code>pytest:test</code></td>
+<td><code>uv run pytest</code> (add it with <code>uv add --dev pytest</code>)</td>
+</tr>
+<tr>
+<td><code>molecule</code></td>
+<td><code>molecule:test</code></td>
+<td><code>molecule test --all</code>, with the Docker driver (needs your <code>molecule/&lt;scenario&gt;/molecule.yml</code> and Docker: see <a href="#molecule">Molecule</a>)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>molecule:converge</code>, <code>molecule:verify</code>, <code>molecule:destroy</code></td>
+<td><code>molecule converge</code>, <code>verify</code>, <code>destroy</code>, while writing a role</td>
+</tr>
+<tr>
+<td></td>
+<td><code>molecule:reconverge</code></td>
+<td><code>molecule:destroy</code>, then <code>molecule converge</code>, to converge from scratch</td>
+</tr>
+<tr>
+<td></td>
+<td><code>molecule:login</code></td>
+<td><code>molecule login</code>, a shell in the instance</td>
+</tr>
+<tr>
+<td><code>ctt</code></td>
+<td><code>ctt:test</code></td>
+<td><code>ctt</code>, for a Copier template (needs your <code>ctt.toml</code>; render the variants into <code>.ctt/</code>, which <code>yamllint</code> skips)</td>
+</tr>
+<tr>
+<td><code>codeceptjs</code></td>
+<td><code>codeceptjs:test</code></td>
+<td><code>npm ci</code>, Chromium (<code>npx playwright install --with-deps chromium</code>), then <code>npx codeceptjs run</code> with your <code>codecept.conf.*</code>; none: nothing runs. Needs <code>node</code>: see <a href="#codeceptjs">codeceptjs</a></td>
+</tr>
+<tr>
+<td><code>releasaurus</code></td>
+<td><code>releasaurus:release</code></td>
+<td><code>releasaurus release &amp;&amp; releasaurus release-pr --tag-prefix ''</code>: see <a href="#release">release</a></td>
+</tr>
+<tr>
+<td><code>goreleaser</code></td>
+<td><code>goreleaser:deploy</code></td>
+<td>GitHub, GitLab: <code>goreleaser release --clean</code>, the Go binaries attached to the release (<a href="#tool-configs">config</a>): see <a href="#deploy">deploy</a></td>
+</tr>
+<tr>
+<td><code>pages</code></td>
+<td><code>pages:deploy</code></td>
+<td>Runs the <code>*:build</code> tasks, then publishes the <code>pages_dir</code> folder (<code>site/</code> by default). GitHub: <code>ghp-import -n -p -f site</code>. GitLab: the job publishes it</td>
+</tr>
+<tr>
+<td><code>ansible</code></td>
+<td><code>ansible:deploy</code>, <code>ansible:operate</code></td>
+<td><code>ansible-playbook -i inventory playbooks/deploy.yml</code> (<code>operate.yml</code>): see <a href="#ansible">Ansible</a></td>
+</tr>
+<tr>
+<td><code>act</code></td>
+<td><code>act:test</code></td>
+<td>GitHub, Gitea, Forgejo: <code>act pull_request</code> replays the pull request workflows in Docker: see below</td>
+</tr>
+<tr>
+<td><code>prek</code></td>
+<td><code>prek:install</code></td>
+<td><code>prek install --force</code>: the git hooks of <code>.brigade/configs/prek.yaml</code>, in place of any hook already there (local use, not a stage): see <a href="#prek">prek</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>prek:run</code></td>
+<td><code>prek run --all-files</code>: the hooks on every file</td>
+</tr>
+<tr>
+<td><code>gh</code></td>
+<td><code>gh:check</code>, <code>gh:setup</code></td>
+<td>GitHub: checks the repository's settings for the selected tools, or changes them (local use, not a stage): see <a href="#repository-settings">Repository settings</a></td>
+</tr>
+<tr>
+<td><code>glab</code></td>
+<td><code>glab:check</code>, <code>glab:setup</code></td>
+<td>GitLab: the same for the project</td>
+</tr>
+<tr>
+<td><code>tea</code></td>
+<td><code>tea:check</code>, <code>tea:setup</code></td>
+<td>Gitea, Forgejo: the same for the repository</td>
+</tr>
+<tr>
+<td><code>gitlab-ci-local</code></td>
+<td><code>gitlab-ci-local:test</code></td>
+<td>GitLab: <code>gitlab-ci-local</code> replays the merge request pipeline in Docker: see below</td>
+</tr>
+</tbody>
+</table>
+<p>The CI platform adds its own linter (<code>jactionlint:lint</code>, <code>gitlab-ci:lint</code>): see
+<a href="../ci/">CI platforms</a>.</p>
+<h2 id="tool-configs">Tool configs<a class="headerlink" href="#tool-configs" title="Permanent link">&para;</a></h2>
+<p>Tools that read a config file get one in <code>.brigade/configs/</code>, created when the
+tool is selected; removing the tool from <code>tools</code> removes it. Paths in it are
+relative to the project root.</p>
+<ul>
+<li><strong>brigade's settings</strong> (the folders to skip, such as <code>.mise-data/</code> and
+  <code>.mise/</code>): brigade-owned, like the rest of <code>.brigade/</code>. <code>brigade:update</code>
+  updates them and <code>brigade:lint</code> fails when one is edited. For your own
+  settings, write your own file (start from a copy of brigade's, or extend it
+  where the tool allows: <code>extend</code> in ruff, <code>import</code> in cspell, <code>extends</code> in
+  yamllint, biome and rumdl), and set <code>&lt;tool&gt;_config</code> to its path (see
+  <a href="#customize-a-version-or-a-command">Customize</a>); it then keeps your settings,
+  and brigade's later changes are yours to follow.</li>
+<li><strong>Your content</strong> (<code>goreleaser</code>, <code>container-structure-test</code>, <code>sqlfluff</code>,
+  <code>prek</code>: your builds, tests, SQL dialect, hooks):
+  created once with a starting point, then yours: <code>brigade:update</code> keeps it,
+  <code>brigade:lint</code> skips it.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Config</th>
+<th>Owner</th>
+<th>Your usual config file, with brigade's</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yamllint</code></td>
+<td><code>.brigade/configs/yamllint.yml</code></td>
+<td>brigade's (<code>yamllint_config</code>)</td>
+<td><code>.yamllint</code>: not read</td>
+</tr>
+<tr>
+<td><code>ruff</code></td>
+<td><code>.brigade/configs/ruff.toml</code></td>
+<td>brigade's (<code>ruff_config</code>)</td>
+<td><code>[tool.ruff]</code> in <code>pyproject.toml</code>, <code>ruff.toml</code>: not read</td>
+</tr>
+<tr>
+<td><code>ty</code></td>
+<td><code>.brigade/configs/ty.toml</code></td>
+<td>brigade's (<code>ty_config</code>)</td>
+<td><code>[tool.ty]</code> in <code>pyproject.toml</code>, <code>ty.toml</code>: not read</td>
+</tr>
+<tr>
+<td><code>typos</code></td>
+<td><code>.brigade/configs/typos.toml</code></td>
+<td>brigade's (<code>typos_config</code>)</td>
+<td><code>_typos.toml</code>, <code>typos.toml</code>: still read, both apply</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td><code>.brigade/configs/taplo.toml</code></td>
+<td>brigade's (<code>taplo_config</code>)</td>
+<td><code>taplo.toml</code>: not read</td>
+</tr>
+<tr>
+<td><code>rumdl</code></td>
+<td><code>.brigade/configs/rumdl.toml</code></td>
+<td>brigade's (<code>rumdl_config</code>)</td>
+<td><code>.rumdl.toml</code>: not read</td>
+</tr>
+<tr>
+<td><code>editorconfig-checker</code></td>
+<td><code>.brigade/configs/editorconfig-checker.json</code></td>
+<td>brigade's (<code>editorconfig_checker_config</code>)</td>
+<td><code>.editorconfig-checker.json</code>: not read (<code>.editorconfig</code> still is)</td>
+</tr>
+<tr>
+<td><code>ansible-lint</code></td>
+<td><code>.brigade/configs/ansible-lint.yml</code></td>
+<td>brigade's (<code>ansible_lint_config</code>)</td>
+<td><code>.ansible-lint</code>: not read</td>
+</tr>
+<tr>
+<td><code>vale</code></td>
+<td><code>.brigade/configs/vale.ini</code></td>
+<td>brigade's (<code>vale_config</code>)</td>
+<td><code>.vale.ini</code>: not read</td>
+</tr>
+<tr>
+<td><code>codespell</code></td>
+<td><code>.brigade/configs/codespell.cfg</code></td>
+<td>brigade's (<code>codespell_config</code>)</td>
+<td><code>.codespellrc</code>: not read</td>
+</tr>
+<tr>
+<td><code>biome</code></td>
+<td><code>.brigade/configs/biome-brigade.jsonc</code></td>
+<td>brigade's (<code>biome_config</code>)</td>
+<td><code>biome.json</code>, <code>biome.jsonc</code>: not read</td>
+</tr>
+<tr>
+<td><code>trivy</code></td>
+<td><code>.brigade/configs/trivy.yaml</code></td>
+<td>brigade's (<code>trivy_config</code>)</td>
+<td><code>trivy.yaml</code>: not read</td>
+</tr>
+<tr>
+<td><code>prek</code></td>
+<td><code>.brigade/configs/prek.yaml</code></td>
+<td>yours</td>
+<td><code>.pre-commit-config.yaml</code>: not read</td>
+</tr>
+<tr>
+<td><code>sqlfluff</code></td>
+<td><code>.brigade/configs/sqlfluff.cfg</code></td>
+<td>yours</td>
+<td><code>.sqlfluff</code>: still read, the brigade file wins (its <code>dialect</code>)</td>
+</tr>
+<tr>
+<td><code>checkov</code></td>
+<td><code>.brigade/configs/checkov.yml</code></td>
+<td>brigade's (<code>checkov_config</code>)</td>
+<td><code>.checkov.yaml</code>: not read</td>
+</tr>
+<tr>
+<td><code>goreleaser</code></td>
+<td><code>.brigade/configs/goreleaser.yaml</code></td>
+<td>yours</td>
+<td><code>.goreleaser.yaml</code>: not read</td>
+</tr>
+<tr>
+<td><code>container-structure-test</code></td>
+<td><code>.brigade/configs/container-structure-test.yaml</code></td>
+<td>yours</td>
+<td>none: your image's tests</td>
+</tr>
+<tr>
+<td><code>cspell</code></td>
+<td><code>.brigade/configs/cspell.yaml</code></td>
+<td>brigade's (<code>cspell_config</code>)</td>
+<td><code>cspell.json</code>, <code>.cspell.json</code>...: still read, both apply</td>
+</tr>
+<tr>
+<td><code>ls-lint</code></td>
+<td><code>.brigade/configs/ls-lint.yml</code></td>
+<td>brigade's (<code>ls_lint_config</code>)</td>
+<td><code>.ls-lint.yml</code>: not read</td>
+</tr>
+<tr>
+<td><code>releasaurus</code></td>
+<td><code>.brigade/configs/releasaurus.toml</code></td>
+<td>brigade's (<code>releasaurus_config</code>)</td>
+<td><code>releasaurus.toml</code>: not read</td>
+</tr>
+<tr>
+<td><code>maven</code></td>
+<td><code>.brigade/configs/maven-settings.xml</code> (with <code>maven_publish</code>)</td>
+<td>brigade's (<code>maven_config</code>)</td>
+<td><code>~/.m2/settings.xml</code>: still read, both apply</td>
+</tr>
+<tr>
+<td><code>renovate</code></td>
+<td><code>.brigade/configs/renovate.json</code></td>
+<td>brigade's (<code>renovate_config</code>)</td>
+<td><code>renovate.json</code>, <code>.github/renovate.json5</code>...: still read, yours wins</td>
+</tr>
+</tbody>
+</table>
+<p>Other tools read their usual config file (<code>.golangci.yml</code>, <code>.tflint.hcl</code>,
+<code>stylua.toml</code>, <code>lychee.toml</code>, <code>.markdownlint-cli2.yaml</code>, <code>.prettierrc</code>,
+<code>.clang-format</code>...).</p>
+<h2 id="codeceptjs">codeceptjs<a class="headerlink" href="#codeceptjs" title="Permanent link">&para;</a></h2>
+<p><code>codeceptjs</code> runs end-to-end tests: <a href="https://codecept.io/">CodeceptJS</a> drives
+Chromium through its Playwright helper, against your app. CodeceptJS and
+Playwright are your dev dependencies (<code>npm install -D codeceptjs playwright</code>,
+then <code>npx codeceptjs init</code>): the helper loads Playwright next to CodeceptJS, so
+mise cannot install them apart, and their versions are in your
+<code>package.json</code>. It needs the <code>node</code> tool, and waits for <code>node:test</code>, which also
+runs <code>npm ci</code>.</p>
+<p>Your <code>codecept.conf.*</code> holds your tests, your app's URL, and the server they
+need: CI runs each stage in a fresh job, without the build stage's output, so
+start it in <code>bootstrap</code> (and stop it in <code>teardown</code>), e.g. a static server on
+your build, or <code>ng serve</code>. The task installs Chromium, and on Linux its system
+packages (with <code>sudo</code> outside CI). Add CodeceptJS's <code>output</code> folder (e.g.
+<code>e2e/output/</code>) to your <code>.gitignore</code>.</p>
+<h2 id="prek">prek<a class="headerlink" href="#prek" title="Permanent link">&para;</a></h2>
+<p><code>prek</code> runs git hooks, for local use; it stays out of the pipeline, which CI
+runs anyway. <a href="https://prek.j178.dev/">prek</a> is a faster, single-binary
+pre-commit: same config format, same hooks. Its config,
+<code>.brigade/configs/prek.yaml</code>, is yours: brigade creates it once, then never
+changes it. It starts with prek's builtin hooks, fast and offline, on the
+committed files:</p>
+<ul>
+<li><code>check-merge-conflict</code>: conflict markers, also those <code>brigade:update</code> leaves;</li>
+<li><code>check-added-large-files</code>: files over 500 KiB;</li>
+<li><code>check-case-conflict</code>, <code>check-illegal-windows-names</code>: names that break on
+  macOS or Windows;</li>
+<li><code>mixed-line-ending</code>, <code>trailing-whitespace</code>, <code>end-of-file-fixer</code>: they fix the
+  files and fail the commit; stage the fixes and commit again.</li>
+</ul>
+<p>Then <code>mise run lint</code>, the lint stage as in CI. Add hooks from the pre-commit
+ecosystem there (they download their own tools), or <code>repo: local</code> hooks that
+call your mise tasks.</p>
+<p><code>mise run prek:install</code> writes the hook into <code>.git/hooks/</code>, each clone once, in
+place of any hook already there (<code>--force</code>): the hook of brigade 0.25 and
+earlier, or one you wrote, whose commands go in <code>prek.yaml</code> as <code>repo: local</code>
+hooks. The hook calls this prek by its install path, so run it again after a
+prek version change. <code>mise run prek:run</code> runs the hooks on every file. Skip them
+for one commit with <code>git commit --no-verify</code>.</p>
+<h2 id="repository-settings">Repository settings<a class="headerlink" href="#repository-settings" title="Permanent link">&para;</a></h2>
+<p>Each forge's CLI comes with a check, for local use (not a stage): <code>gh:check</code>
+(GitHub), <code>glab:check</code> (GitLab), <code>tea:check</code> (Gitea, Forgejo). It reads the
+repository's settings that the selected tools need, with your login
+(<code>gh auth login</code>, <code>glab auth login</code>, <code>tea login add</code>), changes nothing, and
+fails when a required one is missing, with where to change it:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>GitHub</th>
+<th>GitLab</th>
+<th>Gitea, Forgejo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>always</td>
+<td>squash merge only, the pull request title as the commit</td>
+<td>squash commits required</td>
+<td>squash merge only</td>
+</tr>
+<tr>
+<td><code>releasaurus</code></td>
+<td><code>RELEASAURUS_GITHUB_TOKEN</code>, else Actions allowed to create pull requests</td>
+<td><code>RELEASAURUS_GITLAB_TOKEN</code></td>
+<td><code>RELEASAURUS_GITEA_TOKEN</code>, <code>RELEASAURUS_FORGEJO_TOKEN</code> on Forgejo (advised)</td>
+</tr>
+<tr>
+<td><code>renovate</code></td>
+<td><code>RENOVATE_TOKEN</code>; auto-merge allowed with <code>renovate_automerge</code></td>
+<td><code>RENOVATE_TOKEN</code>; <code>RENOVATE_GITHUB_COM_TOKEN</code> and an active pipeline schedule (advised)</td>
+<td><code>RENOVATE_TOKEN</code>; <code>RENOVATE_GITHUB_COM_TOKEN</code> (advised)</td>
+</tr>
+<tr>
+<td><code>pages</code></td>
+<td>Pages published from <code>gh-pages</code></td>
+<td>Pages enabled</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Secrets and CI/CD variables are looked up in the repository and its
+organization or group. Only admins (maintainers on GitLab) can list them: for
+others, they show as <code>unknown</code>.</p>
+<p><code>gh:setup</code>, <code>glab:setup</code> and <code>tea:setup</code> change the missing settings that need
+no secret value (merge method, auto-merge, Actions allowed to create pull
+requests, Pages once the first deploy has pushed <code>gh-pages</code>), then report the
+others as the check does: set the secrets yourself, as printed.
+Run it once on a new repository, as an admin.</p>
+<p><code>mise run brigade:update</code> runs the check at the end, outside CI, as a notice
+that never fails the update: a new tool may need a new setting.</p>
+<h2 id="platforms">Platforms<a class="headerlink" href="#platforms" title="Permanent link">&para;</a></h2>
+<p>brigade's own files run on Linux, macOS and Windows; each tool runs where it is
+supported. CI runs on Linux, so these limits only matter for local runs
+(<code>mise run &lt;stage&gt;</code>, git hooks). Known limits on Windows:</p>
+<ul>
+<li><code>taplo</code>: fails on checkouts with CRLF line endings
+  (<code>git config core.autocrlf false</code>, or <code>* text eol=lf</code> in <code>.gitattributes</code>).</li>
+<li><code>ctt</code>: ctt 3.0.0 fails inside a git repository.</li>
+<li><code>rust</code>: needs the MSVC build tools (Visual Studio Build Tools, C++ workload)
+  to link.</li>
+<li><code>ansible-lint</code>, <code>molecule</code>, <code>ansible</code>: Ansible does not run on Windows (use
+  WSL).</li>
+<li><code>act</code>, <code>gitlab-ci-local</code>, <code>docker</code>, <code>container-structure-test</code>: need Docker
+  with Linux containers (Docker Desktop, WSL 2).</li>
+</ul>
+<h2 id="brigade">brigade<a class="headerlink" href="#brigade" title="Permanent link">&para;</a></h2>
+<p><code>brigade:lint</code> renders the template at the version of
+<code>.brigade/copier/answers.yml</code>, with your answers, into a temporary folder, and
+compares it with your brigade-owned files (<code>.miserc.toml</code>, <code>.brigade/</code>, the
+generated workflows or <code>.gitlab-ci.yml</code>). An edited or deleted file fails the
+lint stage, locally, in the git hook and in CI: <code>brigade:update</code> would overwrite
+it. Run <code>mise run brigade:update</code> to restore them. An edited
+<code>.brigade/copier/data.yml</code> fails it too until <code>brigade:update</code> applies it (see
+<a href="../questions/#changing-answers">Changing answers</a>).</p>
+<p>It also tells when a newer brigade release is out (<code>copier check-update</code>),
+without failing: run <code>mise run brigade:update</code>, or let
+<a href="#brigade-updates">Renovate</a> open the PR.</p>
+<p>It needs access to the template (<code>gh:pa-decarvalho/brigade</code>, through git) on
+each run. Offline, behind a proxy, or to edit a generated file on purpose,
+remove <code>brigade</code> from your tools.</p>
+<h2 id="release">release<a class="headerlink" href="#release" title="Permanent link">&para;</a></h2>
+<p>CI runs this stage on its own, on pushes to the default branch: <code>lint</code>,
+<code>build</code> and <code>test</code> already ran on the pull request.</p>
+<p>With <code>releasaurus</code>, <a href="https://releasaurus.rgon.io/">Releasaurus</a> reads the
+Conventional Commits since the last tag and opens or updates a release pull
+request, with the next version and a <code>CHANGELOG.md</code>. Once you merge it, the next
+run tags <code>X.Y.Z</code> (no <code>v</code>) and publishes the release on your forge. It works on
+GitHub, GitLab, Gitea and Forgejo.</p>
+<p>Its config, <code>.brigade/configs/releasaurus.toml</code> (brigade's, read from the
+default branch through the forge's API, so commit it):</p>
+<ul>
+<li>Releases on <code>feat</code>, <code>fix</code>, <code>perf</code>, <code>revert</code> and breaking changes only: other
+  commits (<code>ci:</code>, <code>docs:</code>, <code>chore:</code>...) are left out of the version and
+  <code>CHANGELOG.md</code>.</li>
+<li>Tags <code>X.Y.Z</code>, with no <code>v</code>.</li>
+<li>Updates your manifests to the new version in the release pull request
+  (<code>release_type</code>), from your tools: <code>uv</code> → <code>pyproject.toml</code>, <code>node</code> →
+  <code>package.json</code> and <code>package-lock.json</code>, <code>rust</code> → <code>Cargo.toml</code> and
+  <code>Cargo.lock</code>, <code>go</code> → <code>version.go</code>, <code>maven</code> → <code>pom.xml</code>. With none or several
+  of them, none. <code>releasaurus_release_type</code> picks another (<code>php</code>, <code>ruby</code>,
+  <code>helm</code>...) or
+  <code>none</code> (see <a href="#customize-a-version-or-a-command">Customize</a>). <code>uv.lock</code> is not
+  updated: <code>uv</code> rewrites it on the next <code>uv lock</code> or <code>uv run</code>.</li>
+</ul>
+<p>Two workflows (<code>releasaurus_workflow</code>, see
+<a href="#customize-a-version-or-a-command">Customize</a>):</p>
+<ul>
+<li><code>pr</code> (default): a release pull request to merge; the next run tags it.</li>
+<li><code>direct</code>: each push with a releasable commit is released at once, with no
+  pull request (<code>releasaurus release-direct</code>): the version and <code>CHANGELOG.md</code>
+  are committed to the default branch, then tagged. With the CI's own token, the
+  tag starts no CI: on GitHub and Gitea, set the bot token below so that
+  <code>deploy</code> runs. When the default branch is protected, that token must be
+  allowed to push to it (the CI's own token cannot be):</li>
+<li>GitHub: add the token's owner to the bypass list (ruleset: "Repository
+    admin"; classic branch protection: leave "Do not allow bypassing the above
+    settings" off, for admins).</li>
+<li>GitLab: "Allowed to push and merge" on the protected branch includes the
+    token's role (Maintainers by default: a project token with the Maintainer
+    role).</li>
+<li>Gitea, Forgejo: add the token's user to the branch protection's push
+    whitelist.</li>
+</ul>
+<p>For your own settings (prereleases, a monorepo, changelog options), set
+<code>releasaurus_config</code> to your file, with <code>tag_prefix = ""</code> in its <code>[[package]]</code>
+to keep the tags brigade's CI deploys. See
+<a href="https://releasaurus.rgon.io/configuration.html">Releasaurus configuration</a>.</p>
+<p>On GitHub and Gitea, it works with the CI's own token, with three manual
+steps:</p>
+<ul>
+<li>GitHub: allow the workflow token to open pull requests (Settings → Actions →
+  General → "Allow GitHub Actions to create and approve pull requests", off in
+  new repositories), else the release fails with
+  <code>Failed to create pull request</code>:</li>
+</ul>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh<span class="w"> </span>api<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>repos/&lt;owner&gt;/&lt;repo&gt;/actions/permissions/workflow<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>-f<span class="w"> </span><span class="nv">default_workflow_permissions</span><span class="o">=</span><span class="nb">read</span><span class="w"> </span>-F<span class="w"> </span><span class="nv">can_approve_pull_request_reviews</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></div>
+<ul>
+<li>The release pull request starts no checks (GitHub shows failed runs with no
+  job): re-run them, or merge with a bypass of the required checks.</li>
+<li>The tag starts no CI: run <code>deploy</code> by hand after each release.</li>
+</ul>
+<p>A bot token avoids all three: the pull request and the tag start the CI as
+usual. GitLab needs the token: until it is set, the first pipeline on the
+default branch fails (<code>API authentication failed: Token not provided</code>); once it
+is, retry the failed <code>release</code> job ("Run pipeline" only deploys). A project
+token, created and stored without being printed:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>glab<span class="w"> </span>token<span class="w"> </span>create<span class="w"> </span>releasaurus<span class="w"> </span>--access-level<span class="w"> </span>maintainer<span class="w"> </span>--scope<span class="w"> </span>api<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--scope<span class="w"> </span>write_repository<span class="w"> </span>--duration<span class="w"> </span>365d<span class="w"> </span>--output<span class="w"> </span>text<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>glab<span class="w"> </span>variable<span class="w"> </span><span class="nb">set</span><span class="w"> </span>RELEASAURUS_GITLAB_TOKEN<span class="w"> </span>--masked
+</span></code></pre></div>
+<p>Merge pull requests with squash, the title being the commit: GitLab's default
+merge commit can leave a branch's older commits out of the next release.</p>
+<table>
+<thead>
+<tr>
+<th>CI</th>
+<th>Secret or CI/CD variable (bot token)</th>
+<th>Scopes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitHub</td>
+<td><code>RELEASAURUS_GITHUB_TOKEN</code></td>
+<td>Contents, Issues and Pull requests: read and write</td>
+</tr>
+<tr>
+<td>GitLab</td>
+<td><code>RELEASAURUS_GITLAB_TOKEN</code></td>
+<td><code>api</code>, <code>write_repository</code></td>
+</tr>
+<tr>
+<td>Gitea</td>
+<td><code>RELEASAURUS_GITEA_TOKEN</code></td>
+<td>repository, issue and misc: read and write</td>
+</tr>
+<tr>
+<td>Forgejo</td>
+<td><code>RELEASAURUS_FORGEJO_TOKEN</code></td>
+<td>repository, issue and misc: read and write</td>
+</tr>
+</tbody>
+</table>
+<h2 id="deploy">deploy<a class="headerlink" href="#deploy" title="Permanent link">&para;</a></h2>
+<p>CI runs this stage on its own, on tags <code>X.Y.Z</code> (or <code>vX.Y.Z</code>), such as the ones
+Releasaurus pushes, and on a manual run, to deploy without a release: for
+example to fix a typo in the documentation.</p>
+<p><code>pages</code> needs GitHub or GitLab, and a <code>&lt;tool&gt;:build</code> task that writes the site
+to the <code>pages_dir</code> folder (<code>site</code> by default): <code>zensical</code>, <code>node</code> (a Vite app:
+<code>pages_dir: dist</code>), or your own (for example <code>mkdocs:build</code>, see
+<a href="../custom-tasks/">Custom tasks</a>).</p>
+<ul>
+<li><strong>GitHub</strong>: the site is pushed to the <code>gh-pages</code> branch. In Settings → Pages,
+  choose "Deploy from a branch" and <code>gh-pages</code>.</li>
+<li><strong>GitLab</strong>: the job publishes the <code>pages_dir</code> folder with <code>pages.publish</code>
+  (GitLab 17.10 or later). The site is private by default, even in a public
+  project: in Settings → General → Visibility, set Pages to "Everyone"
+  (<code>glab api -X PUT projects/:id -f pages_access_level=enabled</code>).</li>
+</ul>
+<p>The site's base path depends on the forge: GitHub serves
+<code>https://&lt;owner&gt;.github.io/&lt;repo&gt;/</code>; GitLab serves it at the root of a unique
+domain, <code>https://&lt;project&gt;-&lt;hash&gt;.gitlab.io/</code> (on by default; without it,
+<code>https://&lt;namespace&gt;.gitlab.io/&lt;project&gt;/</code>, whose certificate fails when the
+namespace has a dot). Set it in your build: Vite's <code>base</code>, Angular's
+<code>baseHref</code>, zensical's <code>site_url</code>. Your end-to-end tests serve the build under
+the same base, so they pass either way: check the deployed site once.</p>
+<p>Add <code>site/</code> and <code>.cache/</code> to your <code>.gitignore</code>.</p>
+<p><code>goreleaser</code> builds the Go binaries for Linux, macOS and Windows and attaches
+the archives and their checksums to the release Releasaurus made for the tag (it
+needs Go: the <code>go</code> tool). GitHub: with the workflow token. GitLab: add a
+<code>GITLAB_TOKEN</code> CI/CD variable (a token with the <code>api</code> scope); a self-managed
+GitLab also needs its URLs in the config (<code>gitlab_urls</code>). Add <code>dist/</code> to your
+<code>.gitignore</code>. A manual run needs a tag at the checked out commit.</p>
+<p><code>node:deploy</code> (the <code>node</code> tool, with the <code>npm_publish: true</code> answer) publishes
+the package with <code>npm publish</code>, once per tag: the version is the one in
+<code>package.json</code>, which Releasaurus bumps in the release PR. Build it in a
+<code>prepublishOnly</code> script (<code>npm run build</code>). In CI, add an <code>NPM_TOKEN</code> secret
+(CI/CD variable on GitLab), and give npm the line that reads it in your
+<code>.npmrc</code>: <code>//registry.npmjs.org/:_authToken=${NPM_TOKEN}</code> (another registry: its
+host, and <code>publishConfig.registry</code> in <code>package.json</code>). A scoped public package
+needs <code>"publishConfig": {"access": "public"}</code>. A version already published
+fails: a manual run on the same tag does nothing new.</p>
+<p><code>rust:deploy</code> (the <code>rust</code> tool, with the <code>cargo_publish: true</code> answer) publishes
+the crate with <code>cargo publish</code>, once per tag: the version is the one in
+<code>Cargo.toml</code>, which Releasaurus bumps in the release PR. In CI, add a
+<code>CARGO_REGISTRY_TOKEN</code> secret (CI/CD variable on GitLab): a crates.io API token
+with the <code>publish-update</code> scope (and <code>publish-new</code> for the first release).
+Another registry: <code>publish = ["&lt;name&gt;"]</code> in <code>Cargo.toml</code> and the registry in
+<code>.cargo/config.toml</code>; cargo reads its token from
+<code>CARGO_REGISTRIES_&lt;NAME&gt;_TOKEN</code>, which your <code>mise.toml</code> can take from the same
+secret (<code>[env]</code>:
+<code>CARGO_REGISTRIES_&lt;NAME&gt;_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"</code>). A version
+already published fails: a manual run on the same tag does nothing new.</p>
+<p><code>maven:deploy</code> (the <code>maven</code> tool, with the <code>maven_publish: true</code> answer) deploys
+the artifacts with <code>mvn deploy</code>, once per tag: the version is the one in
+<code>pom.xml</code>, which Releasaurus bumps in the release PR (a <code>-SNAPSHOT</code> version goes
+to a snapshot repository). The repository is <code>MAVEN_REPOSITORY_URL</code> (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your <code>mise.toml</code>
+(<code>[env]</code>) or as a CI variable; else <code>distributionManagement</code> in your <code>pom.xml</code>,
+whose repository needs the id <code>brigade</code> for the login. In CI, add
+<code>MAVEN_USERNAME</code> and <code>MAVEN_PASSWORD</code> secrets (CI/CD variables on GitLab), read
+by <code>.brigade/configs/maven-settings.xml</code> (Maven's global settings: your
+<code>~/.m2/settings.xml</code> still applies). A release repository refuses a version
+already deployed: a manual run on the same tag fails.</p>
+<p><code>docker</code> builds the image of the tag and pushes it as <code>X.Y.Z</code> and <code>latest</code>
+(<code>.brigade/scripts/docker_deploy.py</code>). The image is <code>DOCKER_IMAGE</code>
+(<code>registry/owner/name</code>, in your <code>mise.toml</code> <code>[env]</code> or a CI variable), else the
+repository's: <code>ghcr.io/&lt;owner&gt;/&lt;repo&gt;</code> on GitHub, pushed with the workflow token
+(the job has <code>packages: write</code>), <code>&lt;server&gt;/&lt;owner&gt;/&lt;repo&gt;</code> on Gitea. Another
+registry, or Gitea: add <code>DOCKER_USERNAME</code> and <code>DOCKER_PASSWORD</code> secrets. It
+needs Docker in CI, which brigade's GitLab image does not have: <code>docker</code> and
+<code>container-structure-test</code> are not offered on GitLab yet. A manual run needs a
+tag at the checked out commit.</p>
+<p><code>uv:deploy</code> (the <code>uv</code> tool, with the <code>uv_publish: true</code> answer) publishes the
+Python package built by uv (<code>uv build --clear</code>, then <code>uv publish</code> without the
+empty <code>UV_PUBLISH_*</code> variables, which GitHub and Gitea pass for a secret that is
+not set), once per tag: the
+version is the one in <code>pyproject.toml</code>, which Releasaurus bumps in the release
+PR. The index is PyPI, or the upload URL in <code>UV_PUBLISH_URL</code> (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your <code>mise.toml</code>
+(<code>[env]</code>) or as a CI variable. In CI, add a <code>UV_PUBLISH_TOKEN</code> secret (CI/CD
+variable on GitLab): the index's token (on PyPI, an API token scoped to the
+project once it exists); or, for an index with a user and a password (Nexus...),
+<code>UV_PUBLISH_USERNAME</code> and <code>UV_PUBLISH_PASSWORD</code>. A manual run on a tag already
+published fails unless <code>UV_PUBLISH_CHECK_URL</code> is set to the index URL
+(<code>https://pypi.org/simple/</code>), which skips the files already there.</p>
+<h2 id="operate">operate<a class="headerlink" href="#operate" title="Permanent link">&para;</a></h2>
+<p>Operations that do not belong to a release, such as <code>renovate:operate</code>. Run it
+with <code>mise run operate</code>, or in CI:</p>
+<ul>
+<li><strong>GitHub, Gitea</strong>: "Run workflow" on the Operate workflow, and on the
+  <code>operate_schedule</code> answer (a cron expression, e.g. <code>0 5 * * 1</code> for Mondays at
+  5:00 UTC).</li>
+<li><strong>GitLab</strong>: scheduled pipelines only (CI/CD → Schedules; "Play" runs one now),
+  since "Run pipeline" deploys.</li>
+</ul>
+<p>Renovate reads brigade's config, <code>.brigade/configs/renovate.json</code>
+(<code>RENOVATE_CONFIG_FILE</code>): no <code>renovate.json</code> is needed, so there is no
+onboarding PR. What it updates is the <code>renovate_updates</code> answer, a list:</p>
+<ul>
+<li><code>brigade</code> (the default): brigade's updates, see
+  <a href="#brigade-updates">brigade updates</a>;</li>
+<li><code>dependencies</code>: your project's own (<code>package.json</code>, <code>pyproject.toml</code>, your
+  workflows...), with Renovate's <code>config:recommended</code>;</li>
+<li><code>template</code>: the pins of a Copier template's <code>template/</code> folder made like
+  brigade's (brigade's own repository), in one <code>fix:</code> PR.</li>
+</ul>
+<p>Your own Renovate config (<code>renovate.json</code>, <code>.github/renovate.json5</code>...) adds to
+it and wins, e.g. <code>"automerge": true</code>; without <code>dependencies</code>,
+<code>"enabledManagers": []</code> there also updates your dependencies. To replace it
+all, point <code>renovate_config</code> to your own file (keep brigade's
+<code>customManagers</code> and <code>packageRules</code> entries for brigade's updates).</p>
+<p>For Renovate, CI sets the platform, the endpoint and the repository; add a
+<code>RENOVATE_TOKEN</code> secret (CI/CD variable on GitLab). On GitHub, the job commits
+as the token's owner, with their noreply address (<code>RENOVATE_GIT_AUTHOR</code>);
+elsewhere, set <code>gitAuthor</code> in your Renovate config if needed. See
+<a href="https://docs.renovatebot.com/modules/platform/">Renovate's token permissions</a>.</p>
+<p>Off GitHub, also add a <code>RENOVATE_GITHUB_COM_TOKEN</code> secret (CI/CD variable on
+GitLab): many dependencies live on github.com (mise's <code>github:</code> and <code>aqua:</code>
+tools, <code>github-releases</code>, npm packages' repositories), whose API without a
+token soon hits its rate limit, so Renovate skips some lookups and opens PRs
+without release notes. Any github.com token works, with no permissions: a
+fine-grained token with "Public repositories" access. See
+<a href="https://docs.renovatebot.com/getting-started/running/#githubcom-token-for-changelogs-and-tools">Renovate's github.com token</a>.</p>
+<h3 id="brigade-updates">brigade updates<a class="headerlink" href="#brigade-updates" title="Permanent link">&para;</a></h3>
+<p><code>renovate:operate</code> also follows brigade: on a new release, it opens a PR that
+runs <code>mise run brigade:update</code> to that version, on every CI platform, as a
+<code>ci(deps):</code> commit (no release). Copier
+shows conflicts with your edits as inline markers in the PR: fix them there
+before merging (<code>brigade:lint</code> fails until then). On GitHub, the token also
+needs the Workflows permission, since updates change workflow files.</p>
+<p>The pins in brigade's own files (<code>.miserc.toml</code>, <code>.brigade/</code>, its workflows,
+<code>.gitlab-ci.yml</code>) come with these updates: Renovate leaves them alone, since a
+change there would fail <code>brigade:lint</code>. Your own files (<code>package.json</code>,
+<code>mise.toml</code>, your workflows...) are updated with <code>dependencies</code>.</p>
+<p>Renovate reads this from brigade's config (<code>.brigade/configs/renovate.json</code>):
+your Renovate config can still change the PR, for example its commit type with a
+<code>packageRules</code> entry on <code>matchDepNames: ["brigade"]</code>. If it sets <code>includePaths</code>,
+add <code>.brigade/copier/answers.yml</code>. Keep <code>brigade</code> out of groups (such as
+<code>group:all</code>): Copier needs a clean tree, so the update must be its own PR.</p>
+<p>To update every day and merge automatically once the checks pass, answer
+<code>operate_schedule: "0 5 * * *"</code> and <code>renovate_automerge: true</code>, and make your
+checks required (GitHub: a branch ruleset, and "Allow auto-merge"
+in Settings). A failing check, or Copier's conflict markers in a brigade update,
+keep the PR open.</p>
+<h2 id="ansible">Ansible<a class="headerlink" href="#ansible" title="Permanent link">&para;</a></h2>
+<p><code>ansible</code> installs <code>ansible-core</code> and runs your playbooks on your inventory:
+<code>playbooks/deploy.yml</code> in the deploy stage (on <code>X.Y.Z</code> tags and manual runs),
+<code>playbooks/operate.yml</code> in the operate stage (manual runs and
+<code>operate_schedule</code>), both with <code>-i inventory</code>. Other paths or options: change
+the commands (<code>ansible_deploy_command</code>, <code>ansible_operate_command</code>), or add
+<code>ansible.cfg</code>.</p>
+<p>In CI, two optional secrets (CI/CD variables on GitLab, of type Variable):</p>
+<ul>
+<li><code>ANSIBLE_PRIVATE_KEY</code>: the SSH private key. Ansible loads it into an SSH agent
+  of its own (<code>ANSIBLE_SSH_AGENT=auto</code>, ansible-core 2.19 or later), with no key
+  file. Without it, the tasks keep your own SSH setup. On GitLab, brigade's
+  image has no SSH client yet
+  (<a href="https://github.com/pa-decarvalho/brigade/issues/139">#139</a>).</li>
+<li><code>ANSIBLE_VAULT_PASSWORD</code>: the vault password. When it is set, the tasks add
+  <code>--vault-password-file .brigade/scripts/ansible_vault_password.py</code>, a script
+  that prints it. Without it, Ansible uses your own setup (<code>ansible.cfg</code>,
+  <code>ANSIBLE_VAULT_PASSWORD_FILE</code>), so it works the same locally:
+  <code>ANSIBLE_VAULT_PASSWORD=... mise run deploy</code>.</li>
+</ul>
+<p>Lint the playbooks with <code>ansible-lint</code>, test roles with <code>molecule</code>.</p>
+<h2 id="toolchain">Toolchain<a class="headerlink" href="#toolchain" title="Permanent link">&para;</a></h2>
+<p>Create the project with <code>uv init</code>: <code>uv</code> is always installed, and picks Python
+from <code>.python-version</code> and <code>requires-python</code>.</p>
+<h2 id="molecule">Molecule<a class="headerlink" href="#molecule" title="Permanent link">&para;</a></h2>
+<p><code>molecule:test</code> runs every scenario of <code>molecule/</code> (<code>molecule test --all</code>), with
+the Docker driver of <code>molecule-plugins</code> and <code>ansible-core</code> installed alongside.
+<code>molecule init scenario</code> writes a scenario to fill in; for Docker, set the
+driver and an image with Python (<code>pre_build_image</code> uses it as is; without it,
+the driver builds an image and needs <code>rsync</code>):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># molecule/default/molecule.yml</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">driver</span><span class="p">:</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nt">platforms</span><span class="p">:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">instance</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/library/python:3.13-slim</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nt">pre_build_image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div>
+<p>The other tasks stay out of the pipeline and work on the <code>default</code> scenario.
+Arguments go to the command: <code>mise run molecule:converge -- -s &lt;scenario&gt;</code>;
+<code>molecule:reconverge</code> passes them to <code>converge</code> only (its <code>molecule:destroy</code>
+takes the <code>default</code> scenario). The tasks run Molecule with
+<code>mise exec pipx:molecule@&lt;version&gt;</code>, so that its <code>ansible-playbook</code> (with the
+Docker libraries) comes before the <code>ansible</code> tool's.</p>
+<p>It needs Docker, also in CI: GitHub runners and <code>act</code> have it; on GitLab and
+Gitea, the runner must give the job access to a Docker daemon (mounted socket or
+<code>DOCKER_HOST</code>).</p>
+<h2 id="run-the-ci-locally">Run the CI locally<a class="headerlink" href="#run-the-ci-locally" title="Permanent link">&para;</a></h2>
+<p>Pick <a href="https://github.com/nektos/act">act</a> (GitHub, Gitea, Forgejo) or
+<a href="https://github.com/firecow/gitlab-ci-local">gitlab-ci-local</a> (GitLab):
+<code>act:test</code> or <code>gitlab-ci-local:test</code> replays the CI of pull requests in Docker,
+as part of the test stage.</p>
+<ul>
+<li>It needs Docker, also in CI: GitHub runners have it; on GitLab, the task does
+  nothing in a pipeline, and on Gitea it depends on the runner.</li>
+<li>Inside the replayed CI, its test job runs the task again: there it does
+  nothing (act sets <code>ACT</code>, gitlab-ci-local sets <code>GITLAB_CI</code>), so the replay does
+  not loop.</li>
+<li>In CI, the test job then replays the whole CI once more, which takes longer.</li>
+<li>Parallel replayed jobs share the remote actions: <code>act</code> runs with
+  <code>--use-new-action-cache</code>, so a job never copies an action another one is
+  rewriting.</li>
+</ul>
+<h2 id="customize-a-version-or-a-command">Customize a version or a command<a class="headerlink" href="#customize-a-version-or-a-command" title="Permanent link">&para;</a></h2>
+<p>Each tool has one file with its version and its commands. Answer yes to
+<code>customize_tools</code> and Copier asks, for each selected tool, a version, a config
+file (tools with one in <code>.brigade/configs/</code>) and a command:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Customize tool versions and commands? (y/N) y
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>ruff version (empty for brigade's):
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Config file of ruff, from the project root (empty for brigade's): ruff.toml
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Command of ruff:lint (empty for brigade's): ruff check src
+</span></code></pre></div>
+<ul>
+<li>An answer replaces brigade's value, and stays on <code>brigade:update</code> until you
+  change it.</li>
+<li>An empty answer takes brigade's value, and keeps following it on
+  <code>brigade:update</code>. Clear an answer to go back to it.</li>
+</ul>
+<p>Answers are named <code>&lt;tool&gt;_version</code>, <code>&lt;tool&gt;_config</code> and
+<code>&lt;tool&gt;_&lt;action&gt;_command</code>, e.g. <code>ruff_version</code>, <code>ruff_config</code>,
+<code>zensical_serve_command</code>. To change them later, see <a href="../questions/">Questions</a>.</p>
+<p>Missing a tool? Add your own task: see <a href="../custom-tasks/">Custom tasks</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../questions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Questions">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Questions
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../ci/" class="md-footer__link md-footer__link--next" aria-label="Next: CI platforms">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                CI platforms
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.code.copy","navigation.footer"],"redirect":null,"search":"../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.3cb411a8.min.js"></script>
+      
+    
+  </body>
+</html>
