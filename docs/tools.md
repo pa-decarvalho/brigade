@@ -73,7 +73,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `lychee` | `lychee:lint` | `lychee --no-progress .` (links in Markdown, HTML and text files, outside hidden folders and `CHANGELOG.md`, whose release PR links to a tag not made yet); reads your `lychee.toml`. Checks external links: a dead link fails an unchanged project |
 | `codespell` | `codespell:lint` | `codespell`, outside hidden folders ([config](#tool-configs)) |
 | `cspell` | `cspell:lint` | `cspell lint .`, outside hidden folders ([config](#tool-configs)). Checks every word against its dictionaries, unlike `typos` and `codespell`: add your project's words to the config's `words`, listed by `mise exec -- cspell lint --words-only --unique .` |
-| `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names ([config](#tool-configs): set your naming rules, none until then) |
+| `ls-lint` | `ls-lint:lint` | `ls-lint`: file and folder names, brigade's naming rules per language ([config](#tool-configs)) |
 | `sqlfluff` | `sqlfluff:lint` | `sqlfluff lint` on every `*.sql` (outside hidden folders); none: nothing to check ([config](#tool-configs): set your SQL dialect) |
 | `prettier` | `prettier:lint` | `prettier --check .` (JavaScript, TypeScript, JSON, YAML, Markdown, CSS...), without `.mise-data/`, `.mise/`, `.venv/` and `.brigade/`; reads your `.prettierrc` and `.prettierignore` |
 | `biome` | `biome:lint` | `biome ci .` (JavaScript, TypeScript, JSON, CSS, Markdown: lint and formatting), without what git ignores, `.mise-data/`, `.mise/`, `.venv/` and `.brigade/` ([config](#tool-configs)). Formats the same files as `prettier`: pick one |
@@ -144,8 +144,8 @@ relative to the project root.
   yamllint, biome and rumdl), and set `<tool>_config` to its path (see
   [Customize](#customize-a-version-or-a-command)); it then keeps your settings,
   and brigade's later changes are yours to follow.
-- **Your content** (`goreleaser`, `container-structure-test`, `ls-lint`,
-  `sqlfluff`, `prek`: your builds, tests, naming rules, SQL dialect, hooks):
+- **Your content** (`goreleaser`, `container-structure-test`, `sqlfluff`,
+  `prek`: your builds, tests, SQL dialect, hooks):
   created once with a starting point, then yours: `brigade:update` keeps it,
   `brigade:lint` skips it.
 
@@ -169,7 +169,7 @@ relative to the project root.
 | `goreleaser` | `.brigade/configs/goreleaser.yaml` | yours | `.goreleaser.yaml`: not read |
 | `container-structure-test` | `.brigade/configs/container-structure-test.yaml` | yours | none: your image's tests |
 | `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
-| `ls-lint` | `.brigade/configs/ls-lint.yml` | yours | `.ls-lint.yml`: not read |
+| `ls-lint` | `.brigade/configs/ls-lint.yml` | brigade's (`ls_lint_config`) | `.ls-lint.yml`: not read |
 | `releasaurus` | `.brigade/configs/releasaurus.toml` | brigade's (`releasaurus_config`) | `releasaurus.toml`: not read |
 | `renovate` | `.brigade/configs/renovate.json` | brigade's (`renovate_config`) | `renovate.json`, `.github/renovate.json5`...: still read, yours wins |
 
