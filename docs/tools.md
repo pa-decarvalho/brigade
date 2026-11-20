@@ -593,6 +593,9 @@ as part of the test stage.
   nothing (act sets `ACT`, gitlab-ci-local sets `GITLAB_CI`), so the replay does
   not loop.
 - In CI, the test job then replays the whole CI once more, which takes longer.
+- Parallel replayed jobs share the remote actions: `act` runs with
+  `--use-new-action-cache`, so a job never copies an action another one is
+  rewriting.
 
 ## Customize a version or a command
 
