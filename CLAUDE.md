@@ -178,8 +178,8 @@ Its own env lives in `mise.toml`; it is tested only with the tools it ships (no
 hand-written test scripts), added as needed, except `tests/e2e/`: pytest
 end-to-end tests on a local forge with its runner (`tests/fixtures/`, Docker
 Compose, local only; one test per project type of `tests/e2e/projects.py`,
-`mise run forges:test -- --forge <forge>`, the `e2e` skill), whose notes in
-`.forges/` list what to improve. `mise run lint` checks this repo
+`mise run <forge>:test`, or `:up`, `:run`, `:down`, the `e2e` skill), whose
+notes in `.forges/` list what to improve. `mise run lint` checks this repo
 (yamllint, jactionlint, zizmor, taplo, editorconfig-checker, gitleaks, typos,
 ruff, ty, rumdl, lychee, ls-lint, Renovate config schema). `mise run build`
 builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict

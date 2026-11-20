@@ -160,3 +160,11 @@ PROJECTS = {
         not_on=("gitlab",),
     ),
 }
+
+# The tests, by id (the <forge>:run and :test arguments): (project type, Releasaurus
+# workflow). Each forge runs both workflows, on python.
+CASES = {
+    "python": ("python", "pr"),
+    "python-direct": ("python", "direct"),
+    **{kind: (kind, "pr") for kind in PROJECTS if kind != "python"},
+}
