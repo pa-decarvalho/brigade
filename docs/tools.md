@@ -38,6 +38,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `go` | `golangci-lint` |
 | `node` | `node`, `biome` (JavaScript or TypeScript) |
 | `rust` | `rust` |
+| `java` | `maven` (Java with Maven) |
 | `terraform` | `tflint`, `checkov`, `opentofu` |
 | `ansible` | `ansible-lint`, `molecule`, `ansible` |
 | `shell` | `shellcheck`, `shfmt` |
@@ -103,6 +104,9 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `node:build` | `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
 | | `node:test` | `npm ci && npm test --if-present` |
 | | `node:deploy` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
+| `maven` | `maven:build` | Installs Java (Eclipse Temurin) and Maven; `mvn --batch-mode --no-transfer-progress package -DskipTests` (your `pom.xml`, into `target/`: ignore it) |
+| | `maven:test` | `mvn --batch-mode --no-transfer-progress verify`: the tests, and the checks your `pom.xml` binds to `verify` (Checkstyle, Spotless...) |
+| | `maven:deploy` | With `maven_publish: true`: `mvn ... deploy -DskipTests`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -171,6 +175,7 @@ relative to the project root.
 | `cspell` | `.brigade/configs/cspell.yaml` | brigade's (`cspell_config`) | `cspell.json`, `.cspell.json`...: still read, both apply |
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | brigade's (`ls_lint_config`) | `.ls-lint.yml`: not read |
 | `releasaurus` | `.brigade/configs/releasaurus.toml` | brigade's (`releasaurus_config`) | `releasaurus.toml`: not read |
+| `maven` | `.brigade/configs/maven-settings.xml` (with `maven_publish`) | brigade's (`maven_config`) | `~/.m2/settings.xml`: still read, both apply |
 | `renovate` | `.brigade/configs/renovate.json` | brigade's (`renovate_config`) | `renovate.json`, `.github/renovate.json5`...: still read, yours wins |
 
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
@@ -305,8 +310,9 @@ default branch through the forge's API, so commit it):
 - Updates your manifests to the new version in the release pull request
   (`release_type`), from your tools: `uv` → `pyproject.toml`, `node` →
   `package.json` and `package-lock.json`, `rust` → `Cargo.toml` and
-  `Cargo.lock`, `go` → `version.go`. With none or several of them, none.
-  `releasaurus_release_type` picks another (`java`, `php`, `ruby`, `helm`...) or
+  `Cargo.lock`, `go` → `version.go`, `maven` → `pom.xml`. With none or several
+  of them, none. `releasaurus_release_type` picks another (`php`, `ruby`,
+  `helm`...) or
   `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
   updated: `uv` rewrites it on the next `uv lock` or `uv run`.
 
@@ -429,6 +435,18 @@ Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in
 secret (`[env]`:
 `CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version
 already published fails: a manual run on the same tag does nothing new.
+
+`maven:deploy` (the `maven` tool, with the `maven_publish: true` answer) deploys
+the artifacts with `mvn deploy`, once per tag: the version is the one in
+`pom.xml`, which Releasaurus bumps in the release PR (a `-SNAPSHOT` version goes
+to a snapshot repository). The repository is `MAVEN_REPOSITORY_URL` (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
+(`[env]`) or as a CI variable; else `distributionManagement` in your `pom.xml`,
+whose repository needs the id `brigade` for the login. In CI, add
+`MAVEN_USERNAME` and `MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), read
+by `.brigade/configs/maven-settings.xml` (Maven's global settings: your
+`~/.m2/settings.xml` still applies). A release repository refuses a version
+already deployed: a manual run on the same tag fails.
 
 `docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
 (`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE`

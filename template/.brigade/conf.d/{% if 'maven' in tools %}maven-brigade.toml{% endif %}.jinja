@@ -1,0 +1,30 @@
+{%- set config = maven_config or '.brigade/configs/maven-settings.xml' -%}
+[tools]
+# Eclipse Temurin: mise matches the pin's prefix (temurin-25.0.5+8.0.LTS).
+# renovate: datasource=java-version depName=java-jdk
+java = "temurin-{{ maven_java_version | default('25.0.5+8', true) }}"
+# renovate: datasource=maven depName=org.apache.maven:apache-maven
+maven = "{{ maven_version | default('3.10.1', true) }}"
+
+# Maven runs the project's pom.xml; it downloads its dependencies to ~/.m2/repository
+# (not cached in CI). --batch-mode and --no-transfer-progress: plain logs, no download lines.
+
+[tasks."maven:build"]
+description = "Build the Java project with Maven, without its tests"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ maven_build_command | default('mvn --batch-mode --no-transfer-progress package -DskipTests', true) }}'''
+
+[tasks."maven:test"]
+description = "Build the Java project and run its tests and checks (mvn verify)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ maven_test_command | default('mvn --batch-mode --no-transfer-progress verify', true) }}'''
+{%- if maven_publish %}
+
+[tasks."maven:deploy"]
+description = "Deploy the artifacts to a Maven repository"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# The repository: MAVEN_REPOSITORY_URL, else distributionManagement in pom.xml; its login:
+# the MAVEN_USERNAME and MAVEN_PASSWORD secrets, read by the settings file (--global-settings:
+# yours in ~/.m2/settings.xml still applies).
+run = '''{{ maven_deploy_command | default('mvn --batch-mode --no-transfer-progress --global-settings ' ~ config ~ ' deploy -DskipTests', true) }}'''
+{%- endif %}

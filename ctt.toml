@@ -92,6 +92,64 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo command.\n")
     ["mise", "exec", "--", "cargo", "publish", "--dry-run"],
 ]
 
+[output.".ctt/java-github"]
+# The Java example: a Maven library with its test, deployed to a Maven repository on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "osv-scanner", "maven", "releasaurus", "renovate"]
+ci = "github"
+maven_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The project's files: pom.xml, a class with its JUnit test, .gitignore (Maven's target/), .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+pathlib.Path("src/main/java/demo").mkdir(parents=True)
+pathlib.Path("src/test/java/demo").mkdir(parents=True)
+pathlib.Path("pom.xml").write_text("""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>demo</groupId>
+    <artifactId>demo</artifactId>
+    <version>0.1.0</version>
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.13.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+""")
+pathlib.Path("src/main/java/demo/Hello.java").write_text("package demo;\n\npublic final class Hello {\n    private Hello() {\n    }\n\n    public static String hello() {\n        return \"Hello from demo!\";\n    }\n}\n")
+pathlib.Path("src/test/java/demo/HelloTest.java").write_text("package demo;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\nclass HelloTest {\n    @Test\n    void hello() {\n        assertEquals(\"Hello from demo!\", Hello.hello());\n    }\n}\n")
+pathlib.Path(".gitignore").write_text("target/\n")
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo Java library.\n")
+'''],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # maven:deploy to a local file repository (MAVEN_REPOSITORY_URL, the settings' profile), with a login.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import os, pathlib, subprocess
+repo = pathlib.Path(".git/m2-repo").resolve()
+env = {**os.environ, "MAVEN_REPOSITORY_URL": repo.as_uri(), "MAVEN_USERNAME": "ctt", "MAVEN_PASSWORD": "ctt"}
+subprocess.run(["mise", "run", "maven:deploy"], env=env, check=True)
+assert (repo / "demo/demo/0.1.0/demo-0.1.0.jar").exists(), sorted(repo.rglob("*"))
+'''],
+]
+
 [output.".ctt/python-docker-github"]
 # The Python app example: an app shipped as a Docker image, tested as code and as an image.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ruff", "ty", "osv-scanner", "hadolint", "checkov", "pytest", "docker", "container-structure-test", "releasaurus", "renovate"]

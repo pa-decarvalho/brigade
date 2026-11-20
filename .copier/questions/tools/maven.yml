@@ -1,0 +1,44 @@
+---
+maven_publish:
+  type: bool
+  help: >-
+    Deploy the artifacts to a Maven repository on each release (maven:deploy)?
+  default: false
+  when: "{{ 'maven' in tools }}"
+
+maven_version:
+  type: str
+  help: Maven version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools }}"
+
+maven_java_version:
+  type: str
+  help: Java version, Eclipse Temurin (e.g. 21; empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools }}"
+
+maven_config:
+  type: str
+  help: >-
+    Settings file of maven:deploy, from the project root (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools and maven_publish }}"
+
+maven_build_command:
+  type: str
+  help: Command of maven:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools }}"
+
+maven_test_command:
+  type: str
+  help: Command of maven:test (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools }}"
+
+maven_deploy_command:
+  type: str
+  help: Command of maven:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'maven' in tools and maven_publish }}"

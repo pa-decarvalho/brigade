@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven settings of maven:deploy: mvn -gs .brigade/configs/maven-settings.xml
+  brigade-owned: updated by mise run brigade:update.
+  For your own settings, set maven_config to your file (start from a copy).
+
+  The server "brigade" logs in with MAVEN_USERNAME and MAVEN_PASSWORD. With
+  MAVEN_REPOSITORY_URL set, the artifacts go there; else to
+  distributionManagement in pom.xml (give its repository the id "brigade" for
+  this login).
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+  <servers>
+    <server>
+      <id>brigade</id>
+      <username>${env.MAVEN_USERNAME}</username>
+      <password>${env.MAVEN_PASSWORD}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>brigade</id>
+      <activation>
+        <property>
+          <name>env.MAVEN_REPOSITORY_URL</name>
+        </property>
+      </activation>
+      <properties>
+        <altDeploymentRepository>brigade::${env.MAVEN_REPOSITORY_URL}</altDeploymentRepository>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
