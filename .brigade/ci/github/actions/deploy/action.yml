@@ -27,6 +27,12 @@ inputs:
   cargo-registry-token:
     description: Crate registry token, rust:deploy (CARGO_REGISTRY_TOKEN secret)
     default: ""
+  maven-username:
+    description: Maven repository user, maven:deploy (MAVEN_USERNAME secret)
+    default: ""
+  maven-password:
+    description: Maven repository password, maven:deploy (MAVEN_PASSWORD secret)
+    default: ""
   docker-username:
     description: Registry user, docker:deploy (DOCKER_USERNAME secret)
     default: ""
@@ -37,9 +43,9 @@ runs:
   using: composite
   steps:
     # Not the mise action: no cache restored where a release is published.
-    - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
+    - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
       with:
-        version: 2026.11.9
+        version: 2026.11.10
         cache: false
     - shell: bash
       env:
@@ -51,6 +57,8 @@ runs:
         UV_PUBLISH_PASSWORD: ${{ inputs.uv-publish-password }}
         NPM_TOKEN: ${{ inputs.npm-token }}
         CARGO_REGISTRY_TOKEN: ${{ inputs.cargo-registry-token }}
+        MAVEN_USERNAME: ${{ inputs.maven-username }}
+        MAVEN_PASSWORD: ${{ inputs.maven-password }}
         DOCKER_USERNAME: ${{ inputs.docker-username }}
         DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}

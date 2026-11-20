@@ -25,7 +25,6 @@ PROJECT_CONFIGS = tuple(
     for name in (
         "goreleaser.yaml",
         "container-structure-test.yaml",
-        "ls-lint.yml",
         "sqlfluff.cfg",
         "prek.yaml",
     )

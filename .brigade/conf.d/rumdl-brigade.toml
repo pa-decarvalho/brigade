@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=github-releases depName=rvben/rumdl
-rumdl = "0.3.4"
+rumdl = "0.3.5"
 
 [tasks."rumdl:lint"]
 description = "Check Markdown files with rumdl"

@@ -86,7 +86,7 @@ Gitea, whose runner runs GitHub Actions workflows). Each forge has four tasks:
 - `mise run <forge>:up`: starts it and its runner, creates its admin and token,
   and prints its URL and login (an up forge is reused);
 - `mise run <forge>:run [type...]`: the tests on it, all or the given ones
-  (`python`, `python-direct`, `node`, `docker`);
+  (`python`, `python-direct`, `node`, `docker`, `java`);
 - `mise run <forge>:down`: removes it and its data, then everything Docker no
   longer uses, Docker-wide (`docker system prune --all`, then
   `docker volume prune --all`: stopped containers, unused images and volumes,
@@ -96,7 +96,7 @@ Gitea, whose runner runs GitHub Actions workflows). Each forge has four tasks:
 
 To work on a failure: `up` once, `run` as often as needed, then `down`. pytest
 runs on this machine, one test per project type of `tests/e2e/projects.py`
-(`python`, `node`, `docker`), the Python one with both Releasaurus workflows
+(`python`, `node`, `docker`, `java`), the Python one with both Releasaurus workflows
 (`python`: a release PR; `python-direct`: no PR), each in a temporary folder:
 
 1. the project, created with its ecosystem's tool, brigade applied from this
@@ -106,8 +106,8 @@ runs on this machine, one test per project type of `tests/e2e/projects.py`
 4. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
    passes; merged;
 5. the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's API);
-6. the deploy, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm
-   and image repositories, each deploy logged in as a deploy user.
+6. the deploy, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm,
+   Maven and image repositories, each deploy logged in as a deploy user.
 
 The release and the deploy run with the checkout's files: a fix to them is
 tested before it is released.
