@@ -327,10 +327,11 @@ _post_tasks = [
     ["mise", "run", "test"],
 ]
 
-[output.".ctt/template-gitea"]
-# A Copier template project on Gitea: jobs splits the test stage, replayed by act.
+[output.".ctt/template-forgejo"]
+# A Copier template project on Forgejo (Gitea's files in .forgejo/workflows/): jobs splits the
+# test stage, replayed by act.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
-ci = "gitea"
+ci = "forgejo"
 jobs = { test = [
     { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
     { name = "replay", run = ["mise run act:test"] },

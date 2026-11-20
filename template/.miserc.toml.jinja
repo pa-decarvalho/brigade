@@ -7,7 +7,7 @@ override_config_filenames = [
 {%- if github_mirror or pypi_index %}
     ".brigade/mirror.toml",
 {%- endif %}
-{%- if ci in ['github', 'gitea'] %}
+{%- if ci in ['github', 'gitea', 'forgejo'] %}
     ".brigade/conf.d/jactionlint-brigade.toml",
 {%- elif ci == 'gitlab' %}
     ".brigade/conf.d/gitlab-ci-brigade.toml",

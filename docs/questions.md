@@ -13,13 +13,13 @@ Copier's own copy (do not edit).
 | `<stage>_enabled` | yes / no | yes | Keeps the stage: its mise task and its CI job. See [Stages](tools.md#stages). |
 | `<stage>_commands` | list of commands | empty | Commands of the stage, run in order, locally and in CI. Empty runs all its tools. |
 | `jobs` | stages to lists of `{name, run}` | empty | CI jobs per stage, in parallel, each running its commands in order (locally, all in order). Replaces the stage's tools and `<stage>_commands`. See [Named CI jobs](ci.md#named-ci-jobs). |
-| `operate_schedule` | cron expression, e.g. `0 5 * * 1` | empty | GitHub, Gitea: when the Operate workflow runs, besides manual runs. Empty: manual runs only. On GitLab, set a pipeline schedule instead. |
+| `operate_schedule` | cron expression, e.g. `0 5 * * 1` | empty | GitHub, Gitea, Forgejo: when the Operate workflow runs, besides manual runs. Empty: manual runs only. On GitLab, set a pipeline schedule instead. |
 | `pages_dir` | folder | `site` | With the `pages` tool: the folder your build writes the site to (`dist` for Vite). |
 | `uv_publish` | yes / no | no | With the `uv` tool: publish the package on each release (`uv:deploy`, see [deploy](tools.md#deploy)). |
 | `npm_publish` | yes / no | no | With the `node` tool: publish the package on each release (`node:deploy`, see [deploy](tools.md#deploy)). |
 | `cargo_publish` | yes / no | no | With the `rust` tool: publish the crate on each release (`rust:deploy`, see [deploy](tools.md#deploy)). |
 | `customize_tools` | yes / no | no | Asks a version, a config file and a command for each selected tool: see [Tools](tools.md#customize-a-version-or-a-command). |
-| `ci` | `github`, `gitlab`, `gitea`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
+| `ci` | `github`, `gitlab`, `gitea`, `forgejo`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |
 | `github_mirror` | URL | empty | Mirror of `https://github.com/`: see [Mirrors](mirrors.md). |
 | `pypi_index` | URL | empty | PyPI simple index: see [Mirrors](mirrors.md). |
 

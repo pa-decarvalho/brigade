@@ -46,7 +46,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `docs` | `rumdl`, `zensical`, `pages` (GitHub, GitLab) |
 | `copier-template` | `ctt` |
 | `security` | `osv-scanner`, `checkov`, `zizmor` (GitHub) |
-| `ci` | `act` (GitHub, Gitea) or `gitlab-ci-local` (GitLab): replays the CI |
+| `ci` | `act` (GitHub, Gitea, Forgejo) or `gitlab-ci-local` (GitLab): replays the CI |
 | `maintenance` | `renovate`, `releasaurus` |
 
 ## Catalog
@@ -119,12 +119,12 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
-| `act` | `act:test` | GitHub, Gitea: `act pull_request` replays the pull request workflows in Docker: see below |
+| `act` | `act:test` | GitHub, Gitea, Forgejo: `act pull_request` replays the pull request workflows in Docker: see below |
 | `prek` | `prek:install` | `prek install --force`: the git hooks of `.brigade/configs/prek.yaml`, in place of any hook already there (local use, not a stage): see [prek](#prek) |
 | | `prek:run` | `prek run --all-files`: the hooks on every file |
 | `gh` | `gh:check`, `gh:setup` | GitHub: checks the repository's settings for the selected tools, or changes them (local use, not a stage): see [Repository settings](#repository-settings) |
 | `glab` | `glab:check`, `glab:setup` | GitLab: the same for the project |
-| `tea` | `tea:check`, `tea:setup` | Gitea, Forgejo: the same for the repository |
+| `tea` | `tea:check`, `tea:setup` | Gitea (not Forgejo yet, #299): the same for the repository |
 | `gitlab-ci-local` | `gitlab-ci-local:test` | GitLab: `gitlab-ci-local` replays the merge request pipeline in Docker: see below |
 
 The CI platform adds its own linter (`jactionlint:lint`, `gitlab-ci:lint`): see
@@ -224,7 +224,7 @@ for one commit with `git commit --no-verify`.
 ## Repository settings
 
 Each forge's CLI comes with a check, for local use (not a stage): `gh:check`
-(GitHub), `glab:check` (GitLab), `tea:check` (Gitea, Forgejo). It reads the
+(GitHub), `glab:check` (GitLab), `tea:check` (Gitea). It reads the
 repository's settings that the selected tools need, with your login
 (`gh auth login`, `glab auth login`, `tea login add`), changes nothing, and
 fails when a required one is missing, with where to change it:
@@ -370,7 +370,8 @@ merge commit can leave a branch's older commits out of the next release.
 |---|---|---|
 | GitHub | `RELEASAURUS_GITHUB_TOKEN` | Contents, Issues and Pull requests: read and write |
 | GitLab | `RELEASAURUS_GITLAB_TOKEN` | `api`, `write_repository` |
-| Gitea, Forgejo | `RELEASAURUS_GITEA_TOKEN` | repository, issue and misc: read and write |
+| Gitea | `RELEASAURUS_GITEA_TOKEN` | repository, issue and misc: read and write |
+| Forgejo | `RELEASAURUS_FORGEJO_TOKEN` | repository, issue and misc: read and write |
 
 ## deploy
 
@@ -581,7 +582,7 @@ Gitea, the runner must give the job access to a Docker daemon (mounted socket or
 
 ## Run the CI locally
 
-Pick [act](https://github.com/nektos/act) (GitHub, Gitea) or
+Pick [act](https://github.com/nektos/act) (GitHub, Gitea, Forgejo) or
 [gitlab-ci-local](https://github.com/firecow/gitlab-ci-local) (GitLab):
 `act:test` or `gitlab-ci-local:test` replays the CI of pull requests in Docker,
 as part of the test stage.

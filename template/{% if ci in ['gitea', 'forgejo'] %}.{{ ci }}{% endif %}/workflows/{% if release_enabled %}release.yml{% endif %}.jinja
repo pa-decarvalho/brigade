@@ -31,5 +31,5 @@ jobs:
 {% endraw %}{% raw %}        with:
 {% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
 {% endraw %}{% endif %}{% raw %}          # Optional bot token, else the workflow token.
-          token: ${{ secrets.RELEASAURUS_GITEA_TOKEN }}
+          token: ${{ secrets.RELEASAURUS_{% endraw %}{{ ci | upper }}{% raw %}_TOKEN }}
 {% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

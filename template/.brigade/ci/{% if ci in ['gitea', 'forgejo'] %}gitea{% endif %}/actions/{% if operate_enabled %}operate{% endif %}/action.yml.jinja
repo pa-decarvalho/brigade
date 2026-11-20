@@ -1,4 +1,4 @@
----
+{% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 name: operate
 description: mise run operate (e.g. Renovate), with the project's tools
@@ -25,8 +25,8 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
-        RENOVATE_PLATFORM: gitea
-        RENOVATE_ENDPOINT: ${{ github.server_url }}/api/v1
+{% endraw %}        RENOVATE_PLATFORM: {{ ci }}
+{% raw %}        RENOVATE_ENDPOINT: ${{ github.server_url }}/api/v1
         RENOVATE_REPOSITORIES: ${{ github.repository }}
         RENOVATE_TOKEN: ${{ inputs.renovate-token }}
         RENOVATE_ONBOARDING: "false"
@@ -34,4 +34,4 @@ runs:
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
         TASK: ${{ inputs.task }}
-      run: mise run "$TASK"
+      run: mise run "$TASK"{% endraw %}

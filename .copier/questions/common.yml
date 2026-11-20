@@ -6,6 +6,7 @@ ci:
     - github
     - gitlab
     - gitea
+    - forgejo
     - none
   default: github
 
@@ -108,8 +109,8 @@ tools:
     act (test):
       value: act
       validator: >-
-        {% if ci not in ['github', 'gitea'] %}needs GitHub
-        or Gitea{% endif %}
+        {% if ci not in ['github', 'gitea', 'forgejo'] %}needs GitHub,
+        Gitea or Forgejo{% endif %}
     gitlab-ci-local (test):
       value: gitlab-ci-local
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
@@ -121,6 +122,7 @@ tools:
       validator: "{% if ci != 'gitlab' %}needs GitLab{% endif %}"
     tea (repository settings, local):
       value: tea
+      # Not on Forgejo yet: its install fails in Forgejo's CI (#299).
       validator: "{% if ci != 'gitea' %}needs Gitea{% endif %}"
     prek (git hooks, local): prek
   # brigade's defaults, then the presets' tools, without those the CI
@@ -130,6 +132,7 @@ tools:
       'github': ['gitlab-ci-local'],
       'gitlab': ['zizmor', 'act'],
       'gitea': ['zizmor', 'pages', 'gitlab-ci-local'],
+      'forgejo': ['zizmor', 'pages', 'gitlab-ci-local', 'tea'],
       'none': ['zizmor', 'pages', 'act', 'gitlab-ci-local'],
     }[ci] -%}
     {{ (['brigade', 'yamllint', 'gitleaks', 'typos'] + presets | sum(start=[]))
@@ -208,7 +211,7 @@ operate_schedule:
     Cron schedule of the operate workflow, e.g. "0 5 * * 1" (empty for manual
     runs only)
   default: ""
-  when: "{{ operate_enabled and ci in ['github', 'gitea'] }}"
+  when: "{{ operate_enabled and ci in ['github', 'gitea', 'forgejo'] }}"
 
 # Asks a version and a command per selected tool (questions/tools/).
 # An empty answer takes brigade's default, which is in the tool's Jinja file.

@@ -7,4 +7,4 @@ act = "{{ act_version | default('0.2.98', true) }}"
 [tasks."act:test"]
 description = "Run the pull request workflows locally with act, in Docker"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
-run = '''{% raw %}{% if get_env(name="ACT", default="") %}echo act:test: already in act{% else %}{% endraw %}{{ act_test_command | default('act pull_request' ~ (' -W .gitea/workflows' if ci == 'gitea' else '') ~ ' -P ubuntu-latest=catthehacker/ubuntu:act-24.04', true) }}{% raw %}{% endif %}{% endraw %}'''
+run = '''{% raw %}{% if get_env(name="ACT", default="") %}echo act:test: already in act{% else %}{% endraw %}{{ act_test_command | default('act pull_request' ~ (' -W .' ~ ci ~ '/workflows' if ci in ['gitea', 'forgejo'] else '') ~ ' -P ubuntu-latest=catthehacker/ubuntu:act-24.04', true) }}{% raw %}{% endif %}{% endraw %}'''

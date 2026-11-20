@@ -85,6 +85,10 @@ class Forge:
         """The default branch's last commit."""
         raise NotImplementedError
 
+    def tag_sha(self, repo: str, tag: str) -> str:
+        """The commit a tag points to."""
+        raise NotImplementedError
+
     # -- shared ----------------------------------------------------------------
 
     def wait_runs(
@@ -209,6 +213,11 @@ class Gitea(Forge):
         assert isinstance(found, list)
         return [t["name"] for t in found]
 
+    def tag_sha(self, repo: str, tag: str) -> str:
+        found = self.api("GET", f"/repos/{self.user}/{repo}/tags/{tag}")
+        assert isinstance(found, dict)
+        return found["commit"]["sha"]
+
     def head(self, repo: str) -> str:
         branch = self.api("GET", f"/repos/{self.user}/{repo}/branches/main")
         assert isinstance(branch, dict)
@@ -223,8 +232,9 @@ class GitHubOnGitea(Gitea):
 
 
 class Forgejo(Gitea):
-    name = server = "forgejo"
+    name = server = ci = "forgejo"
     cli = ""  # tea fails to install in Forgejo's CI (#299)
+    releasaurus_secret = "RELEASAURUS_FORGEJO_TOKEN"
 
 
 class GitLab(Forge):
@@ -256,7 +266,17 @@ class GitLab(Forge):
 
     def open_pr(self, repo: str, branch: str, title: str) -> str:
         body = {"source_branch": branch, "target_branch": "main", "title": title}
-        mr = self.api("POST", f"/projects/{self.project(repo)}/merge_requests", body)
+        path = f"/projects/{self.project(repo)}/merge_requests"
+        for _ in range(10):  # GitLab registers a pushed branch asynchronously
+            try:
+                mr = self.api("POST", path, body)
+                break
+            except AssertionError as error:
+                if "does not exist" not in str(error):
+                    raise
+                time.sleep(3)
+        else:
+            raise AssertionError(f"branch {branch} not found after its push")
         assert isinstance(mr, dict)
         return str(mr["iid"])
 
@@ -308,6 +328,12 @@ class GitLab(Forge):
         found = self.api("GET", f"/projects/{self.project(repo)}/repository/tags")
         assert isinstance(found, list)
         return [t["name"] for t in found]
+
+    def tag_sha(self, repo: str, tag: str) -> str:
+        path = f"/projects/{self.project(repo)}/repository/tags/{tag}"
+        found = self.api("GET", path)
+        assert isinstance(found, dict)
+        return found["commit"]["id"]
 
     def head(self, repo: str) -> str:
         branch = self.api(

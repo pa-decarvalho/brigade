@@ -12,6 +12,7 @@ import re
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 import pytest  # ty: ignore[import-not-found]  # run with uv run --with pytest
 import up
@@ -67,8 +68,20 @@ def data_args(data: dict) -> list[str]:
     return [arg for k, v in values.items() for arg in ("--data", f"{k}={v}")]
 
 
-@pytest.mark.parametrize("kind", PROJECTS)
-def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
+# (project type, Releasaurus workflow): each forge runs both workflows, on python.
+CASES = [
+    ("python", "pr"),
+    ("python", "direct"),
+    *((k, "pr") for k in PROJECTS if k != "python"),
+]
+
+
+@pytest.mark.parametrize(
+    ("kind", "workflow"), CASES, ids=[k if w == "pr" else f"{k}-{w}" for k, w in CASES]
+)
+def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -> None:
+    """pr: the release PR opens on the feat merge, the update merge updates it.
+    direct: the update merges first, then the feat merge releases at once."""
     project = PROJECTS[kind]
     if forge.server in project.not_on:
         pytest.skip(f"brigade refuses {kind} on {forge.server}")
@@ -91,11 +104,20 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         tools = list(project.tools)
         tools += ["releasaurus"] if full else []
         tools += [forge.cli] if forge.cli else []
-        data = {**project.data, "ci": forge.ci, "tools": tools}
+        template = template_at(latest_tag())
+        # A release without this ci (forgejo before 0.33): ci: gitea, then the update
+        # moves to it, as docs/ci.md says.
+        known = (
+            f"\n    - {forge.ci}\n"
+            in Path(template, ".copier/questions/common.yml").read_text()
+        )
+        ci = forge.ci if known else "gitea"
+        data = {**project.data, "ci": ci, "tools": tools}
+        if workflow == "direct":
+            data |= {"customize_tools": True, "releasaurus_workflow": "direct"}
         if not full:  # no deploy without a release
             data = {k: v for k, v in data.items() if not k.endswith("_publish")}
         run("git", "init", "-q", "-b", "main")
-        template = template_at(latest_tag())
         run(*COPIER, "copy", "--trust", "--defaults", *data_args(data), template, ".")
         for name, text in project.files.items():
             (path / name).parent.mkdir(parents=True, exist_ok=True)
@@ -114,6 +136,8 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         run("git", "remote", "add", "origin", forge.remote(repo))
         if full:
             secrets = {forge.releasaurus_secret: "{token}", **project.secrets}
+            if ci != forge.ci:  # the secret's name before the move
+                secrets[f"RELEASAURUS_{ci.upper()}_TOKEN"] = "{token}"
             for name, value in secrets.items():
                 value = value.format(user=forge.user, token=forge.token)
                 forge.set_secret(repo, name, value)
@@ -135,19 +159,31 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         names = () if forge.server == "gitlab" else ("lint", "test")
         forge.wait_runs(repo, sha, "pull_request", names)
 
-    with note.step("update"):
+    def merge(number: str, title: str) -> None:
         before = forge.head(repo)
-        forge.merge_pr(repo, pr, "feat: say hello")
+        forge.merge_pr(repo, number, title)
         merged = forge.moved(repo, before)
         if full:  # release, on pushes to main
             forge.wait_runs(repo, merged, "push")
+
+    with note.step("update"):
+        if workflow == "pr":
+            merge(pr, "feat: say hello")
         run("git", "switch", "-q", "main")
         run("git", "pull", "-q", "origin", "main")
         run("git", "switch", "-q", "-c", "update")
         answers = path / ".brigade/copier/answers.yml"
         answers.write_text(answers.read_text().replace(template, str(up.ROOT)))
         run("git", "commit", "-qam", "ci: brigade from the checkout")
+        if ci != forge.ci:
+            data_file = path / ".brigade/copier/data.yml"
+            text = data_file.read_text()
+            assert f'ci: "{ci}"' in text, text
+            data_file.write_text(text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"'))
         run("mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD")
+        if ci != forge.ci:  # Copier moved the workflows
+            assert (path / f".{forge.ci}/workflows/lint.yml").exists()
+            assert not (path / f".{ci}/workflows").exists()
         assert f"_commit: {latest_tag()}\n" not in answers.read_text(), (
             "HEAD is the tag"
         )
@@ -157,31 +193,30 @@ def test_project(kind: str, forge: Forge, note: Note, tmp_path) -> None:
         update = forge.open_pr(repo, "update", "ci: update brigade")
         sha = run("git", "rev-parse", "HEAD").strip()
         forge.wait_runs(repo, sha, "pull_request", names)
-        before = forge.head(repo)
-        forge.merge_pr(repo, update, "ci: update brigade")
-        merged = forge.moved(repo, before)
-        if full:
-            forge.wait_runs(repo, merged, "push")
+        merge(update, "ci: update brigade")
 
     if not full:
         note.skip("release", "deploy", reason="not covered: they call GitHub's API")
         return
 
     with note.step("release"):
-        release, title, sha = wait_for(
-            "release PR", lambda: forge.find_pr(repo, "release"), 300
-        )
-        assert title.startswith("chore(main): release"), title
-        forge.wait_runs(repo, sha, "pull_request", names)
-        before = forge.head(repo)
-        forge.merge_pr(repo, release, title)
-        tag_sha = forge.moved(repo, before)
+        if workflow == "pr":
+            release, title, sha = wait_for(
+                "release PR", lambda: forge.find_pr(repo, "release"), 300
+            )
+            assert title.startswith("chore(main): release"), title
+            forge.wait_runs(repo, sha, "pull_request", names)
+            merge(release, title)
+        else:  # released by the feat merge's release job
+            merge(pr, "feat: say hello")
+            assert not forge.find_pr(repo, "release"), "a release PR in direct"
         tags = wait_for(
             "X.Y.Z tag",
             lambda: [t for t in forge.tags(repo) if SEMVER.fullmatch(t)],
             600,
         )
         assert all(SEMVER.fullmatch(t) for t in forge.tags(repo)), forge.tags(repo)
+        tag_sha = forge.tag_sha(repo, tags[0])
 
     with note.step("deploy", go_on=True):
         tag = tags[0]
