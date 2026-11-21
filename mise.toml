@@ -16,7 +16,7 @@ run = "uv run --no-project python tests/e2e/up.py gitea up"
 
 [tasks."gitea:run"]
 description = "Run the end-to-end tests on Gitea"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py gitea run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitea:down"]
@@ -25,7 +25,7 @@ run = "uv run --no-project python tests/e2e/up.py gitea down"
 
 [tasks."gitea:test"]
 description = "End-to-end tests on Gitea: up, run, then down"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py gitea test{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."forgejo:up"]
@@ -34,7 +34,7 @@ run = "uv run --no-project python tests/e2e/up.py forgejo up"
 
 [tasks."forgejo:run"]
 description = "Run the end-to-end tests on Forgejo"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py forgejo run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."forgejo:down"]
@@ -43,7 +43,7 @@ run = "uv run --no-project python tests/e2e/up.py forgejo down"
 
 [tasks."forgejo:test"]
 description = "End-to-end tests on Forgejo: up, run, then down"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py forgejo test{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitlab:up"]
@@ -52,7 +52,7 @@ run = "uv run --no-project python tests/e2e/up.py gitlab up"
 
 [tasks."gitlab:run"]
 description = "Run the end-to-end tests on GitLab"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py gitlab run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitlab:down"]
@@ -61,7 +61,7 @@ run = "uv run --no-project python tests/e2e/up.py gitlab down"
 
 [tasks."gitlab:test"]
 description = "End-to-end tests on GitLab: up, run, then down"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py gitlab test{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."github:up"]
@@ -70,7 +70,7 @@ run = "uv run --no-project python tests/e2e/up.py github up"
 
 [tasks."github:run"]
 description = "Run the end-to-end tests on a ci: github project on Gitea"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py github run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."github:down"]
@@ -79,5 +79,5 @@ run = "uv run --no-project python tests/e2e/up.py github down"
 
 [tasks."github:test"]
 description = "End-to-end tests on a ci: github project on Gitea: up, run, then down"
-usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java"'
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, docker, java-maven, java-gradle"'
 run = "uv run --no-project python tests/e2e/up.py github test{% for t in usage.type %} {{ t }}{% endfor %}"

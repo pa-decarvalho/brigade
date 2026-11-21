@@ -20,9 +20,12 @@ jobs:
     -   name: python-docker-github
         run:
         - mise run ctt:test -- -t .ctt/python-docker-github
-    -   name: java-github
+    -   name: java-maven-github
         run:
-        - mise run ctt:test -- -t .ctt/java-github
+        - mise run ctt:test -- -t .ctt/java-maven-github
+    -   name: java-gradle-github
+        run:
+        - mise run ctt:test -- -t .ctt/java-gradle-github
     -   name: node-github
         run:
         - mise run ctt:test -- -t .ctt/node-github

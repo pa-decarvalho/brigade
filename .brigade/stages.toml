@@ -16,7 +16,7 @@ depends = [{ task = "*:build", optional = true }]
 [tasks.test]
 description = "Stage: tests"
 dir = "{{config_root}}/.."
-run = ["mise run ctt:test -- -t .ctt/python-github", "mise run ctt:test -- -t .ctt/go-github", "mise run ctt:test -- -t .ctt/python-docker-github", "mise run ctt:test -- -t .ctt/java-github", "mise run ctt:test -- -t .ctt/node-github", "mise run ctt:test -- -t .ctt/react-github", "mise run ctt:test -- -t .ctt/angular-github", "mise run ctt:test -- -t .ctt/rust-github", "mise run ctt:test -- -t .ctt/python-gitlab", "mise run ctt:test -- -t .ctt/template-gitlab", "mise run ctt:test -- -t .ctt/template-forgejo", "mise run ctt:test -- -t .ctt/python-gitea", "mise run ctt:test -- -t .ctt/python-mirror", "mise run ctt:test -- -t .ctt/none-github", "mise run ctt:test -- -t .ctt/template-github", "mise run ctt:test -- -t .ctt/ansible-github"]
+run = ["mise run ctt:test -- -t .ctt/python-github", "mise run ctt:test -- -t .ctt/go-github", "mise run ctt:test -- -t .ctt/python-docker-github", "mise run ctt:test -- -t .ctt/java-maven-github", "mise run ctt:test -- -t .ctt/java-gradle-github", "mise run ctt:test -- -t .ctt/node-github", "mise run ctt:test -- -t .ctt/react-github", "mise run ctt:test -- -t .ctt/angular-github", "mise run ctt:test -- -t .ctt/rust-github", "mise run ctt:test -- -t .ctt/python-gitlab", "mise run ctt:test -- -t .ctt/template-gitlab", "mise run ctt:test -- -t .ctt/template-forgejo", "mise run ctt:test -- -t .ctt/python-gitea", "mise run ctt:test -- -t .ctt/python-mirror", "mise run ctt:test -- -t .ctt/none-github", "mise run ctt:test -- -t .ctt/template-github", "mise run ctt:test -- -t .ctt/ansible-github"]
 
 [tasks."test-python-github"]
 description = "Job python-github of the test stage (CI)"
@@ -36,11 +36,17 @@ hide = true
 dir = "{{config_root}}/.."
 run = ["mise run ctt:test -- -t .ctt/python-docker-github"]
 
-[tasks."test-java-github"]
-description = "Job java-github of the test stage (CI)"
+[tasks."test-java-maven-github"]
+description = "Job java-maven-github of the test stage (CI)"
 hide = true
 dir = "{{config_root}}/.."
-run = ["mise run ctt:test -- -t .ctt/java-github"]
+run = ["mise run ctt:test -- -t .ctt/java-maven-github"]
+
+[tasks."test-java-gradle-github"]
+description = "Job java-gradle-github of the test stage (CI)"
+hide = true
+dir = "{{config_root}}/.."
+run = ["mise run ctt:test -- -t .ctt/java-gradle-github"]
 
 [tasks."test-node-github"]
 description = "Job node-github of the test stage (CI)"

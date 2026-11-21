@@ -39,6 +39,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `node` | `node`, `biome` (JavaScript or TypeScript) |
 | `rust` | `rust` |
 | `java` | `maven` (Java with Maven) |
+| `java-gradle` | `gradle` (Java with Gradle) |
 | `terraform` | `tflint`, `checkov`, `opentofu` |
 | `ansible` | `ansible-lint`, `molecule`, `ansible` |
 | `shell` | `shellcheck`, `shfmt` |
@@ -107,6 +108,9 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `maven` | `maven:build` | Installs Java (Eclipse Temurin) and Maven; `mvn --batch-mode --no-transfer-progress package -DskipTests` (your `pom.xml`, into `target/`: ignore it) |
 | | `maven:test` | `mvn --batch-mode --no-transfer-progress verify`: the tests, and the checks your `pom.xml` binds to `verify` (Checkstyle, Spotless...) |
 | | `maven:deploy` | With `maven_publish: true`: `mvn ... deploy -DskipTests`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
+| `gradle` | `gradle:build` | Installs Java (Eclipse Temurin) and Gradle; `gradle --console=plain assemble` (your `settings.gradle.kts` or `build.gradle`, not `gradlew`; into `build/` and `.gradle/`: ignore them) |
+| | `gradle:test` | `gradle --console=plain check`: the tests, and the checks your build adds to `check` (Checkstyle, Spotless...) |
+| | `gradle:deploy` | With `gradle_publish: true`: `gradle ... publish`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
@@ -176,6 +180,7 @@ relative to the project root.
 | `ls-lint` | `.brigade/configs/ls-lint.yml` | brigade's (`ls_lint_config`) | `.ls-lint.yml`: not read |
 | `releasaurus` | `.brigade/configs/releasaurus.toml` | brigade's (`releasaurus_config`) | `releasaurus.toml`: not read |
 | `maven` | `.brigade/configs/maven-settings.xml` (with `maven_publish`) | brigade's (`maven_config`) | `~/.m2/settings.xml`: still read, both apply |
+| `gradle` | `.brigade/configs/gradle-init.gradle` (with `gradle_publish`) | brigade's (`gradle_config`) | `~/.gradle/init.d/`: still read, both apply |
 | `renovate` | `.brigade/configs/renovate.json` | brigade's (`renovate_config`) | `renovate.json`, `.github/renovate.json5`...: still read, yours wins |
 
 Other tools read their usual config file (`.golangci.yml`, `.tflint.hcl`,
@@ -310,7 +315,9 @@ default branch through the forge's API, so commit it):
 - Updates your manifests to the new version in the release pull request
   (`release_type`), from your tools: `uv` → `pyproject.toml`, `node` →
   `package.json` and `package-lock.json`, `rust` → `Cargo.toml` and
-  `Cargo.lock`, `go` → `version.go`, `maven` → `pom.xml`. With none or several
+  `Cargo.lock`, `go` → `version.go`, `maven` → `pom.xml`, `gradle` →
+  `version = "X.Y.Z"` in `build.gradle(.kts)` or `version=X.Y.Z` in
+  `gradle.properties`. With none or several
   of them, none. `releasaurus_release_type` picks another (`php`, `ruby`,
   `helm`...) or
   `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
@@ -448,6 +455,16 @@ whose repository needs the id `brigade` for the login. In CI, add
 by `.brigade/configs/maven-settings.xml` (Maven's global settings: your
 `~/.m2/settings.xml` still applies). A release repository refuses a version
 already deployed: a manual run on the same tag fails.
+
+`gradle:deploy` (the `gradle` tool, with the `gradle_publish: true` answer)
+runs `gradle publish`, once per tag: your build applies the `maven-publish`
+plugin with its publications, and its `version` is the one Releasaurus bumps in
+the release PR. With `MAVEN_REPOSITORY_URL` set (your `mise.toml` `[env]` or a
+CI variable), `.brigade/configs/gradle-init.gradle` (an init script) adds it as
+a repository named `brigade`, logged in with the `MAVEN_USERNAME` and
+`MAVEN_PASSWORD` secrets (CI/CD variables on GitLab); else only the repositories
+of your build. A release repository refuses a version already published: a
+manual run on the same tag fails.
 
 `docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
 (`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE`
