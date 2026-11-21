@@ -317,7 +317,7 @@ PROJECTS = {
             "build.gradle.kts": GRADLE_BUILD,
             "src/main/java/demo/Hello.java": JAVA_HELLO,
             "src/test/java/demo/HelloTest.java": JAVA_TEST,
-            ".gitignore": ".gradle/\nbuild/\n",
+            ".gitignore": "/.gradle/\n/build/\n",  # anchored: see docs/tools.md
             "README.md": "# Demo\n\nA demo Java library, built with Gradle.\n",
         },
         commands=[],

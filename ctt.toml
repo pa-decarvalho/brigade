@@ -161,9 +161,12 @@ _post_tasks = [
     ["mise", "-C", ".brigade", "lock"],
     # The project, by Gradle's own tool (--overwrite: brigade's files are already there).
     ["mise", "exec", "--", "gradle", "init", "--overwrite", "--type", "java-library", "--dsl", "kotlin", "--test-framework", "junit-jupiter", "--project-name", "demo", "--package", "demo", "--java-version", "25", "--use-defaults", "--console=plain"],
-    # Published with maven-publish, at the version Releasaurus bumps; .editorconfig, renovate.json.
+    # Published with maven-publish, at the version Releasaurus bumps; its .gitignore's build anchored
+    # (brigade:lint: it ignored .brigade/ci/github/actions/build/); .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
 import pathlib
+gitignore = pathlib.Path(".gitignore")
+gitignore.write_text(gitignore.read_text().replace("\nbuild\n", "\n/build\n"))
 build = pathlib.Path("lib/build.gradle.kts")
 build.write_text(build.read_text() + """
 apply(plugin = "maven-publish")
