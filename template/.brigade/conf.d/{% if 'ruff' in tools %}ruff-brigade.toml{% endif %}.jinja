@@ -1,7 +1,7 @@
 {%- set config = ruff_config or '.brigade/configs/ruff.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ruff
-ruff = "{{ ruff_version | default('0.17.5', true) }}"
+ruff = "{{ ruff_version | default('0.17.6', true) }}"
 
 [tasks."ruff:lint"]
 description = "Check code and formatting with ruff"
