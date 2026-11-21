@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write # pages:deploy pushes the gh-pages branch
-      packages: write # docker:deploy pushes to ghcr.io
+      packages: write # docker:deploy and helm:deploy push to ghcr.io
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -40,5 +40,7 @@ jobs:
           cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           maven-username: ${{ secrets.MAVEN_USERNAME }}
           maven-password: ${{ secrets.MAVEN_PASSWORD }}
+          helm-registry-username: ${{ secrets.HELM_REGISTRY_USERNAME }}
+          helm-registry-password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}

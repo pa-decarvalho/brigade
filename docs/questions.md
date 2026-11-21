@@ -17,6 +17,8 @@ Copier's own copy (do not edit).
 | `pages_dir` | folder | `site` | With the `pages` tool: the folder your build writes the site to (`dist` for Vite). |
 | `uv_publish` | yes / no | no | With the `uv` tool: publish the package on each release (`uv:deploy`, see [deploy](tools.md#deploy)). |
 | `npm_publish` | yes / no | no | With the `node` tool: publish the package on each release (`node:deploy`, see [deploy](tools.md#deploy)). |
+| `bun_publish` | yes / no | no | With the `bun` tool: publish the package on each release (`bun:deploy`, see [deploy](tools.md#deploy)). |
+| `deno_publish` | yes / no | no | With the `deno` tool: publish the package to JSR on each release (`deno:deploy`, see [deploy](tools.md#deploy)). |
 | `maven_publish` | yes / no | no | With the `maven` tool: deploy the artifacts on each release (`maven:deploy`, see [deploy](tools.md#deploy)). |
 | `gradle_publish` | yes / no | no | With the `gradle` tool: publish the artifacts on each release (`gradle:deploy`, see [deploy](tools.md#deploy)). |
 | `helm_publish` | yes / no | no | With the `helm` tool: push the charts on each release (`helm:deploy`, see [deploy](tools.md#deploy)). |

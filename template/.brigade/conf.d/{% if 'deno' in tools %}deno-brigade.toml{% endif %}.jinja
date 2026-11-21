@@ -1,0 +1,25 @@
+[tools]
+# renovate: datasource=github-releases depName=denoland/deno
+deno = "{{ deno_version | default('2.9.8', true) }}"
+
+# Deno finds the project's files itself, without .mise-data/, .mise/ (mise's) and .brigade/
+# (brigade's), and passes when there are none (--permit-no-files).
+
+[tasks."deno:lint"]
+description = "Lint and check the formatting with Deno (deno lint, deno fmt --check)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ deno_lint_command | default('deno lint --permit-no-files --ignore=.mise-data,.mise,.brigade && deno fmt --check --permit-no-files --ignore=.mise-data,.mise,.brigade', true) }}'''
+
+[tasks."deno:test"]
+description = "Type-check and run the tests with Deno (deno test)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ deno_test_command | default('deno test --permit-no-files --ignore=.mise-data,.mise,.brigade', true) }}'''
+{%- if deno_publish %}
+
+[tasks."deno:deploy"]
+description = "Publish the package to JSR at the tag's version (deno publish)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# The version: the tag (X.Y.Z), not deno.json's; the token: the JSR_TOKEN secret. Arguments go
+# to deno publish (mise run deno:deploy -- --dry-run).
+run = '''{{ deno_deploy_command | default('uv run --no-project python -c "import os, subprocess, sys; tag = subprocess.run([\'git\', \'describe\', \'--tags\', \'--exact-match\'], capture_output=True, text=True, check=True).stdout.strip(); token = [\'--token\', os.environ[\'JSR_TOKEN\']] if os.environ.get(\'JSR_TOKEN\') else []; sys.exit(subprocess.call([\'deno\', \'publish\', \'--set-version\', tag, *token, *sys.argv[1:]]))"', true) }}'''
+{%- endif %}

@@ -1,0 +1,18 @@
+---
+hugo_version:
+  type: str
+  help: Hugo version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'hugo' in tools }}"
+
+hugo_build_command:
+  type: str
+  help: Command of hugo:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'hugo' in tools }}"
+
+hugo_serve_command:
+  type: str
+  help: Command of hugo:serve (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'hugo' in tools }}"

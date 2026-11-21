@@ -20,6 +20,8 @@ presets:
     python (ruff, ty, pytest, uv): [ruff, ty, pytest, uv]
     go (golangci-lint): [golangci-lint]
     node (node, biome): [node, biome]
+    bun (bun, biome): [bun, biome]
+    deno (deno): [deno]
     rust (rust): [rust]
     java (maven): [maven]
     java-gradle (gradle): [gradle]
@@ -83,6 +85,8 @@ tools:
     go (build, test): go
     rust (lint, build, test): rust
     node (lint, build, test): node
+    bun (lint, build, test): bun
+    deno (lint, test): deno
     maven (build, test): maven
     gradle (build, test): gradle
     docker (build, deploy):
@@ -91,6 +95,7 @@ tools:
         {% if ci == 'gitlab' %}needs a Docker daemon in CI: not on
         GitLab yet{% endif %}
     zensical (build, serve): zensical
+    hugo (build, serve): hugo
     pytest (test): pytest
     molecule (test): molecule
     container-structure-test (test):

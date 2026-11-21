@@ -1,0 +1,30 @@
+[tools]
+# renovate: datasource=npm depName=bun
+bun = "{{ bun_version | default('1.4.5', true) }}"
+
+# Bun installs the project's dependencies from bun.lock (--frozen-lockfile), then runs its
+# package.json scripts; a missing script does nothing (--if-present).
+
+[tasks."bun:lint"]
+description = "Install the dependencies and run the lint script (ESLint...)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ bun_lint_command | default('bun install --frozen-lockfile && bun run --if-present lint', true) }}'''
+
+[tasks."bun:build"]
+description = "Install the dependencies and run the build script"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ bun_build_command | default('bun install --frozen-lockfile && bun run --if-present build', true) }}'''
+
+[tasks."bun:test"]
+description = "Install the dependencies and run the tests (bun test)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ bun_test_command | default('bun install --frozen-lockfile && bun test --pass-with-no-tests', true) }}'''
+{%- if bun_publish %}
+
+[tasks."bun:deploy"]
+description = "Install the dependencies and publish the package to its registry"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# The registry: npm's, or publishConfig in package.json; its token: the NPM_TOKEN secret,
+# read by a line of the project's .npmrc (//registry.npmjs.org/:_authToken=${NPM_TOKEN}).
+run = '''{{ bun_deploy_command | default('bun install --frozen-lockfile && bun publish', true) }}'''
+{%- endif %}
