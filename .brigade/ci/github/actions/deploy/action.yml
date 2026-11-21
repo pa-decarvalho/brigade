@@ -33,6 +33,12 @@ inputs:
   maven-password:
     description: Maven repository password, maven:deploy (MAVEN_PASSWORD secret)
     default: ""
+  helm-registry-username:
+    description: Registry user, helm:deploy (HELM_REGISTRY_USERNAME secret)
+    default: ""
+  helm-registry-password:
+    description: Registry password, helm:deploy (HELM_REGISTRY_PASSWORD secret)
+    default: ""
   docker-username:
     description: Registry user, docker:deploy (DOCKER_USERNAME secret)
     default: ""
@@ -59,6 +65,8 @@ runs:
         CARGO_REGISTRY_TOKEN: ${{ inputs.cargo-registry-token }}
         MAVEN_USERNAME: ${{ inputs.maven-username }}
         MAVEN_PASSWORD: ${{ inputs.maven-password }}
+        HELM_REGISTRY_USERNAME: ${{ inputs.helm-registry-username }}
+        HELM_REGISTRY_PASSWORD: ${{ inputs.helm-registry-password }}
         DOCKER_USERNAME: ${{ inputs.docker-username }}
         DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
