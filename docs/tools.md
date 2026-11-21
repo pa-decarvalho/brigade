@@ -41,6 +41,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `java` | `maven` (Java with Maven) |
 | `java-gradle` | `gradle` (Java with Gradle) |
 | `terraform` | `tflint`, `checkov`, `opentofu` |
+| `kubernetes` | `helm` |
 | `ansible` | `ansible-lint`, `molecule`, `ansible` |
 | `shell` | `shellcheck`, `shfmt` |
 | `docker` | `hadolint` |
@@ -86,6 +87,8 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `revive` | `revive:lint` | `revive -set_exit_status ./...` (Go, golint's rules; faster than `golangci-lint`, which can run revive too), outside hidden folders; `-config revive.toml` in your command for your rules |
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
 | `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
+| `helm` | `helm:lint` | `helm lint --strict` on each chart (a folder holding a `Chart.yaml`, outside hidden folders), after `helm dependency build` for a chart with dependencies (into its `charts/`: ignore `*.tgz` there) |
+| | `helm:deploy` | With `helm_publish: true`: the charts at the tag's version, to an OCI registry on each release: see [deploy](#deploy) |
 | `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
 | `cfn-lint` | `cfn-lint:lint` | `cfn-lint` on every YAML or JSON file holding `AWSTemplateFormatVersion` (CloudFormation and SAM templates, outside hidden folders); none: nothing to check |
 | `dotenv-linter` | `dotenv-linter:lint` | `dotenv-linter check --recursive .` (`.env` files), without `.mise-data/` |
@@ -315,11 +318,10 @@ default branch through the forge's API, so commit it):
 - Updates your manifests to the new version in the release pull request
   (`release_type`), from your tools: `uv` → `pyproject.toml`, `node` →
   `package.json` and `package-lock.json`, `rust` → `Cargo.toml` and
-  `Cargo.lock`, `go` → `version.go`, `maven` → `pom.xml`, `gradle` →
-  `version = "X.Y.Z"` in `build.gradle(.kts)` or `version=X.Y.Z` in
-  `gradle.properties`. With none or several
-  of them, none. `releasaurus_release_type` picks another (`php`, `ruby`,
-  `helm`...) or
+  `Cargo.lock`, `go` → `version.go`, `helm` → `Chart.yaml`, `maven` →
+  `pom.xml`, `gradle` → `version = "X.Y.Z"` in `build.gradle(.kts)` or
+  `version=X.Y.Z` in `gradle.properties`. With none or several of them, none.
+  `releasaurus_release_type` picks another (`php`, `ruby`...) or
   `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
   updated: `uv` rewrites it on the next `uv lock` or `uv run`.
 
@@ -392,6 +394,15 @@ merge commit can leave a branch's older commits out of the next release.
 CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones
 Releasaurus pushes, and on a manual run, to deploy without a release: for
 example to fix a typo in the documentation.
+
+It ships the tagged version, in one of two ways: it **publishes** an artifact to
+a registry (`uv`, `node`, `rust`, `maven`, `gradle`, `docker`, `goreleaser`,
+`helm`: a package, an image or a chart, installed by whoever needs it), or it
+**deploys** to an environment (`ansible`, `pages`). Publishing belongs here,
+not in `release`: `release` runs on every push to the default branch and only
+decides the version, while `deploy` runs once per tag, can be run again on the
+same tag when a push failed, and is the only job that gets the registry tokens.
+`helm:deploy` publishes the chart: it installs nothing on a cluster.
 
 `pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site
 to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:
@@ -475,6 +486,16 @@ registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It
 needs Docker in CI, which brigade's GitLab image does not have: `docker` and
 `container-structure-test` are not offered on GitLab yet. A manual run needs a
 tag at the checked out commit.
+
+`helm:deploy` (the `helm` tool, with the `helm_publish: true` answer) packages
+each chart at the tag's version (`helm package --version X.Y.Z`) and pushes it
+(`.brigade/scripts/helm_charts.py`). The registry is `HELM_REGISTRY`
+(`oci://host/path`, `http://host/path` for a plain HTTP one; in your `mise.toml`
+`[env]` or a CI variable), else the repository's: `oci://ghcr.io/<owner>/<repo>`
+on GitHub, pushed with the workflow token, `<server>/<owner>/<repo>` on Gitea.
+Another registry, or Gitea: add `HELM_REGISTRY_USERNAME` and
+`HELM_REGISTRY_PASSWORD` secrets (CI/CD variables on GitLab, where
+`HELM_REGISTRY` is needed). A manual run needs a tag at the checked out commit.
 
 `uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the
 Python package built by uv (`uv build --clear`, then `uv publish` without the

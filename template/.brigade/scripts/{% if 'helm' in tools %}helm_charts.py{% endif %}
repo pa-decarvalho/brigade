@@ -1,0 +1,89 @@
+"""helm:lint and helm:deploy: lint the project's Helm charts, or push them to a registry.
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+Usage: helm_charts.py lint|deploy
+The charts are the folders holding a Chart.yaml (hidden folders and the subcharts in a
+chart's charts/ left out); a chart with dependencies gets them first (helm dependency
+build: charts/*.tgz, to ignore). No chart: nothing to do.
+deploy packages each chart at the version of the tag (X.Y.Z) and pushes it to
+HELM_REGISTRY (oci://host/path, http://host/path for a plain HTTP registry), else the
+CI's repository: ghcr.io on GitHub, the server itself on Gitea. Login:
+HELM_REGISTRY_USERNAME and HELM_REGISTRY_PASSWORD, else the workflow token for ghcr.io;
+none for a registry that needs none.
+"""
+
+import glob
+import os
+import subprocess
+import sys
+import tempfile
+import urllib.parse
+from pathlib import Path
+
+
+def main() -> int:
+    if sys.argv[1:] not in (["lint"], ["deploy"]):
+        print(__doc__, file=sys.stderr)
+        return 2
+    charts = [
+        path.parent
+        for path in sorted(Path(p) for p in glob.glob("**/Chart.yaml", recursive=True))
+        if not (path.parent.parent.name == "charts" and (path.parents[2] / "Chart.yaml").exists())
+    ]
+    if not charts:
+        return 0
+    for chart in charts:
+        if "dependencies:" in (chart / "Chart.yaml").read_text(encoding="utf-8"):
+            subprocess.run(["helm", "dependency", "build", str(chart)], check=True)
+    if sys.argv[1] == "lint":
+        return subprocess.call(["helm", "lint", "--strict", *map(str, charts)])
+    return deploy(charts)
+
+
+def deploy(charts: list[Path]) -> int:
+    tag = subprocess.run(
+        ["git", "describe", "--tags", "--exact-match"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if tag.returncode:
+        print("helm:deploy: no tag on this commit (deploy runs on X.Y.Z tags)", file=sys.stderr)
+        return 1
+    version = tag.stdout.strip()
+    registry = os.environ.get("HELM_REGISTRY") or ci_registry()
+    if not registry:
+        print("helm:deploy: set HELM_REGISTRY (oci://host/path)", file=sys.stderr)
+        return 1
+    plain = registry.startswith("http://")
+    path = registry.split("://", 1)[-1].rstrip("/")
+    options = ["--plain-http"] if plain else []
+    user = os.environ.get("HELM_REGISTRY_USERNAME", "")
+    password = os.environ.get("HELM_REGISTRY_PASSWORD", "")
+    host = path.split("/")[0]
+    if not password and host == "ghcr.io":
+        user, password = os.environ.get("GITHUB_ACTOR", ""), os.environ.get("GITHUB_TOKEN", "")
+    if password:
+        login = ["helm", "registry", "login", host, "-u", user, "--password-stdin", *options]
+        subprocess.run(login, input=password, text=True, check=True)
+    with tempfile.TemporaryDirectory() as out:
+        for chart in charts:
+            package = ["helm", "package", str(chart), "--version", version, "-d", out]
+            subprocess.run(package, check=True)
+        for archive in sorted(Path(out).glob("*.tgz")):
+            subprocess.run(["helm", "push", str(archive), f"oci://{path}", *options], check=True)
+    return 0
+
+
+def ci_registry() -> str:
+    """The CI's repository as a registry path (GitHub and Gitea set these variables)."""
+    repository = os.environ.get("GITHUB_REPOSITORY")
+    if not repository:
+        return ""
+    server = urllib.parse.urlparse(os.environ.get("GITHUB_SERVER_URL", "")).netloc
+    host = "ghcr.io" if server in ("", "github.com") else server
+    return f"oci://{host}/{repository}".lower()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

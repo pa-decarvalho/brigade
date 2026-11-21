@@ -26,6 +26,9 @@ jobs:
     -   name: java-gradle-github
         run:
         - mise run ctt:test -- -t .ctt/java-gradle-github
+    -   name: helm-github
+        run:
+        - mise run ctt:test -- -t .ctt/helm-github
     -   name: node-github
         run:
         - mise run ctt:test -- -t .ctt/node-github

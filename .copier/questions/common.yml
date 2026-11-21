@@ -24,6 +24,7 @@ presets:
     java (maven): [maven]
     java-gradle (gradle): [gradle]
     terraform (tflint, checkov, opentofu): [tflint, checkov, opentofu]
+    kubernetes (helm): [helm]
     ansible (ansible-lint, molecule, ansible): [ansible-lint, molecule, ansible]
     shell (shellcheck, shfmt): [shellcheck, shfmt]
     docker (hadolint): [hadolint]
@@ -69,6 +70,7 @@ tools:
     revive (lint): revive
     tflint (lint): tflint
     opentofu (lint): opentofu
+    helm (lint, deploy): helm
     checkov (lint): checkov
     cfn-lint (lint): cfn-lint
     dotenv-linter (lint): dotenv-linter

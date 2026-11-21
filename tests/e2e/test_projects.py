@@ -94,6 +94,11 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         tools = list(project.tools)
         tools += ["releasaurus"] if full else []
         template = template_at(latest_tag())
+        # A new tool: its type runs once a release offers it (the test starts there).
+        offered = Path(template, ".copier/questions/common.yml").read_text()
+        missing = [t for t in tools if f": {t}\n" not in offered]
+        if missing:
+            pytest.skip(f"{', '.join(missing)}: not in {latest_tag()} yet")
         # A release without this ci (forgejo before 0.33): ci: gitea, then the update
         # moves to it, as docs/ci.md says.
         known = (

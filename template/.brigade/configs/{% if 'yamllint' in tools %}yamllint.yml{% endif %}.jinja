@@ -12,6 +12,13 @@ ignore: |
   # ctt's rendered templates (the copier-template preset).
   .ctt/
   .brigade/copier/
+{%- if 'helm' in tools %}
+  # Helm charts: Go templates, and files helm create writes in its own style;
+  # helm lint checks them.
+  templates/
+  Chart.yaml
+  values.yaml
+{%- endif %}
 rules:
   truthy:
     check-keys: false
