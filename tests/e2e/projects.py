@@ -282,6 +282,19 @@ PROJECTS = {
             "<version>{tag}</version>",
         ),
     ),
+    # A Helm chart pushed to an OCI registry (Nexus' docker repository, plain HTTP).
+    "helm": Project(
+        tools=[*BASE, "helm"],
+        data={"helm_publish": True},
+        files={"README.md": "# Demo\n\nA demo Helm chart.\n"},
+        commands=[["helm", "create", "demo"]],
+        env={"HELM_REGISTRY": "http://nexus:5000/charts"},
+        secrets={
+            "HELM_REGISTRY_USERNAME": "{deploy_user}",
+            "HELM_REGISTRY_PASSWORD": "{deploy_password}",
+        },
+        deployed=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
+    ),
 }
 
 # The tests, by id (the <forge>:run and :test arguments): (project type, Releasaurus

@@ -33,6 +33,8 @@ jobs:
             task: test-java-maven-github
           - name: java-gradle-github
             task: test-java-gradle-github
+          - name: helm-github
+            task: test-helm-github
           - name: node-github
             task: test-node-github
           - name: react-github

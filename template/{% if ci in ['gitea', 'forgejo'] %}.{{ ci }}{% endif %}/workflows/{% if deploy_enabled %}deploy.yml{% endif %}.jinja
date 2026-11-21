@@ -36,6 +36,8 @@ jobs:
           cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           maven-username: ${{ secrets.MAVEN_USERNAME }}
           maven-password: ${{ secrets.MAVEN_PASSWORD }}
+          helm-registry-username: ${{ secrets.HELM_REGISTRY_USERNAME }}
+          helm-registry-password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
 {% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

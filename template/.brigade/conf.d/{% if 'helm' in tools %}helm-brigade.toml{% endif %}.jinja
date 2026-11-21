@@ -1,0 +1,20 @@
+[tools]
+# renovate: datasource=github-releases depName=helm/helm
+helm = "{{ helm_version | default('4.3.2', true) }}"
+
+# The charts: every folder holding a Chart.yaml (.brigade/scripts/helm_charts.py).
+
+[tasks."helm:lint"]
+description = "Lint the Helm charts (helm lint --strict)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ helm_lint_command | default('uv run --no-project python .brigade/scripts/helm_charts.py lint', true) }}'''
+{%- if helm_publish %}
+
+[tasks."helm:deploy"]
+description = "Package the Helm charts at the tag's version and push them to an OCI registry"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# The registry: HELM_REGISTRY, else the CI's repository on ghcr.io (GitHub) or on the Gitea
+# server; login: HELM_REGISTRY_USERNAME and HELM_REGISTRY_PASSWORD, else GitHub's workflow
+# token for ghcr.io.
+run = '''{{ helm_deploy_command | default('uv run --no-project python .brigade/scripts/helm_charts.py deploy', true) }}'''
+{%- endif %}

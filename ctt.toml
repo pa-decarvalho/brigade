@@ -201,6 +201,54 @@ assert (repo / "demo/lib/0.1.0/lib-0.1.0.jar").exists(), sorted(repo.rglob("*"))
 '''],
 ]
 
+[output.".ctt/helm-github"]
+# The Kubernetes example: a Helm chart made by helm create, pushed to an OCI registry on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "helm", "releasaurus", "renovate"]
+ci = "github"
+helm_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The chart, by Helm's own tool (into charts/, made first); .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+pathlib.Path("charts").mkdir()
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo Helm chart.\n")
+'''],
+    ["mise", "exec", "--", "helm", "create", "charts/demo"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # helm:deploy on a tag, to a local registry (registry in Docker, on 127.0.0.1 only, plain HTTP).
+    ["docker", "rm", "-f", "brigade-ctt-charts"],
+    ["docker", "run", "-d", "--name", "brigade-ctt-charts", "-p", "127.0.0.1:5098:5000", "registry:3.0.0"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import time, urllib.request
+for _ in range(60):
+    try:
+        urllib.request.urlopen("http://127.0.0.1:5098/v2/"); break
+    except OSError:
+        time.sleep(1)
+else:
+    raise SystemExit("registry did not start")
+'''],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.2.0"],
+    ["env", "HELM_REGISTRY=http://127.0.0.1:5098/charts", "mise", "run", "helm:deploy"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import json, urllib.request
+tags = json.load(urllib.request.urlopen("http://127.0.0.1:5098/v2/charts/demo/tags/list"))["tags"]
+assert tags == ["0.2.0"], tags
+'''],
+    ["docker", "rm", "-f", "brigade-ctt-charts"],
+]
+
 [output.".ctt/python-docker-github"]
 # The Python app example: an app shipped as a Docker image, tested as code and as an image.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ruff", "ty", "osv-scanner", "hadolint", "checkov", "pytest", "docker", "container-structure-test", "releasaurus", "renovate"]

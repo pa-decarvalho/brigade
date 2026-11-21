@@ -19,6 +19,7 @@ Copier's own copy (do not edit).
 | `npm_publish` | yes / no | no | With the `node` tool: publish the package on each release (`node:deploy`, see [deploy](tools.md#deploy)). |
 | `maven_publish` | yes / no | no | With the `maven` tool: deploy the artifacts on each release (`maven:deploy`, see [deploy](tools.md#deploy)). |
 | `gradle_publish` | yes / no | no | With the `gradle` tool: publish the artifacts on each release (`gradle:deploy`, see [deploy](tools.md#deploy)). |
+| `helm_publish` | yes / no | no | With the `helm` tool: push the charts on each release (`helm:deploy`, see [deploy](tools.md#deploy)). |
 | `cargo_publish` | yes / no | no | With the `rust` tool: publish the crate on each release (`rust:deploy`, see [deploy](tools.md#deploy)). |
 | `customize_tools` | yes / no | no | Asks a version, a config file and a command for each selected tool: see [Tools](tools.md#customize-a-version-or-a-command). |
 | `ci` | `github`, `gitlab`, `gitea`, `forgejo`, `none` | `github` | CI files and their linter: see [CI platforms](ci.md). |

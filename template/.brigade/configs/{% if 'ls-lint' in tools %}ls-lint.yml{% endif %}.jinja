@@ -34,9 +34,12 @@ ls:
   .*.tsx: kebab-case | PascalCase
   .jsx: kebab-case | PascalCase
   .yml: kebab-case | snake_case
-  .yaml: kebab-case | snake_case
+  # Helm's Chart.yaml, Chart.lock, templates/NOTES.txt and _helpers.tpl.
+  .yaml: kebab-case | snake_case | regex:Chart
   .toml: kebab-case | snake_case | regex:Cargo
-  .lock: kebab-case | regex:Cargo
+  .lock: kebab-case | regex:Cargo | regex:Chart
+  .txt: kebab-case | SCREAMING_SNAKE_CASE
+  .tpl: kebab-case | regex:_[a-z]+
   .sql: kebab-case | snake_case
   .tf: kebab-case | snake_case
   .sh: kebab-case | snake_case
