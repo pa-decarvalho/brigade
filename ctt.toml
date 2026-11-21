@@ -249,6 +249,148 @@ assert tags == ["0.2.0"], tags
     ["docker", "rm", "-f", "brigade-ctt-charts"],
 ]
 
+[output.".ctt/bun-github"]
+# The Bun example: a TypeScript library built and tested with Bun, published to npm on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "biome", "bun", "releasaurus", "renovate"]
+ci = "github"
+bun_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The project's files: a TypeScript library, its test (bun:test), .npmrc (the registry token), .gitignore, .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+pathlib.Path("src").mkdir()
+pathlib.Path("test").mkdir()
+pathlib.Path("package.json").write_text("""{
+\t"name": "@brigade-ctt/bun-demo",
+\t"version": "0.1.0",
+\t"type": "module",
+\t"main": "dist/index.js",
+\t"files": [
+\t\t"dist"
+\t],
+\t"scripts": {
+\t\t"build": "bun build src/index.ts --outdir dist --target node",
+\t\t"prepublishOnly": "bun run build"
+\t},
+\t"publishConfig": {
+\t\t"access": "public"
+\t}
+}
+""")
+pathlib.Path("src/index.ts").write_text("export function hello(name: string): string {\n\treturn `Hello, ${name}!`;\n}\n")
+pathlib.Path("test/index.test.ts").write_text('import { expect, test } from "bun:test";\nimport { hello } from "../src/index.ts";\n\ntest("hello", () => {\n\texpect(hello("demo")).toBe("Hello, demo!");\n});\n')
+pathlib.Path(".gitignore").write_text("node_modules/\ndist/\n")
+pathlib.Path(".npmrc").write_text("//127.0.0.1:4874/:_authToken=${NPM_TOKEN}\n")
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built with Bun.\n")
+'''],
+    # bun.lock, which bun install --frozen-lockfile needs.
+    ["mise", "exec", "--", "bun", "install"],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # bun:deploy to a local npm registry (Verdaccio in Docker, on 127.0.0.1 only).
+    ["docker", "rm", "-f", "brigade-ctt-bun"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib, subprocess
+conf = pathlib.Path(".git/verdaccio.yaml").resolve()
+conf.write_text('storage: /verdaccio/storage/data\npackages:\n  "@brigade-ctt/*":\n    access: $all\n    publish: $all\nlog: {type: stdout, format: pretty, level: warn}\n')
+subprocess.run(["docker", "run", "-d", "--name", "brigade-ctt-bun", "-p", "127.0.0.1:4874:4873", "-v", f"{conf}:/verdaccio/conf/config.yaml", "verdaccio/verdaccio:6.1.6"], check=True)
+'''],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import time, urllib.request
+for _ in range(60):
+    try:
+        urllib.request.urlopen("http://127.0.0.1:4874/-/ping"); break
+    except OSError:
+        time.sleep(1)
+else:
+    raise SystemExit("verdaccio did not start")
+'''],
+    ["env", "NPM_CONFIG_REGISTRY=http://127.0.0.1:4874/", "NPM_TOKEN=ctt", "mise", "run", "bun:deploy"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import json, urllib.request
+meta = json.load(urllib.request.urlopen("http://127.0.0.1:4874/@brigade-ctt%2fbun-demo"))
+assert "0.1.0" in meta["versions"], meta
+'''],
+    ["docker", "rm", "-f", "brigade-ctt-bun"],
+]
+
+[output.".ctt/deno-github"]
+# The Deno example: a TypeScript library linted and tested with Deno, published to JSR on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "deno", "releasaurus", "renovate"]
+ci = "github"
+deno_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The project's files: deno.json (a JSR package), a module, its test, .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+pathlib.Path("deno.json").write_text('{\n  "name": "@brigade-ctt/demo",\n  "version": "0.1.0",\n  "license": "MIT",\n  "exports": "./mod.ts"\n}\n')
+pathlib.Path("mod.ts").write_text('/** Says hello. */\nexport function hello(name: string): string {\n  return `Hello, ${name}!`;\n}\n')
+pathlib.Path("mod_test.ts").write_text('import { hello } from "./mod.ts";\n\nDeno.test("hello", () => {\n  if (hello("demo") !== "Hello, demo!") throw new Error("hello");\n});\n')
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built with Deno.\n")
+'''],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # deno:deploy on a tag, without uploading (no local JSR): the package checked at the tag's version.
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.2.0"],
+    ["mise", "run", "deno:deploy", "--", "--dry-run"],
+]
+
+[output.".ctt/hugo-github"]
+# The Hugo example: a site made by hugo new site, built into pages_dir and published to GitHub Pages.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "hugo", "pages", "releasaurus", "renovate"]
+ci = "github"
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The site, by Hugo's own tool (--force: brigade's files are already there).
+    ["mise", "exec", "--", "hugo", "new", "site", ".", "--force"],
+    # A home page and its layout; .gitignore (the output, Hugo's lock), .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+# Built from parts: Copier renders these commands with Jinja.
+o, c = "{" * 2, "}" * 2
+pathlib.Path("layouts/home.html").write_text(f"<h1>{o} .Site.Title {c}</h1>\n{o} .Content {c}\n")
+pathlib.Path("content/_index.md").write_text("+++\ntitle = 'Home'\n+++\n\nHello from demo.\n")
+pathlib.Path(".gitignore").write_text("site/\n.hugo_build.lock\n")
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo Hugo site.\n")
+'''],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+page = pathlib.Path("site/index.html").read_text()
+assert "Hello from demo." in page, page
+'''],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+]
+
 [output.".ctt/python-docker-github"]
 # The Python app example: an app shipped as a Docker image, tested as code and as an image.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ruff", "ty", "osv-scanner", "hadolint", "checkov", "pytest", "docker", "container-structure-test", "releasaurus", "renovate"]

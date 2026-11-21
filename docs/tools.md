@@ -37,6 +37,8 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `python` | `ruff`, `ty`, `pytest`, `uv` |
 | `go` | `golangci-lint` |
 | `node` | `node`, `biome` (JavaScript or TypeScript) |
+| `bun` | `bun`, `biome` (JavaScript or TypeScript with Bun) |
+| `deno` | `deno` (JavaScript or TypeScript with Deno) |
 | `rust` | `rust` |
 | `java` | `maven` (Java with Maven) |
 | `java-gradle` | `gradle` (Java with Gradle) |
@@ -108,6 +110,13 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `node:build` | `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
 | | `node:test` | `npm ci && npm test --if-present` |
 | | `node:deploy` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
+| `bun` | `bun:lint` | Installs Bun; `bun install --frozen-lockfile && bun run --if-present lint` (your `package.json` scripts; needs `bun.lock`) |
+| | `bun:build` | `bun install --frozen-lockfile && bun run --if-present build` |
+| | `bun:test` | `bun install --frozen-lockfile && bun test --pass-with-no-tests` |
+| | `bun:deploy` | With `bun_publish: true`: `bun publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
+| `deno` | `deno:lint` | Installs Deno; `deno lint` and `deno fmt --check`, without `.mise-data/`, `.mise/` and `.brigade/` (your `deno.json` settings) |
+| | `deno:test` | `deno test` (type-checks, then runs the tests) |
+| | `deno:deploy` | With `deno_publish: true`: `deno publish` at the tag's version, the package to JSR on each release: see [deploy](#deploy) |
 | `maven` | `maven:build` | Installs Java (Eclipse Temurin) and Maven; `mvn --batch-mode --no-transfer-progress package -DskipTests` (your `pom.xml`, into `target/`: ignore it) |
 | | `maven:test` | `mvn --batch-mode --no-transfer-progress verify`: the tests, and the checks your `pom.xml` binds to `verify` (Checkstyle, Spotless...) |
 | | `maven:deploy` | With `maven_publish: true`: `mvn ... deploy -DskipTests`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
@@ -118,6 +127,8 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
+| `hugo` | `hugo:build` | Installs Hugo (standard edition); `hugo build --minify` into `public/`, or `pages_dir` with `pages` (needs your `hugo.toml`: `hugo new site .`; ignore the output and `.hugo_build.lock`) |
+| | `hugo:serve` | `hugo server`, to preview the site |
 | `container-structure-test` | `container-structure-test:test` | GitHub, Gitea, none: builds the image, then checks its content with your tests ([config](#tool-configs): a placeholder test until you write yours) |
 | `pytest` | `pytest:test` | `uv run pytest` (add it with `uv add --dev pytest`) |
 | `molecule` | `molecule:test` | `molecule test --all`, with the Docker driver (needs your `molecule/<scenario>/molecule.yml` and Docker: see [Molecule](#molecule)) |
@@ -317,10 +328,11 @@ default branch through the forge's API, so commit it):
 - Tags `X.Y.Z`, with no `v`.
 - Updates your manifests to the new version in the release pull request
   (`release_type`), from your tools: `uv` → `pyproject.toml`, `node` →
-  `package.json` and `package-lock.json`, `rust` → `Cargo.toml` and
-  `Cargo.lock`, `go` → `version.go`, `helm` → `Chart.yaml`, `maven` →
-  `pom.xml`, `gradle` → `version = "X.Y.Z"` in `build.gradle(.kts)` or
-  `version=X.Y.Z` in `gradle.properties`. With none or several of them, none.
+  `package.json` and `package-lock.json`, `bun` → `package.json`, `rust` →
+  `Cargo.toml` and `Cargo.lock`, `go` → `version.go`, `helm` → `Chart.yaml`,
+  `maven` → `pom.xml`, `gradle` → `version = "X.Y.Z"` in `build.gradle(.kts)`
+  or `version=X.Y.Z` in `gradle.properties`. With none or several of them,
+  none.
   `releasaurus_release_type` picks another (`php`, `ruby`...) or
   `none` (see [Customize](#customize-a-version-or-a-command)). `uv.lock` is not
   updated: `uv` rewrites it on the next `uv lock` or `uv run`.
@@ -396,13 +408,13 @@ Releasaurus pushes, and on a manual run, to deploy without a release: for
 example to fix a typo in the documentation.
 
 It ships the tagged version, in one of two ways: it **publishes** an artifact to
-a registry (`uv`, `node`, `rust`, `maven`, `gradle`, `docker`, `goreleaser`,
-`helm`: a package, an image or a chart, installed by whoever needs it), or it
-**deploys** to an environment (`ansible`, `pages`). Publishing belongs here,
-not in `release`: `release` runs on every push to the default branch and only
-decides the version, while `deploy` runs once per tag, can be run again on the
-same tag when a push failed, and is the only job that gets the registry tokens.
-`helm:deploy` publishes the chart: it installs nothing on a cluster.
+a registry (`uv`, `node`, `bun`, `deno`, `rust`, `maven`, `gradle`, `docker`,
+`goreleaser`, `helm`: a package, an image or a chart, installed by whoever needs
+it), or it **deploys** to an environment (`ansible`, `pages`). Publishing belongs
+here, not in `release`: `release` runs on every push to the default branch and
+only decides the version, while `deploy` runs once per tag, can be run again on
+the same tag when a push failed, and is the only job that gets the registry
+tokens. `helm:deploy` publishes the chart: it installs nothing on a cluster.
 
 `pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site
 to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:
@@ -442,6 +454,17 @@ the package with `npm publish`, once per tag: the version is the one in
 host, and `publishConfig.registry` in `package.json`). A scoped public package
 needs `"publishConfig": {"access": "public"}`. A version already published
 fails: a manual run on the same tag does nothing new.
+
+`bun:deploy` (the `bun` tool, with the `bun_publish: true` answer) publishes
+the package with `bun publish`, as `node:deploy` does: the version is the one in
+`package.json`, which Releasaurus bumps, the `NPM_TOKEN` secret is read by your
+`.npmrc`, and a version already published fails.
+
+`deno:deploy` (the `deno` tool, with the `deno_publish: true` answer) publishes
+the package to JSR with `deno publish --set-version X.Y.Z`: the version is the
+tag's (Releasaurus does not update `deno.json`). In CI, add a `JSR_TOKEN`
+secret (CI/CD variable on GitLab), a token of your JSR account. A version
+already published fails.
 
 `rust:deploy` (the `rust` tool, with the `cargo_publish: true` answer) publishes
 the crate with `cargo publish`, once per tag: the version is the one in

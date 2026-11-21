@@ -29,6 +29,15 @@ jobs:
     -   name: helm-github
         run:
         - mise run ctt:test -- -t .ctt/helm-github
+    -   name: bun-github
+        run:
+        - mise run ctt:test -- -t .ctt/bun-github
+    -   name: deno-github
+        run:
+        - mise run ctt:test -- -t .ctt/deno-github
+    -   name: hugo-github
+        run:
+        - mise run ctt:test -- -t .ctt/hugo-github
     -   name: node-github
         run:
         - mise run ctt:test -- -t .ctt/node-github

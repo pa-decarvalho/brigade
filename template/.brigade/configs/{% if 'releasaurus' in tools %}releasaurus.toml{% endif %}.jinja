@@ -1,4 +1,4 @@
-{%- set ecosystems = {'uv': 'python', 'node': 'node', 'rust': 'rust', 'go': 'go', 'maven': 'java', 'gradle': 'java', 'helm': 'helm'} -%}
+{%- set ecosystems = {'uv': 'python', 'node': 'node', 'rust': 'rust', 'go': 'go', 'maven': 'java', 'gradle': 'java', 'helm': 'helm', 'bun': 'node'} -%}
 {%- set found = ecosystems | dictsort | selectattr(0, 'in', tools) | map(attribute=1) | unique | list -%}
 {%- set release_type = releasaurus_release_type or (found[0] if found | length == 1 else 'none') -%}
 # brigade-owned: updated by mise run brigade:update, do not edit.

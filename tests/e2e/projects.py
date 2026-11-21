@@ -62,6 +62,33 @@ NODE_TSCONFIG = """{
 }
 """
 
+# Bun builds and tests it itself; its own name in Nexus' npm repository.
+BUN_PACKAGE = """{
+\t"name": "@brigade-forges/bun-demo",
+\t"version": "0.1.0",
+\t"type": "module",
+\t"main": "dist/index.js",
+\t"files": [
+\t\t"dist"
+\t],
+\t"scripts": {
+\t\t"build": "bun build src/index.ts --outdir dist --target node",
+\t\t"prepublishOnly": "bun run build"
+\t},
+\t"publishConfig": {
+\t\t"access": "public"
+\t}
+}
+"""
+
+BUN_TEST = """import { expect, test } from "bun:test";
+import { hello } from "../src/index.ts";
+
+test("hello", () => {
+\texpect(hello("demo")).toBe("Hello, demo!");
+});
+"""
+
 NODE_TEST = """import assert from "node:assert/strict";
 import { test } from "node:test";
 import { hello } from "../src/index.ts";
@@ -202,6 +229,28 @@ PROJECTS = {
         secrets={"NPM_TOKEN": "{npm_token}"},
         deployed=(
             "http://localhost:8099/repository/npm/@brigade-forges%2fdemo",
+            '"{tag}"',
+        ),
+    ),
+    # The same library with Bun, published to the same registry.
+    "bun": Project(
+        tools=[*BASE, "biome", "bun"],
+        data={"bun_publish": True},
+        files={
+            "package.json": BUN_PACKAGE,
+            "src/index.ts": "export function hello(name: string): string {\n"
+            "\treturn `Hello, ${name}!`;\n}\n",
+            "test/index.test.ts": BUN_TEST,
+            ".gitignore": "node_modules/\ndist/\n",
+            ".npmrc": "@brigade-forges:registry=http://nexus:8081/repository/npm/\n"
+            "//nexus:8081/repository/npm/:_authToken=${NPM_TOKEN}\n",
+            "README.md": "# Demo\n\nA demo TypeScript library, built with Bun.\n",
+        },
+        commands=[["bun", "install"]],
+        env={},
+        secrets={"NPM_TOKEN": "{npm_token}"},
+        deployed=(
+            "http://localhost:8099/repository/npm/@brigade-forges%2fbun-demo",
             '"{tag}"',
         ),
     ),

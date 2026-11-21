@@ -1,0 +1,17 @@
+[tools]
+# The standard edition (aqua has no extended one for macOS): a theme that needs the extended
+# one (Sass with LibSass, WebP) gets it from your mise.toml.
+# renovate: datasource=github-releases depName=gohugoio/hugo
+hugo = "{{ hugo_version | default('0.170.1', true) }}"
+
+[tasks."hugo:build"]
+description = "Build the site with Hugo (needs hugo.toml: hugo new site)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# Into {{ pages_dir if 'pages' in tools else 'public' }}/ ({% if 'pages' in tools %}pages_dir, which pages:deploy publishes{% else %}Hugo's default{% endif %}: ignore it, and .hugo_build.lock).
+run = '''{{ hugo_build_command | default('hugo build --minify --destination ' ~ (pages_dir if 'pages' in tools else 'public'), true) }}'''
+
+# Not a stage name: stays out of the pipeline.
+[tasks."hugo:serve"]
+description = "Preview the site"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ hugo_serve_command | default('hugo server', true) }}'''

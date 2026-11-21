@@ -35,6 +35,12 @@ jobs:
             task: test-java-gradle-github
           - name: helm-github
             task: test-helm-github
+          - name: bun-github
+            task: test-bun-github
+          - name: deno-github
+            task: test-deno-github
+          - name: hugo-github
+            task: test-hugo-github
           - name: node-github
             task: test-node-github
           - name: react-github
