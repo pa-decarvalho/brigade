@@ -31,7 +31,7 @@ API). No Renovate: its update is what `brigade:update` does.
 - Per forge (`gitea`, `github`, `forgejo`, `gitlab`; `tests/e2e/up.py`):
   `<forge>:up` (start, admin token, runner; `.forges/<server>.json`),
   `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
-  `node`, `docker`, `java`; all by default), `<forge>:down`
+  `node`, `docker`, `java-maven`, `java-gradle`; all by default), `<forge>:down`
   (remove it, then everything Docker no longer uses, volumes included),
   `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
   needed, `down` at the end. GitLab takes a few minutes and, with Nexus and

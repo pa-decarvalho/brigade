@@ -92,7 +92,7 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo command.\n")
     ["mise", "exec", "--", "cargo", "publish", "--dry-run"],
 ]
 
-[output.".ctt/java-github"]
+[output.".ctt/java-maven-github"]
 # The Java example: a Maven library with its test, deployed to a Maven repository on each release.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "osv-scanner", "maven", "releasaurus", "renovate"]
 ci = "github"
@@ -147,6 +147,57 @@ repo = pathlib.Path(".git/m2-repo").resolve()
 env = {**os.environ, "MAVEN_REPOSITORY_URL": repo.as_uri(), "MAVEN_USERNAME": "ctt", "MAVEN_PASSWORD": "ctt"}
 subprocess.run(["mise", "run", "maven:deploy"], env=env, check=True)
 assert (repo / "demo/demo/0.1.0/demo-0.1.0.jar").exists(), sorted(repo.rglob("*"))
+'''],
+]
+
+[output.".ctt/java-gradle-github"]
+# The Java example with Gradle: a library made by gradle init, published to a Maven repository on each release.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "osv-scanner", "gradle", "releasaurus", "renovate"]
+ci = "github"
+gradle_publish = true
+_post_tasks = [
+    ["git", "init", "-q"],
+    # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "lock"],
+    # The project, by Gradle's own tool (--overwrite: brigade's files are already there).
+    ["mise", "exec", "--", "gradle", "init", "--overwrite", "--type", "java-library", "--dsl", "kotlin", "--test-framework", "junit-jupiter", "--project-name", "demo", "--package", "demo", "--java-version", "25", "--use-defaults", "--console=plain"],
+    # Published with maven-publish, at the version Releasaurus bumps; .editorconfig, renovate.json.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+build = pathlib.Path("lib/build.gradle.kts")
+build.write_text(build.read_text() + """
+apply(plugin = "maven-publish")
+
+group = "demo"
+version = "0.1.0"
+
+configure<PublishingExtension> {
+    publications {
+        create<MavenPublication>("lib") {
+            from(components["java"])
+        }
+    }
+}
+""")
+pathlib.Path(".editorconfig").write_text("root = true\n\n[*]\ninsert_final_newline = true\n")
+pathlib.Path("renovate.json").write_text("{}\n")
+pathlib.Path("README.md").write_text("# Demo\n\nA demo Java library, built with Gradle.\n")
+'''],
+    ["git", "add", "-A"],
+    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
+    ["mise", "run", "lint"],
+    ["mise", "run", "build"],
+    ["mise", "run", "test"],
+    # Renders the local template (HEAD) and compares: the generated files are untouched.
+    ["mise", "run", "brigade:lint"],
+    # gradle:deploy to a local file repository (MAVEN_REPOSITORY_URL, the init script); without a
+    # login, which Gradle refuses for file URLs (the e2e tests log in to Nexus).
+    ["uv", "run", "--no-project", "python", "-c", '''
+import os, pathlib, subprocess
+repo = pathlib.Path(".git/m2-repo").resolve()
+env = {**os.environ, "MAVEN_REPOSITORY_URL": repo.as_uri()}
+subprocess.run(["mise", "run", "gradle:deploy"], env=env, check=True)
+assert (repo / "demo/lib/0.1.0/lib-0.1.0.jar").exists(), sorted(repo.rglob("*"))
 '''],
 ]
 

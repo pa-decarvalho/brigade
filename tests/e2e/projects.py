@@ -112,6 +112,46 @@ JAVA_POM = """<?xml version="1.0" encoding="UTF-8"?>
 </project>
 """
 
+# Gradle's layout, by hand (gradle init would overwrite brigade's files first); Releasaurus
+# bumps version = "..." on each release (release_type java). Its own name: Nexus' maven
+# repository keeps the Maven project's demo/demo versions.
+GRADLE_SETTINGS = 'rootProject.name = "demo-gradle"\n'
+
+GRADLE_BUILD = """plugins {
+    `java-library`
+    `maven-publish`
+}
+
+group = "demo"
+version = "0.1.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.withType<JavaCompile> {
+    options.release = 21
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("lib") {
+            from(components["java"])
+        }
+    }
+}
+"""
+
 JAVA_HELLO = (
     "package demo;\n\npublic final class Hello {\n    private Hello() {\n    }\n\n"
     '    public static String hello() {\n        return "Hello from demo!";\n    }\n}\n'
@@ -198,7 +238,7 @@ PROJECTS = {
         not_on=("gitlab",),
     ),
     # A Java library deployed to a Maven repository (Nexus' maven repository).
-    "java": Project(
+    "java-maven": Project(
         tools=[*BASE, "maven"],
         data={"maven_publish": True},
         files={
@@ -216,6 +256,29 @@ PROJECTS = {
         },
         deployed=(
             "http://localhost:8099/repository/maven/demo/demo/maven-metadata.xml",
+            "<version>{tag}</version>",
+        ),
+    ),
+    # The same with Gradle, published by gradle:deploy (its init script adds the repository).
+    "java-gradle": Project(
+        tools=[*BASE, "gradle"],
+        data={"gradle_publish": True},
+        files={
+            "settings.gradle.kts": GRADLE_SETTINGS,
+            "build.gradle.kts": GRADLE_BUILD,
+            "src/main/java/demo/Hello.java": JAVA_HELLO,
+            "src/test/java/demo/HelloTest.java": JAVA_TEST,
+            ".gitignore": ".gradle/\nbuild/\n",
+            "README.md": "# Demo\n\nA demo Java library, built with Gradle.\n",
+        },
+        commands=[],
+        env={"MAVEN_REPOSITORY_URL": "http://nexus:8081/repository/maven/"},
+        secrets={
+            "MAVEN_USERNAME": "{deploy_user}",
+            "MAVEN_PASSWORD": "{deploy_password}",
+        },
+        deployed=(
+            "http://localhost:8099/repository/maven/demo/demo-gradle/maven-metadata.xml",
             "<version>{tag}</version>",
         ),
     ),

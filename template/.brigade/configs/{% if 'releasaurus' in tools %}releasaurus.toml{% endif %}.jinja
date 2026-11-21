@@ -1,5 +1,5 @@
-{%- set ecosystems = {'uv': 'python', 'node': 'node', 'rust': 'rust', 'go': 'go', 'maven': 'java'} -%}
-{%- set found = ecosystems | dictsort | selectattr(0, 'in', tools) | map(attribute=1) | list -%}
+{%- set ecosystems = {'uv': 'python', 'node': 'node', 'rust': 'rust', 'go': 'go', 'maven': 'java', 'gradle': 'java'} -%}
+{%- set found = ecosystems | dictsort | selectattr(0, 'in', tools) | map(attribute=1) | unique | list -%}
 {%- set release_type = releasaurus_release_type or (found[0] if found | length == 1 else 'none') -%}
 # brigade-owned: updated by mise run brigade:update, do not edit.
 # For your own settings, set releasaurus_config to your file (keep tag_prefix = "").

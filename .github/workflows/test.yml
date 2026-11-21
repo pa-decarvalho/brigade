@@ -29,8 +29,10 @@ jobs:
             task: test-go-github
           - name: python-docker-github
             task: test-python-docker-github
-          - name: java-github
-            task: test-java-github
+          - name: java-maven-github
+            task: test-java-maven-github
+          - name: java-gradle-github
+            task: test-java-gradle-github
           - name: node-github
             task: test-node-github
           - name: react-github
