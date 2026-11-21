@@ -2,7 +2,7 @@
 # renovate: datasource=node-version depName=node
 node = "{{ markdownlint_node_version | default('26.13.1', true) }}"
 # renovate: datasource=npm depName=markdownlint-cli2
-"npm:markdownlint-cli2" = "{{ markdownlint_version | default('0.24.1', true) }}"
+"npm:markdownlint-cli2" = "{{ markdownlint_version | default('0.24.2', true) }}"
 
 [tasks."markdownlint:lint"]
 description = "Check Markdown files with markdownlint"
