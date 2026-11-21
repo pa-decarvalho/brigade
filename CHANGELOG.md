@@ -1,3 +1,9 @@
+# [0.37.0](https://github.com/pa-decarvalho/brigade/compare/0.36.0...0.37.0) - 2026-11-21
+
+### 🚀 Features
+
+- add bun, deno and hugo to the tool catalog (#336) [_(aa1c5b43)_](https://github.com/pa-decarvalho/brigade/commit/aa1c5b43d469dd62ea690c7902cc60e4e9d0ebc5)
+
 # [0.36.0](https://github.com/pa-decarvalho/brigade/compare/0.35.0...0.36.0) - 2026-11-21
 
 ### 🚀 Features
