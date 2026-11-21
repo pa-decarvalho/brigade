@@ -1,3 +1,15 @@
+# [0.36.0](https://github.com/pa-decarvalho/brigade/compare/0.35.0...0.36.0) - 2026-11-21
+
+### 🚀 Features
+
+- add helm to the tool catalog (#335) [_(39ad6b5b)_](https://github.com/pa-decarvalho/brigade/commit/39ad6b5b333679c0b35dc75afe2007825af500a0)
+
+- add gradle to the tool catalog (Java with Gradle) (#334) [_(8fc35cfa)_](https://github.com/pa-decarvalho/brigade/commit/8fc35cfabe73eca40dd31af2902ea49fa03d6c63)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#332) [_(26bb7f8a)_](https://github.com/pa-decarvalho/brigade/commit/26bb7f8a708f5b09bc93efb651e2936c263b9cd1)
+
 # [0.35.0](https://github.com/pa-decarvalho/brigade/compare/0.34.0...0.35.0) - 2026-11-20
 
 ### 🚀 Features
