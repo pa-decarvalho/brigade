@@ -6,6 +6,7 @@ customize_tools: false
 deploy_auto: true
 deploy_commands: []
 deploy_enabled: true
+environments: []
 github_mirror: ""
 jobs:
   test:

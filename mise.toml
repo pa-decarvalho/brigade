@@ -7,8 +7,14 @@ MISE_TRUSTED_CONFIG_PATHS = "{{ config_root }}/.ctt"
 MISE_CEILING_PATHS = "{{ config_root }}/.ctt"
 
 # End-to-end tests on local forges (tests/e2e/, tests/fixtures/, Docker): see docs/contributing.md.
-# <forge>:up, :run, :down, and :test (up, run, down). Not stage names (*:lint, *:build...),
+# <forge>:up, :run, :down, and :test (up, run, down); forges:test runs every forge, then cleans
+# Docker up. Not stage names (*:lint, *:build...),
 # which brigade's stages would run in CI; its test stage is a list of ctt jobs.
+
+[tasks."forges:test"]
+description = "End-to-end tests on every forge in turn (up, run, down), then the big Docker cleanup"
+usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, python-direct, node, bun, docker, java-maven, java-gradle, helm"'
+run = "uv run --no-project python tests/e2e/up.py all{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitea:up"]
 description = "Start Gitea and its runner for the end-to-end tests"
@@ -20,7 +26,7 @@ usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, py
 run = "uv run --no-project python tests/e2e/up.py gitea run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitea:down"]
-description = "Remove Gitea and its data, then everything Docker no longer uses"
+description = "Remove Gitea and its data (its containers, network and volumes)"
 run = "uv run --no-project python tests/e2e/up.py gitea down"
 
 [tasks."gitea:test"]
@@ -38,7 +44,7 @@ usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, py
 run = "uv run --no-project python tests/e2e/up.py forgejo run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."forgejo:down"]
-description = "Remove Forgejo and its data, then everything Docker no longer uses"
+description = "Remove Forgejo and its data (its containers, network and volumes)"
 run = "uv run --no-project python tests/e2e/up.py forgejo down"
 
 [tasks."forgejo:test"]
@@ -56,7 +62,7 @@ usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, py
 run = "uv run --no-project python tests/e2e/up.py gitlab run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."gitlab:down"]
-description = "Remove GitLab and its data, then everything Docker no longer uses"
+description = "Remove GitLab and its data (its containers, network and volumes)"
 run = "uv run --no-project python tests/e2e/up.py gitlab down"
 
 [tasks."gitlab:test"]
@@ -74,7 +80,7 @@ usage = 'arg "[type]..." var=#true help="Tests to run (default: all): python, py
 run = "uv run --no-project python tests/e2e/up.py github run{% for t in usage.type %} {{ t }}{% endfor %}"
 
 [tasks."github:down"]
-description = "Remove Gitea (github's server) and its data, then everything Docker no longer uses"
+description = "Remove Gitea (github's server) and its data (its containers, network and volumes)"
 run = "uv run --no-project python tests/e2e/up.py github down"
 
 [tasks."github:test"]

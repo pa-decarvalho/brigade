@@ -7,6 +7,9 @@ inputs:
   workflow:
     description: The workflow file to start, e.g. deploy.yml
     required: true
+  environments:
+    description: The environments to deploy to, a JSON list (its input)
+    default: ""
 runs:
   using: composite
   steps:
@@ -15,4 +18,7 @@ runs:
       env:
         TOKEN: ${{ github.token }}
         WORKFLOW: ${{ inputs.workflow }}
-      run: python3 .brigade/scripts/ci_dispatch.py "$WORKFLOW"
+        ENVIRONMENTS: ${{ inputs.environments }}
+      run: >-
+        python3 .brigade/scripts/ci_dispatch.py "$WORKFLOW"
+        ${ENVIRONMENTS:+"environments=$ENVIRONMENTS"}

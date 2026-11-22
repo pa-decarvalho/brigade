@@ -88,12 +88,17 @@ Gitea, whose runner runs GitHub Actions workflows). Each forge has four tasks:
 - `mise run <forge>:run [type...]`: the tests on it, all or the given ones
   (`python`, `python-direct`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`,
   `helm`);
-- `mise run <forge>:down`: removes it and its data, then everything Docker no
-  longer uses, Docker-wide (`docker system prune --all`, then
-  `docker volume prune --all`: stopped containers, unused images and volumes,
-  named ones included; images are pulled again when needed);
+- `mise run <forge>:down`: removes it and its data (its containers, network
+  and volumes); images stay for the next run;
 - `mise run <forge>:test [type...]`: `up`, `run`, then `down`, even when the
   tests fail.
+
+`mise run forges:test [type...]` runs every forge in turn (Gitea, `github` on
+the same server, Forgejo, GitLab: `up`, `run`, `down`), prints each one's
+result, then does the big cleanup, even when a test fails: brigade's clones,
+and everything Docker no longer uses, Docker-wide (`docker system prune --all`,
+then `docker volume prune --all`: stopped containers, unused images and
+volumes, named ones included; images are pulled again when needed).
 
 To work on a failure: `up` once, `run` as often as needed, then `down`. pytest
 runs on this machine, one test per project type of `tests/e2e/projects.py`
@@ -102,7 +107,10 @@ one with both Releasaurus workflows (`python`: a release PR; `python-direct`: no
 PR), each in a temporary folder:
 
 1. the project, created with its ecosystem's tool, brigade applied from this
-   checkout at its latest tag;
+   checkout at its latest tag; or at its `HEAD` (uncommitted changes included)
+   when that release lacks one of the type's tools or answers (the branch adds
+   them), or with `E2E_FROM_HEAD=1` (every type: a changed tool, a quicker run),
+   then step 4 is skipped;
 2. its settings (secrets, `<cli>:setup` and `<cli>:check`), then the push;
 3. a pull request: lint, build, test; merged;
 4. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI

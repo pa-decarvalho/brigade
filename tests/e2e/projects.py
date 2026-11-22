@@ -23,11 +23,8 @@ class Project:
     published: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
     data: dict = field(default_factory=dict)  # more Copier answers
     not_on: tuple[str, ...] = ()  # forges brigade refuses it on
-    # Answers the latest release does not have yet, added to data.yml for the
-    # update to the checkout's HEAD.
-    data_later: dict = field(default_factory=dict)
     # Its deploy installs on the cluster (up.reset_cluster, "{kubeconfig}"): the
-    # environments of data_later's environments answer are checked there.
+    # environments of its environments answer are checked there.
     cluster: bool = False
 
 
@@ -341,9 +338,9 @@ PROJECTS = {
     # A Helm chart pushed to an OCI registry (Nexus' docker repository, plain HTTP).
     "helm": Project(
         tools=[*BASE, "helm"],
-        data={"helm_publish": True},
         # Installed on the cluster: dev once published, prod by hand.
-        data_later={
+        data={
+            "helm_publish": True,
             "helm_install": True,
             "environments": [{"name": "dev", "auto": True}, {"name": "prod"}],
         },

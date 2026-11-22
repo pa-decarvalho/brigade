@@ -1,15 +1,17 @@
 """A local forge for the end-to-end tests: up, run, test, down.
 
-Usage: up.py <forge> <action> [type...], forge gitea, forgejo, gitlab or
-github (a ci: github project on Gitea, the same server), as mise's <forge>:<action>
-tasks run it:
+Usage: up.py <forge> <action> [type...], or up.py all [type...]; forge gitea,
+forgejo, gitlab or github (a ci: github project on Gitea, the same server), as
+mise's <forge>:<action> and forges:test tasks run it:
 - up: starts tests/fixtures/<server>/compose.yml, waits until it answers,
     creates the admin and a token, registers the runner, writes
     .forges/<server>.json; reuses a forge that is up;
 - run: the tests on it, all or the given ids of projects.CASES;
-- down: removes the forge and its data, then everything Docker no longer
-    uses, Docker-wide (containers, images, networks, build cache, volumes);
-- test: up, run, then down, even when the tests fail.
+- down: removes the forge and its data (containers, network, volumes);
+- test: up, run, then down, even when the tests fail;
+- all [type...] (no forge): every forge in turn (up, run, down), then the big
+    cleanup, Docker-wide (stopped containers, unused images, networks, build
+    cache, volumes) and brigade's clones, even when the tests fail.
 The tests call ensure() themselves: run starts a forge that is not up.
 """
 
@@ -288,17 +290,21 @@ def docker(*args: str) -> list[str]:
 
 
 def down(server: str) -> None:
-    """The forge and its data, then all Docker no longer uses (a dev machine:
-    images are pulled again when needed)."""
+    """The forge and its data: its containers, network and volumes. Images and
+    what the jobs left stay for the next run (clean removes them)."""
     compose(
         server,
         *("--profile", "runner", "--profile", "cluster"),
         *("down", "--volumes", "--remove-orphans"),
     )
     (STATE / f"{server}.json").unlink(missing_ok=True)
+
+
+def clean() -> None:
+    """The big cleanup, after every forge (all): brigade's clones, then all
+    Docker no longer uses, Docker-wide: stopped containers (the jobs'), unused
+    images, networks, build cache and every unused volume (the runners')."""
     shutil.rmtree(TEMPLATES, ignore_errors=True)
-    # Stopped containers (the jobs'), unused images, networks, build cache, then
-    # every unused volume, named ones included (the runners' caches).
     docker("system", "prune", "--all", "--force")
     docker("volume", "prune", "--all", "--force")
 
@@ -328,9 +334,34 @@ FORGES = {"gitea": "gitea", "github": "gitea", "forgejo": "forgejo", "gitlab": "
 ACTIONS = ("up", "run", "down", "test")
 
 
+def run_all(types: list[str]) -> int:
+    """Every forge in turn (github on Gitea's server, before it goes down): up,
+    run, down; then the big cleanup, even after a failure. Its exit code: the
+    first failure's."""
+    results: dict[str, int] = {}
+    try:
+        for server in dict.fromkeys(FORGES.values()):
+            ensure(server)
+            try:
+                for forge in (f for f, s in FORGES.items() if s == server):
+                    results[forge] = run(forge, types)
+            finally:
+                down(server)
+    finally:
+        clean()
+        for forge, code in results.items():
+            print(f"{forge}: {'passed' if code == 0 else f'failed ({code})'}")
+    return next((code for code in results.values() if code), 0)
+
+
 def main(args: list[str]) -> int:
+    if args[:1] == ["all"]:
+        return run_all(args[1:])
     if len(args) < 2 or args[0] not in FORGES or args[1] not in ACTIONS:
-        sys.exit(f"usage: up.py <{'|'.join(FORGES)}> <{'|'.join(ACTIONS)}> [type...]")
+        sys.exit(
+            f"usage: up.py <{'|'.join(FORGES)}> <{'|'.join(ACTIONS)}> [type...]\n"
+            "       up.py all [type...]"
+        )
     forge, action, types = args[0], args[1], args[2:]
     server = FORGES[forge]
     if action == "up":

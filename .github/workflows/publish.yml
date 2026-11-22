@@ -45,8 +45,9 @@ jobs:
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
 
-  # deploy_auto: once published, the deploy workflow on the same tag (a run
-  # started with the workflow token: the exception to "it starts no workflow").
+  # deploy_auto (or the auto environments): once published, the deploy
+  # workflow on the same tag (a run started with the workflow token: the
+  # exception to "it starts no workflow").
   start-deploy:
     needs: [publish]
     runs-on: ubuntu-latest
