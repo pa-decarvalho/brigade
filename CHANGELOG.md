@@ -1,3 +1,9 @@
+# [0.40.1](https://github.com/pa-decarvalho/brigade/compare/0.40.0...0.40.1) - 2026-11-22
+
+### 🐛 Bug Fixes
+
+- deploy without environments (the environment check exited 1) (#350) [_(a5bfdb27)_](https://github.com/pa-decarvalho/brigade/commit/a5bfdb27e70c6bd8f383b274ed6935cd7d82d085)
+
 # [0.40.0](https://github.com/pa-decarvalho/brigade/compare/0.39.0...0.40.0) - 2026-11-22
 
 ### 🚀 Features
