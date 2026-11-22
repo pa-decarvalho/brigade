@@ -300,6 +300,10 @@ it. Run `mise run brigade:update` to restore them. An edited
 `.brigade/copier/data.yml` fails it too until `brigade:update` applies it (see
 [Changing answers](questions.md#changing-answers)).
 
+It also fails when git ignores a brigade-owned file, which would then be
+missing in CI: a `.gitignore` pattern such as `build` (written by `gradle init`)
+matches `.brigade/ci/<ci>/actions/build/` too. Anchor it to the root: `/build`.
+
 It also tells when a newer brigade release is out (`copier check-update`),
 without failing: run `mise run brigade:update`, or let
 [Renovate](#brigade-updates) open the PR.
@@ -496,9 +500,9 @@ plugin with its publications, and its `version` is the one Releasaurus bumps in
 the release PR. With `MAVEN_REPOSITORY_URL` set (your `mise.toml` `[env]` or a
 CI variable), `.brigade/configs/gradle-init.gradle` (an init script) adds it as
 a repository named `brigade`, logged in with the `MAVEN_USERNAME` and
-`MAVEN_PASSWORD` secrets (CI/CD variables on GitLab); else only the repositories
-of your build. A release repository refuses a version already published: a
-manual run on the same tag fails.
+`MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), over plain HTTP for an
+`http://` URL; else only the repositories of your build. A release repository
+refuses a version already published: a manual run on the same tag fails.
 
 `docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
 (`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE`

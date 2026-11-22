@@ -20,6 +20,7 @@ run = '''{{ deno_test_command | default('deno test --permit-no-files --ignore=.m
 description = "Publish the package to JSR at the tag's version (deno publish)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The version: the tag (X.Y.Z), not deno.json's; the token: the JSR_TOKEN secret. Arguments go
-# to deno publish (mise run deno:deploy -- --dry-run).
-run = '''{{ deno_deploy_command | default('uv run --no-project python -c "import os, subprocess, sys; tag = subprocess.run([\'git\', \'describe\', \'--tags\', \'--exact-match\'], capture_output=True, text=True, check=True).stdout.strip(); token = [\'--token\', os.environ[\'JSR_TOKEN\']] if os.environ.get(\'JSR_TOKEN\') else []; sys.exit(subprocess.call([\'deno\', \'publish\', \'--set-version\', tag, *token, *sys.argv[1:]]))"', true) }}'''
+# to deno publish (mise run deno:deploy -- --dry-run). git update-index --refresh first: mise
+# rewrites .brigade/mise.lock unchanged, which deno publish would take for an uncommitted change.
+run = '''{{ deno_deploy_command | default('uv run --no-project python -c "import os, subprocess, sys; tag = subprocess.run([\'git\', \'describe\', \'--tags\', \'--exact-match\'], capture_output=True, text=True, check=True).stdout.strip(); token = [\'--token\', os.environ[\'JSR_TOKEN\']] if os.environ.get(\'JSR_TOKEN\') else []; subprocess.run([\'git\', \'update-index\', \'-q\', \'--refresh\']); sys.exit(subprocess.call([\'deno\', \'publish\', \'--set-version\', tag, *token, *sys.argv[1:]]))"', true) }}'''
 {%- endif %}

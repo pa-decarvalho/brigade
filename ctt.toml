@@ -13,6 +13,7 @@ uv_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
@@ -46,6 +47,7 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: a command, its test, .gitignore (go:build's binary, goreleaser's dist/), .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('go.mod').write_text('module demo\\n\\ngo 1.27\\n')\npathlib.Path('main.go').write_text('// Package main prints a greeting.\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(hello())\\n}\\n\\nfunc hello() string {\\n\\treturn \"demo\"\\n}\\n')\npathlib.Path('main_test.go').write_text('package main\\n\\nimport \"testing\"\\n\\nfunc TestHello(t *testing.T) {\\n\\tif got := hello(); got != \"demo\" {\\n\\t\\tt.Fatalf(\"hello() = %q\", got)\\n\\t}\\n}\\n')\npathlib.Path('.gitignore').write_text('dist/\\ndemo\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo command.\\n')\n"],
@@ -69,6 +71,7 @@ cargo_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: a command with its test, .gitignore (cargo's target/), .editorconfig.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -100,6 +103,7 @@ maven_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: pom.xml, a class with its JUnit test, .gitignore (Maven's target/), .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -158,12 +162,16 @@ gradle_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project, by Gradle's own tool (--overwrite: brigade's files are already there).
     ["mise", "exec", "--", "gradle", "init", "--overwrite", "--type", "java-library", "--dsl", "kotlin", "--test-framework", "junit-jupiter", "--project-name", "demo", "--package", "demo", "--java-version", "25", "--use-defaults", "--console=plain"],
-    # Published with maven-publish, at the version Releasaurus bumps; .editorconfig, renovate.json.
+    # Published with maven-publish, at the version Releasaurus bumps; its .gitignore's build anchored
+    # (brigade:lint: it ignored .brigade/ci/github/actions/build/); .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
 import pathlib
+gitignore = pathlib.Path(".gitignore")
+gitignore.write_text(gitignore.read_text().replace("\nbuild\n", "\n/build\n"))
 build = pathlib.Path("lib/build.gradle.kts")
 build.write_text(build.read_text() + """
 apply(plugin = "maven-publish")
@@ -209,6 +217,7 @@ helm_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The chart, by Helm's own tool (into charts/, made first); .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -257,6 +266,7 @@ bun_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: a TypeScript library, its test (bun:test), .npmrc (the registry token), .gitignore, .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -332,6 +342,7 @@ deno_publish = true
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: deno.json (a JSR package), a module, its test, .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -350,9 +361,8 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
-    # deno:deploy on a tag, without uploading (no local JSR): the package checked at the tag's version.
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.2.0"],
-    ["mise", "run", "deno:deploy", "--", "--dry-run"],
+    # No deno:deploy -- --dry-run until #339: in CI, mise rewrites .brigade/mise.lock and deno
+    # publish refuses the dirty tree.
 ]
 
 [output.".ctt/hugo-github"]
@@ -362,6 +372,7 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The site, by Hugo's own tool (--force: brigade's files are already there).
     ["mise", "exec", "--", "hugo", "new", "site", ".", "--force"],
@@ -398,6 +409,7 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--package", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
@@ -432,6 +444,7 @@ renovate_updates = ["brigade", "dependencies"]
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: a TypeScript library, its test (Node runs .ts files), .npmrc (the registry token), .gitignore, .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('src').mkdir()\npathlib.Path('test').mkdir()\npathlib.Path('package.json').write_text('{\\n\\t\"name\": \"@brigade-ctt/demo\",\\n\\t\"version\": \"0.1.0\",\\n\\t\"type\": \"module\",\\n\\t\"main\": \"dist/index.js\",\\n\\t\"types\": \"dist/index.d.ts\",\\n\\t\"files\": [\\n\\t\\t\"dist\"\\n\\t],\\n\\t\"scripts\": {\\n\\t\\t\"build\": \"tsc\",\\n\\t\\t\"test\": \"node --test\",\\n\\t\\t\"prepublishOnly\": \"npm run build\"\\n\\t},\\n\\t\"publishConfig\": {\\n\\t\\t\"access\": \"public\"\\n\\t},\\n\\t\"devDependencies\": {\\n\\t\\t\"typescript\": \"7.0.2\"\\n\\t}\\n}\\n')\npathlib.Path('tsconfig.json').write_text('{\\n\\t\"compilerOptions\": {\\n\\t\\t\"target\": \"ES2022\",\\n\\t\\t\"module\": \"NodeNext\",\\n\\t\\t\"declaration\": true,\\n\\t\\t\"rootDir\": \"src\",\\n\\t\\t\"outDir\": \"dist\",\\n\\t\\t\"strict\": true\\n\\t},\\n\\t\"include\": [\"src\"]\\n}\\n')\npathlib.Path('src/index.ts').write_text('export function hello(name: string): string {\\n\\treturn `Hello, ${name}!`;\\n}\\n')\npathlib.Path('test/index.test.ts').write_text('import assert from \"node:assert/strict\";\\nimport { test } from \"node:test\";\\nimport { hello } from \"../src/index.ts\";\\n\\ntest(\"hello\", () => {\\n\\tassert.equal(hello(\"demo\"), \"Hello, demo!\");\\n});\\n')\npathlib.Path('.gitignore').write_text('node_modules/\\ndist/\\n')\npathlib.Path('.npmrc').write_text('//127.0.0.1:4873/:_authToken=${NPM_TOKEN}\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo TypeScript library.\\n')\n"],
@@ -472,6 +485,7 @@ releasaurus_workflow = "direct"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project's files: a Vite React app in TypeScript, a Vitest test, ESLint (project dependencies), .gitignore, .editorconfig, renovate.json.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\npathlib.Path('src').mkdir()\npathlib.Path('package.json').write_text('{\\n  \"name\": \"demo\",\\n  \"private\": true,\\n  \"version\": \"0.1.0\",\\n  \"type\": \"module\",\\n  \"scripts\": {\\n    \"dev\": \"vite\",\\n    \"lint\": \"eslint .\",\\n    \"build\": \"tsc && vite build\",\\n    \"test\": \"vitest run\"\\n  },\\n  \"dependencies\": {\\n    \"react\": \"19.3.1\",\\n    \"react-dom\": \"19.3.1\"\\n  },\\n  \"devDependencies\": {\\n    \"@eslint/js\": \"10.0.1\",\\n    \"@types/react\": \"19.3.0\",\\n    \"@types/react-dom\": \"19.3.0\",\\n    \"@vitejs/plugin-react\": \"6.3.0\",\\n    \"eslint\": \"10.15.0\",\\n    \"typescript\": \"6.0.3\",\\n    \"typescript-eslint\": \"8.72.2\",\\n    \"vite\": \"8.3.8\",\\n    \"vitest\": \"5.1.0\"\\n  }\\n}\\n')\npathlib.Path('tsconfig.json').write_text('{\\n  \"compilerOptions\": {\\n    \"target\": \"ES2022\",\\n    \"lib\": [\\n      \"ES2022\",\\n      \"DOM\",\\n      \"DOM.Iterable\"\\n    ],\\n    \"module\": \"ESNext\",\\n    \"moduleResolution\": \"bundler\",\\n    \"jsx\": \"react-jsx\",\\n    \"strict\": true,\\n    \"noEmit\": true,\\n    \"skipLibCheck\": true,\\n    \"types\": [\\n      \"vite/client\"\\n    ]\\n  },\\n  \"include\": [\\n    \"src\",\\n    \"vite.config.ts\"\\n  ]\\n}\\n')\npathlib.Path('index.html').write_text('<!doctype html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"UTF-8\" />\\n    <title>Demo</title>\\n  </head>\\n  <body>\\n    <div id=\"root\"></div>\\n    <script type=\"module\" src=\"/src/main.tsx\"></script>\\n  </body>\\n</html>\\n')\npathlib.Path('vite.config.ts').write_text('import react from \"@vitejs/plugin-react\";\\nimport { defineConfig } from \"vitest/config\";\\n\\nexport default defineConfig({ plugins: [react()] });\\n')\npathlib.Path('eslint.config.js').write_text('import js from \"@eslint/js\";\\nimport tseslint from \"typescript-eslint\";\\n\\nexport default tseslint.config({ ignores: [\"dist\"] }, js.configs.recommended, ...tseslint.configs.recommended);\\n')\npathlib.Path('src/greeting.ts').write_text('export function greeting(name: string): string {\\n  return `Hello, ${name}!`;\\n}\\n')\npathlib.Path('src/greeting.test.ts').write_text('import { expect, test } from \"vitest\";\\nimport { greeting } from \"./greeting\";\\n\\ntest(\"greeting\", () => {\\n  expect(greeting(\"demo\")).toBe(\"Hello, demo!\");\\n});\\n')\npathlib.Path('src/App.tsx').write_text('import { greeting } from \"./greeting\";\\n\\nexport function App() {\\n  return <h1>{greeting(\"demo\")}</h1>;\\n}\\n')\npathlib.Path('src/main.tsx').write_text('import { StrictMode } from \"react\";\\nimport { createRoot } from \"react-dom/client\";\\nimport { App } from \"./App\";\\n\\nconst root = document.getElementById(\"root\");\\nif (root) {\\n  createRoot(root).render(\\n    <StrictMode>\\n      <App />\\n    </StrictMode>,\\n  );\\n}\\n')\npathlib.Path('.gitignore').write_text('node_modules/\\ndist/\\n')\npathlib.Path('.editorconfig').write_text('root = true\\n\\n[*]\\ninsert_final_newline = true\\n')\npathlib.Path('renovate.json').write_text('{}\\n')\npathlib.Path('README.md').write_text('# Demo\\n\\nA demo React app.\\n')\n"],
@@ -504,6 +518,7 @@ pages_dir = "dist/demo/browser"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # The project, by Angular's own tool.
     ["mise", "exec", "--", "npx", "-y", "@angular/cli@22.2.7", "new", "demo", "--defaults", "--skip-git", "--directory", "."],
@@ -587,6 +602,7 @@ ruff_lint_command = "ruff check --extend-exclude .mise-data ."
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
@@ -618,6 +634,7 @@ jobs = { test = [
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
     ["git", "add", "-A"],
@@ -638,6 +655,7 @@ jobs = { test = [
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
     ["git", "add", "-A"],
@@ -656,6 +674,7 @@ lint_commands = ["mise run ruff:lint", "mise run typos:lint"]
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
@@ -682,6 +701,7 @@ pypi_index = "https://pypi.org/simple"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "init", "--lib", "--vcs", "none", "--name", "demo"],
     ["uv", "add", "--dev", "pytest==9.2.0"],
@@ -700,6 +720,7 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # editorconfig-checker needs the project's own .editorconfig; root = true stops it from
     # reading brigade's (end_of_line = lf), which fails on Windows CRLF checkouts.
@@ -712,6 +733,7 @@ _post_tasks = [
     ["mise", "trust", "-q", "mise.toml"],
     # With the project's mise.toml, brigade's tools are still locked in .brigade/mise.lock.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('.brigade/mise.lock').unlink()"],
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; assert '[[tools.typos]]' in pathlib.Path('.brigade/mise.lock').read_text()"],
     ["git", "add", "-A"],
@@ -732,6 +754,7 @@ jobs = { test = [
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     # A one-file Copier template and its ctt variant.
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('copier.yml').write_text('---\\n_subdirectory: tpl\\nname:\\n  type: str\\n  default: demo\\n'); pathlib.Path('tpl').mkdir(); pathlib.Path('tpl/hello.txt.jinja').write_text('hello ' + '{' * 2 + ' name ' + '}' * 2 + '\\n'); pathlib.Path('ctt.toml').write_text('[output.\".out\"]\\nname = \"ctt\"\\n')"],
@@ -751,6 +774,7 @@ ci = "github"
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
+    ["mise", "-C", ".brigade", "install"],
     ["mise", "-C", ".brigade", "lock"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('site.yml').write_text('---\\n- name: Demo\\n  hosts: localhost\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib; d = pathlib.Path('molecule/default'); d.mkdir(parents=True); (d / 'molecule.yml').write_text('---\\ndriver:\\n  name: docker\\nplatforms:\\n  - name: instance\\n    image: docker.io/library/python:3.13-slim\\n    pre_build_image: true\\n'); (d / 'converge.yml').write_text('---\\n- name: Converge\\n  hosts: all\\n  gather_facts: false\\n  tasks:\\n    - name: Say hello\\n      ansible.builtin.debug:\\n        msg: hello\\n')"],

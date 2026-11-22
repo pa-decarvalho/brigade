@@ -4,7 +4,8 @@
 //
 // With MAVEN_REPOSITORY_URL set, each project applying maven-publish gets a
 // repository "brigade" at that URL, logged in with MAVEN_USERNAME and
-// MAVEN_PASSWORD: gradle publish publishes there too. Else nothing changes.
+// MAVEN_PASSWORD (plain HTTP allowed for an http:// URL): gradle publish
+// publishes there too. Else nothing changes.
 def url = System.getenv('MAVEN_REPOSITORY_URL')
 if (url) {
     allprojects {
@@ -12,6 +13,7 @@ if (url) {
             publishing.repositories.maven {
                 name = 'brigade'
                 setUrl(url)
+                allowInsecureProtocol = url.startsWith('http://')
                 if (System.getenv('MAVEN_USERNAME')) {
                     credentials {
                         username = System.getenv('MAVEN_USERNAME')

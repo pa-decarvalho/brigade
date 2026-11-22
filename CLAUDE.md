@@ -56,7 +56,10 @@ mise fragment with all its tasks, and stages follow from the tools.
   `.brigade/conf.d/<tool>-brigade.toml` (the suffix avoids names such as
   `ruff.toml`, which mise reads as tool config; `conf.d/` makes mise write one
   lockfile, `.brigade/mise.lock` with its `.brigade/.mise/locks/` sidecars, for
-  all of `.brigade/`: `brigade:update` runs `mise -C .brigade lock` after Copier
+  all of `.brigade/`: `brigade:update` runs `mise -C .brigade install` then
+  `mise -C .brigade lock` after Copier (installed first: `mise lock` leaves out
+  what only an install records, an npm package's provenance, which CI's install
+  would add, dirtying the tree that `deno publish` and GoReleaser check)
   (from the root, mise locks only a project's own `mise.toml` when it exists),
   and `mise install` checks the checksums; `pipx:` tools set `python = "3.14"`,
   which locked Python dependencies need), the CI file linter

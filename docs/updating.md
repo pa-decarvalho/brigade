@@ -25,15 +25,19 @@ brigade, so a project gets them through a release and `brigade:update`.
 and checksum of its download for Linux, macOS and Windows;
 `.brigade/.mise/locks/` holds the Python and npm dependencies of the `pipx:` and
 `npm:` tools. `brigade:update` writes them after each update
-(`mise -C .brigade lock`; from the root, `mise lock` only locks your `mise.toml`
-when you have one): commit them with it. Then `mise install`, locally and in CI,
-installs these versions and fails when a download does not match its checksum (a
-release republished under the same version). Without a lockfile, it installs the
-pinned versions without checksums.
+(`mise -C .brigade install`, then `mise -C .brigade lock`; from the root,
+`mise lock` only locks your `mise.toml` when you have one): commit them with it.
+The install comes first because `mise lock` leaves out what only an install
+records (an npm package's provenance): CI's install would add it, and the
+modified lockfile would make `deno publish` or GoReleaser refuse to release.
+Then `mise install`, locally and in CI, installs these versions and fails when a
+download does not match its checksum (a release republished under the same
+version). Without a lockfile, it installs the pinned versions without checksums.
 
-A failed `mise lock` (offline...) does not fail the update: run
-`mise -C .brigade lock` again. The tools you add in your `mise.toml` are locked
-with `mise lock`, in your own `mise.lock` next to it.
+A failed install or lock (offline...) does not fail the update: run
+`mise -C .brigade install` and `mise -C .brigade lock` again. The tools you add
+in your `mise.toml` are locked with `mise lock`, in your own `mise.lock` next to
+it.
 
 ## What is overwritten
 
@@ -105,7 +109,8 @@ brigade's file.
 Since 0.24, the tool files are in `.brigade/conf.d/` (was `.brigade/tools/`), so
 that mise writes one lockfile for them all. Update as usual: Copier moves them.
 This first update runs the previous `brigade:update`, which does not lock: then
-run `mise -C .brigade lock` (mise may ask you to trust the moved files:
+run `mise -C .brigade install` and `mise -C .brigade lock` (mise may ask you to
+trust the moved files:
 `mise trust`), and commit the update with `.brigade/mise.lock` and
 `.brigade/.mise/`.
 
