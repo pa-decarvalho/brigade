@@ -1,3 +1,13 @@
+# [0.38.0](https://github.com/pa-decarvalho/brigade/compare/0.37.0...0.38.0) - 2026-11-22
+
+### 🚀 Features
+
+- add kustomize and kubeconform to the tool catalog (#341) [_(90b0cb4a)_](https://github.com/pa-decarvalho/brigade/commit/90b0cb4acef68b253be39e19cd4f73e51e62e718)
+
+### 🐛 Bug Fixes
+
+- fail brigade:lint on ignored brigade files and allow Gradle publishing over HTTP (#338) [_(493aba6a)_](https://github.com/pa-decarvalho/brigade/commit/493aba6a8fa43c862b4534c48d19f1fa83a5f6e8)
+
 # [0.37.0](https://github.com/pa-decarvalho/brigade/compare/0.36.0...0.37.0) - 2026-11-21
 
 ### 🚀 Features
