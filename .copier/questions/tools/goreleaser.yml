@@ -5,8 +5,8 @@ goreleaser_version:
   default: ""
   when: "{{ customize_tools and 'goreleaser' in tools }}"
 
-goreleaser_deploy_command:
+goreleaser_publish_command:
   type: str
-  help: Command of goreleaser:deploy (empty for brigade's)
+  help: Command of goreleaser:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'goreleaser' in tools }}"

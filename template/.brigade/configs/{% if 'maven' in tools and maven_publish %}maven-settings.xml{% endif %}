@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Maven settings of maven:deploy: mvn -gs .brigade/configs/maven-settings.xml
+  Maven settings of maven:publish: mvn -gs .brigade/configs/maven-settings.xml
   brigade-owned: updated by mise run brigade:update.
   For your own settings, set maven_config to your file (start from a copy).
 

@@ -2,7 +2,8 @@
 gradle_publish:
   type: bool
   help: >-
-    Publish the artifacts to a Maven repository on each release (gradle:deploy)?
+    Publish the artifacts to a Maven repository on each release
+    (gradle:publish)?
   default: false
   when: "{{ 'gradle' in tools }}"
 
@@ -21,7 +22,7 @@ gradle_java_version:
 gradle_config:
   type: str
   help: >-
-    Init script of gradle:deploy, from the project root (empty for brigade's)
+    Init script of gradle:publish, from the project root (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'gradle' in tools and gradle_publish }}"
 
@@ -37,8 +38,8 @@ gradle_test_command:
   default: ""
   when: "{{ customize_tools and 'gradle' in tools }}"
 
-gradle_deploy_command:
+gradle_publish_command:
   type: str
-  help: Command of gradle:deploy (empty for brigade's)
+  help: Command of gradle:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'gradle' in tools and gradle_publish }}"

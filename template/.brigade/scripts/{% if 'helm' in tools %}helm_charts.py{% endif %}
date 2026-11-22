@@ -1,11 +1,11 @@
-"""helm:lint and helm:deploy: lint the project's Helm charts, or push them to a registry.
+"""helm:lint and helm:publish: lint the project's Helm charts, or push them to a registry.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Usage: helm_charts.py lint|deploy
+Usage: helm_charts.py lint|publish
 The charts are the folders holding a Chart.yaml (hidden folders and the subcharts in a
 chart's charts/ left out); a chart with dependencies gets them first (helm dependency
 build: charts/*.tgz, to ignore). No chart: nothing to do.
-deploy packages each chart at the version of the tag (X.Y.Z) and pushes it to
+publish packages each chart at the version of the tag (X.Y.Z) and pushes it to
 HELM_REGISTRY (oci://host/path, http://host/path for a plain HTTP registry), else the
 CI's repository: ghcr.io on GitHub, the server itself on Gitea. Login:
 HELM_REGISTRY_USERNAME and HELM_REGISTRY_PASSWORD, else the workflow token for ghcr.io;
@@ -22,7 +22,7 @@ from pathlib import Path
 
 
 def main() -> int:
-    if sys.argv[1:] not in (["lint"], ["deploy"]):
+    if sys.argv[1:] not in (["lint"], ["publish"]):
         print(__doc__, file=sys.stderr)
         return 2
     charts = [
@@ -37,10 +37,10 @@ def main() -> int:
             subprocess.run(["helm", "dependency", "build", str(chart)], check=True)
     if sys.argv[1] == "lint":
         return subprocess.call(["helm", "lint", "--strict", *map(str, charts)])
-    return deploy(charts)
+    return publish(charts)
 
 
-def deploy(charts: list[Path]) -> int:
+def publish(charts: list[Path]) -> int:
     tag = subprocess.run(
         ["git", "describe", "--tags", "--exact-match"],
         check=False,
@@ -48,12 +48,12 @@ def deploy(charts: list[Path]) -> int:
         text=True,
     )
     if tag.returncode:
-        print("helm:deploy: no tag on this commit (deploy runs on X.Y.Z tags)", file=sys.stderr)
+        print("helm:publish: no tag on this commit (publish runs on X.Y.Z tags)", file=sys.stderr)
         return 1
     version = tag.stdout.strip()
     registry = os.environ.get("HELM_REGISTRY") or ci_registry()
     if not registry:
-        print("helm:deploy: set HELM_REGISTRY (oci://host/path)", file=sys.stderr)
+        print("helm:publish: set HELM_REGISTRY (oci://host/path)", file=sys.stderr)
         return 1
     plain = registry.startswith("http://")
     path = registry.split("://", 1)[-1].rstrip("/")

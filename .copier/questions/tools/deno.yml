@@ -1,7 +1,7 @@
 ---
 deno_publish:
   type: bool
-  help: Publish the package to JSR on each release (deno:deploy)?
+  help: Publish the package to JSR on each release (deno:publish)?
   default: false
   when: "{{ 'deno' in tools }}"
 
@@ -23,8 +23,8 @@ deno_test_command:
   default: ""
   when: "{{ customize_tools and 'deno' in tools }}"
 
-deno_deploy_command:
+deno_publish_command:
   type: str
-  help: Command of deno:deploy (empty for brigade's)
+  help: Command of deno:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'deno' in tools and deno_publish }}"

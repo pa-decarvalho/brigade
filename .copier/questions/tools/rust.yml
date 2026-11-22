@@ -1,7 +1,7 @@
 ---
 cargo_publish:
   type: bool
-  help: Publish the crate to its registry on each release (rust:deploy)?
+  help: Publish the crate to its registry on each release (rust:publish)?
   default: false
   when: "{{ 'rust' in tools }}"
 
@@ -29,8 +29,8 @@ rust_test_command:
   default: ""
   when: "{{ customize_tools and 'rust' in tools }}"
 
-rust_deploy_command:
+rust_publish_command:
   type: str
-  help: Command of rust:deploy (empty for brigade's)
+  help: Command of rust:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'rust' in tools and cargo_publish }}"

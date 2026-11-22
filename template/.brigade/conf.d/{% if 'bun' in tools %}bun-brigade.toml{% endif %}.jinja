@@ -21,10 +21,10 @@ description = "Install the dependencies and run the tests (bun test)"
 run = '''{{ bun_test_command | default('bun install --frozen-lockfile && bun test --pass-with-no-tests', true) }}'''
 {%- if bun_publish %}
 
-[tasks."bun:deploy"]
+[tasks."bun:publish"]
 description = "Install the dependencies and publish the package to its registry"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The registry: npm's, or publishConfig in package.json; its token: the NPM_TOKEN secret,
 # read by a line of the project's .npmrc (//registry.npmjs.org/:_authToken=${NPM_TOKEN}).
-run = '''{{ bun_deploy_command | default('bun install --frozen-lockfile && bun publish', true) }}'''
+run = '''{{ bun_publish_command | default('bun install --frozen-lockfile && bun publish', true) }}'''
 {%- endif %}

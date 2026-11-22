@@ -5,8 +5,8 @@ docker_build_command:
   default: ""
   when: "{{ customize_tools and 'docker' in tools }}"
 
-docker_deploy_command:
+docker_publish_command:
   type: str
-  help: Command of docker:deploy (empty for brigade's)
+  help: Command of docker:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'docker' in tools }}"

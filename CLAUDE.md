@@ -75,10 +75,17 @@ mise fragment with all its tasks, and stages follow from the tools.
   string `{{ <tool>_<action>_command | default('<command>', true) }}` (chain
   steps with `&&`).
 - Pipeline stages are mise tasks in `.brigade/stages.toml`, in order `lint`,
-  `build`, `test`, `release`, `deploy`, `operate`. CI runs `release` on pushes
-  to the default branch (`releasaurus:release`: release PR, then tag `X.Y.Z`
-  once merged, with an optional bot token secret, else the CI token, whose tag
-  starts no CI), `deploy` on `X.Y.Z` tags and manual runs, and `operate`
+  `build`, `test`, `release`, `publish`, `deploy`, `operate`. CI runs `release`
+  on pushes to the default branch (`releasaurus:release`: release PR, then tag
+  `X.Y.Z` once merged, with an optional bot token secret, else the CI token,
+  whose tag starts no CI), `publish` (artifacts to registries, once per
+  version) on `X.Y.Z` tags and manual runs, `deploy` (to an environment, as
+  often as needed, nothing published) after `publish` (by itself with the
+  `deploy_auto` answer, else when started; GitHub/Gitea: `publish.yml`'s last
+  job starts `deploy.yml` on the tag with `.brigade/scripts/ci_dispatch.py`
+  and the job token; GitLab: a job of the tag's pipeline, `when: manual`
+  without `deploy_auto`) and on manual runs (on `X.Y.Z` tags itself when
+  `publish` is disabled), and `operate`
   (`renovate:operate`) on manual runs and on the `operate_schedule` cron answer
   (GitLab: scheduled pipelines, since "Run pipeline" deploys). Tokens are
   secrets named after the tool's env var. Each runs `*:<stage>`; tools are
@@ -102,19 +109,20 @@ mise fragment with all its tasks, and stages follow from the tools.
   value and stays until changed, an empty answer takes brigade's value in the
   Jinja file. Keep Jinja out of other files that hold pins (Renovate parses
   them): conditions go in file names or in pin-free files.
-- Add a stage (build, release, deploy...) only when a tool needs it.
+- Add a stage (build, release, publish, deploy...) only when a tool needs it.
 - brigade-owned CI files only install mise and call `mise run <task>`.
   Forgejo (`ci: forgejo`) uses Gitea's files (`.forgejo/workflows/`, the same
   `.brigade/ci/gitea/actions/`), with its own Releasaurus forge and Renovate
   platform. GitHub/Gitea: each workflow checks out, then calls its stage's
   composite action `.brigade/ci/<ci>/actions/<stage>` (mise via `actions/mise`,
   `mise run <stage>`, the stage's env; secrets as inputs, since actions cannot
-  read them); `deploy` calls mise-action itself with `cache: false`, because
+  read them); `publish` and `deploy` call mise-action itself with
+  `cache: false`, because
   jactionlint does not follow a nested action's inputs; each CI platform lints
   its own files (`jactionlint:lint` with its default profile, `gitlab-ci:lint`):
   workflows pin actions by SHA with a version comment, set `permissions:`,
   `timeout-minutes` and `concurrency:`, and restore no cache where they publish
-  (`deploy`).
+  or deploy (`publish`, `deploy`).
 - Each enabled stage is one CI job on Linux, running `mise run <stage>` (or,
   when the `jobs` answer lists named jobs for the stage (`{name, run}`;
   `split_stages`, a computed question in `.copier/questions/computed.yml`), one
@@ -125,7 +133,9 @@ mise fragment with all its tasks, and stages follow from the tools.
   a last job named after the stage is its check; the shared jobs are Jinja
   snippets in `.copier/ci/`, outside `template/`), with no `needs` between
   stages: `lint`, `build`, `test` on pull/merge requests only, `release` on
-  pushes to the default branch, `deploy` on `X.Y.Z` tags and manual runs, the
+  pushes to the default branch, `publish` on `X.Y.Z` tags and manual runs,
+  `deploy` after it (the one exception to no `needs`, through a dispatch) and
+  on manual runs, the
   same on every platform. GitHub/Gitea: one workflow per stage,
   `workflows/{% if <stage>_enabled %}<stage>.yml{% endif %}`, plain YAML
   (Renovate reads its `uses:`), except `operate.yml.jinja` for its schedule.
@@ -187,15 +197,16 @@ notes in `.forges/` list what to improve. `mise run lint` checks this repo
 ruff, ty, rumdl, lychee, ls-lint, Renovate config schema). `mise run build`
 builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict
 mode, which fails on broken links; `mise run deploy` pushes it to the `gh-pages`
-branch (CI: on `X.Y.Z` tags, made with the `RELEASAURUS_GITHUB_TOKEN` secret,
-and manual runs; a `docs:` change waits for the next release or a manual run).
+branch (CI: after the publish of each `X.Y.Z` tag, made with the
+`RELEASAURUS_GITHUB_TOKEN` secret, and manual runs; a `docs:` change waits for
+the next release or a manual run).
 `mise run test` renders each `ctt.toml` variant into `.ctt/` (`ctt:test`),
 creates a real project there with the ecosystem's tool, then runs its mise
 tasks. In CI, each variant is its own job (`jobs` in `.brigade/copier/data.yml`:
 add a new variant there too); `mise run ctt:test -- -t .ctt/<variant>` runs one
 locally. Some variants are recipes, documented in `docs/recipes.md`: a whole
-project with every tool it uses, up to its deploy (`python-github`: a package
-published to a local PyPI in Docker; `go-github`: binaries built by GoReleaser
+project with every tool it uses, up to its publish or deploy (`python-github`:
+a package published to a local PyPI in Docker; `go-github`: binaries built by GoReleaser
 in snapshot mode; `python-docker-github`: a Python app shipped as an image;
 `node-github`: a TypeScript library published to a local npm registry;
 `react-github`: a Vite React app with ESLint and Vitest; `angular-github`: an

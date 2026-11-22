@@ -1,4 +1,4 @@
-// Gradle init script of gradle:deploy: gradle --init-script .brigade/configs/gradle-init.gradle
+// Gradle init script of gradle:publish: gradle --init-script .brigade/configs/gradle-init.gradle
 // brigade-owned: updated by mise run brigade:update.
 // For your own script, set gradle_config to your file (start from a copy).
 //

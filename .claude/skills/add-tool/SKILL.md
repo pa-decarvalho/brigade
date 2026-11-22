@@ -117,7 +117,7 @@ file).
 - Ask before committing, pushing or opening the PR. Branch `feat/<tool>` (or
   `feat/linters` for a batch), title `feat: add <tool> to the tool catalog`,
   body "Part of #<epic>" (the stage's epic: #138 lint, #197 test, #198
-  build, #199 release, #200 deploy, #201 operate), no AI attribution.
+  build, #199 release, #200 publish and deploy, #201 operate), no AI attribution.
 - Once merged: tick the tool in its epic
   (`gh issue view <epic> --json body -q .body > <scratchpad>/<epic>.md`, edit,
   `gh issue edit <epic> --body-file ...`) with the PR number.

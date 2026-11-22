@@ -47,7 +47,8 @@ tools:
 | `build` | the package (`uv build`) and the docs site (`zensical`) |
 | `test` | `pytest` |
 | `release` | the release PR, then the tag (`releasaurus`) |
-| `deploy` | the docs to GitHub Pages (`pages`), the package to PyPI (`uv`, with `uv_publish: true`) |
+| `publish` | the package to PyPI (`uv`, with `uv_publish: true`) |
+| `deploy` | the docs to GitHub Pages (`pages`) |
 | `operate` | dependency updates (`renovate`) |
 
 Your part: the code in `src/`, the tests in `tests/`, the docs in `docs/` with a
@@ -98,7 +99,7 @@ tools:
 | `build` | `go build ./...` (Go installed by the `go` tool) |
 | `test` | `go test ./...` |
 | `release` | the release PR, then the tag (`releasaurus`) |
-| `deploy` | the binaries and their checksums attached to the release (`goreleaser`) |
+| `publish` | the binaries and their checksums attached to the release (`goreleaser`) |
 | `operate` | dependency updates (`renovate`) |
 
 Your part: the Go code and its tests, a `.gitignore` with `dist/` and the binary
@@ -145,7 +146,7 @@ tools:
 | `build` | `docker build .` |
 | `test` | the image's content (`container-structure-test`) |
 | `release` | the release PR, then the tag (`releasaurus`) |
-| `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
+| `publish` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, the `FROM` images included (`renovate`) |
 
 Your part: the `Dockerfile`, your image's tests in
@@ -153,7 +154,7 @@ Your part: the `Dockerfile`, your image's tests in
 an `.editorconfig`, and the secrets `RENOVATE_TOKEN` and optionally
 `RELEASAURUS_GITHUB_TOKEN` (see [release](tools.md#release)). Another registry:
 `DOCKER_IMAGE`, `DOCKER_USERNAME` and `DOCKER_PASSWORD` (see
-[deploy](tools.md#deploy)).
+[publish](tools.md#publish)).
 
 ## Python app in Docker
 
@@ -196,7 +197,7 @@ tools:
 | `build` | `docker build .` |
 | `test` | `pytest`, the image's content (`container-structure-test`) |
 | `release` | the release PR (it bumps `pyproject.toml`), then the tag (`releasaurus`) |
-| `deploy` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
+| `publish` | the image, tagged `X.Y.Z` and `latest`, pushed to `ghcr.io/<owner>/<repo>` (`docker`) |
 | `operate` | dependency updates, `uv.lock` and the `FROM` image included (`renovate`) |
 
 No `uv` tool: it builds a package (`uv build`), which an app does not need; the
@@ -257,7 +258,7 @@ tools:
 | `build` | `npm ci`, then your `build` script (`tsc`; Node.js installed by the `node` tool) |
 | `test` | `npm ci`, then your `test` script (`node --test`: Node runs `.ts` files) |
 | `release` | the release PR (it bumps `package.json`), then the tag (`releasaurus`) |
-| `deploy` | the package to npm (`node`, with `npm_publish: true`) |
+| `publish` | the package to npm (`node`, with `npm_publish: true`) |
 | `operate` | dependency updates, `package-lock.json` included (`renovate`) |
 
 The scripts in `package.json`:

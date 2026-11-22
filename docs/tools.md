@@ -7,7 +7,8 @@ all its tasks, in one file: `.brigade/conf.d/<tool>-brigade.toml`, listed in
 `.miserc.toml`. Its tasks run at the project root.
 
 Tasks are named `<tool>:<action>`. Stages run in this order: `lint`, `build`,
-`test`, `release`, `deploy`, `operate`, and each runs every `<tool>:<stage>`
+`test`, `release`, `publish`, `deploy`, `operate`, and each runs every
+`<tool>:<stage>`
 task. Any other action, such as `zensical:serve`, stays out of the pipeline.
 
 ## Stages
@@ -90,7 +91,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `tflint` | `tflint:lint` | `tflint --recursive` (Terraform) |
 | `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
 | `helm` | `helm:lint` | `helm lint --strict` on each chart (a folder holding a `Chart.yaml`, outside hidden folders), after `helm dependency build` for a chart with dependencies (into its `charts/`: ignore `*.tgz` there) |
-| | `helm:deploy` | With `helm_publish: true`: the charts at the tag's version, to an OCI registry on each release: see [deploy](#deploy) |
+| | `helm:publish` | With `helm_publish: true`: the charts at the tag's version, to an OCI registry on each release: see [publish](#publish) |
 | `kustomize` | `kustomize:build` | `kustomize build` on each kustomization (a folder holding a `kustomization.yaml`, outside hidden folders; components are built by the kustomizations using them), output discarded: fails when one does not build |
 | `kubeconform` | `kubeconform:lint` | `kubeconform -strict -ignore-missing-schemas` on the Kubernetes manifests: YAML files holding `apiVersion:` and `kind:` outside kustomizations and Helm charts (there, they are patches and templates), plus each kustomization's `kustomize build` (with `kustomize`) and each chart's `helm template` (with `helm`); downloads the schemas on each run (network), so a schema change can fail it without a project change; a resource without a schema (custom resources) is skipped |
 | `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
@@ -105,28 +106,28 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `rust` | `rust:lint` | Installs Rust (rustup, then the toolchain with rustfmt and Clippy); `cargo fmt --check && cargo clippy --all-targets -- -D warnings` |
 | | `rust:build` | `cargo build` (into `target/`: ignore it) |
 | | `rust:test` | `cargo test` |
-| | `rust:deploy` | With `cargo_publish: true`: `cargo publish`, the crate to crates.io or another registry on each release: see [deploy](#deploy) |
+| | `rust:publish` | With `cargo_publish: true`: `cargo publish`, the crate to crates.io or another registry on each release: see [publish](#publish) |
 | `docker` | `docker:build` | GitHub, Gitea, none: `docker build .` (Docker from the machine or the runner) |
-| | `docker:deploy` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [deploy](#deploy) |
+| | `docker:publish` | Builds the image of the tag and pushes `X.Y.Z` and `latest` to its registry: see [publish](#publish) |
 | `node` | `node:lint` | Installs Node.js; `npm ci && npm run lint --if-present`, for linters that are project dependencies (ESLint and its plugins) |
 | | `node:build` | `npm ci && npm run build --if-present` (JavaScript or TypeScript: your `package.json` scripts; needs `package-lock.json`) |
 | | `node:test` | `npm ci && npm test --if-present` |
-| | `node:deploy` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
+| | `node:publish` | With `npm_publish: true`: `npm ci && npm publish`, the package to npm or another registry on each release: see [publish](#publish) |
 | `bun` | `bun:lint` | Installs Bun; `bun install --frozen-lockfile && bun run --if-present lint` (your `package.json` scripts; needs `bun.lock`) |
 | | `bun:build` | `bun install --frozen-lockfile && bun run --if-present build` |
 | | `bun:test` | `bun install --frozen-lockfile && bun test --pass-with-no-tests` |
-| | `bun:deploy` | With `bun_publish: true`: `bun publish`, the package to npm or another registry on each release: see [deploy](#deploy) |
+| | `bun:publish` | With `bun_publish: true`: `bun publish`, the package to npm or another registry on each release: see [publish](#publish) |
 | `deno` | `deno:lint` | Installs Deno; `deno lint` and `deno fmt --check`, without `.mise-data/`, `.mise/` and `.brigade/` (your `deno.json` settings) |
 | | `deno:test` | `deno test` (type-checks, then runs the tests) |
-| | `deno:deploy` | With `deno_publish: true`: `deno publish` at the tag's version, the package to JSR on each release: see [deploy](#deploy) |
+| | `deno:publish` | With `deno_publish: true`: `deno publish` at the tag's version, the package to JSR on each release: see [publish](#publish) |
 | `maven` | `maven:build` | Installs Java (Eclipse Temurin) and Maven; `mvn --batch-mode --no-transfer-progress package -DskipTests` (your `pom.xml`, into `target/`: ignore it) |
 | | `maven:test` | `mvn --batch-mode --no-transfer-progress verify`: the tests, and the checks your `pom.xml` binds to `verify` (Checkstyle, Spotless...) |
-| | `maven:deploy` | With `maven_publish: true`: `mvn ... deploy -DskipTests`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
+| | `maven:publish` | With `maven_publish: true`: `mvn ... deploy -DskipTests`, the artifacts to a Maven repository on each release: see [publish](#publish) ([config](#tool-configs)) |
 | `gradle` | `gradle:build` | Installs Java (Eclipse Temurin) and Gradle; `gradle --console=plain assemble` (your `settings.gradle.kts` or `build.gradle`, not `gradlew`; into `build/` and `.gradle/`: ignore them) |
 | | `gradle:test` | `gradle --console=plain check`: the tests, and the checks your build adds to `check` (Checkstyle, Spotless...) |
-| | `gradle:deploy` | With `gradle_publish: true`: `gradle ... publish`, the artifacts to a Maven repository on each release: see [deploy](#deploy) ([config](#tool-configs)) |
+| | `gradle:publish` | With `gradle_publish: true`: `gradle ... publish`, the artifacts to a Maven repository on each release: see [publish](#publish) ([config](#tool-configs)) |
 | `uv` | `uv:build` | `uv build` (into `dist/`) |
-| | `uv:deploy` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [deploy](#deploy) |
+| | `uv:publish` | With `uv_publish: true`: `uv build --clear && uv publish`, the package to PyPI or another index on each release: see [publish](#publish) |
 | `zensical` | `zensical:build` | `zensical build --strict` (needs your `zensical.toml` and `docs/`: `zensical new .`) |
 | | `zensical:serve` | `zensical serve --open`, to preview the site |
 | `hugo` | `hugo:build` | Installs Hugo (standard edition); `hugo build --minify` into `public/`, or `pages_dir` with `pages` (needs your `hugo.toml`: `hugo new site .`; ignore the output and `.hugo_build.lock`) |
@@ -140,7 +141,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `ctt` | `ctt:test` | `ctt`, for a Copier template (needs your `ctt.toml`; render the variants into `.ctt/`, which `yamllint` skips) |
 | `codeceptjs` | `codeceptjs:test` | `npm ci`, Chromium (`npx playwright install --with-deps chromium`), then `npx codeceptjs run` with your `codecept.conf.*`; none: nothing runs. Needs `node`: see [codeceptjs](#codeceptjs) |
 | `releasaurus` | `releasaurus:release` | `releasaurus release && releasaurus release-pr --tag-prefix ''`: see [release](#release) |
-| `goreleaser` | `goreleaser:deploy` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [deploy](#deploy) |
+| `goreleaser` | `goreleaser:publish` | GitHub, GitLab: `goreleaser release --clean`, the Go binaries attached to the release ([config](#tool-configs)): see [publish](#publish) |
 | `pages` | `pages:deploy` | Runs the `*:build` tasks, then publishes the `pages_dir` folder (`site/` by default). GitHub: `ghp-import -n -p -f site`. GitLab: the job publishes it |
 | `ansible` | `ansible:deploy`, `ansible:operate` | `ansible-playbook -i inventory playbooks/deploy.yml` (`operate.yml`): see [Ansible](#ansible) |
 | `act` | `act:test` | GitHub, Gitea, Forgejo: `act pull_request` replays the pull request workflows in Docker: see below |
@@ -351,7 +352,7 @@ Two workflows (`releasaurus_workflow`, see
   pull request (`releasaurus release-direct`): the version and `CHANGELOG.md`
   are committed to the default branch, then tagged. With the CI's own token, the
   tag starts no CI: on GitHub and Gitea, set the bot token below so that
-  `deploy` runs. When the default branch is protected, that token must be
+  `publish` runs. When the default branch is protected, that token must be
   allowed to push to it (the CI's own token cannot be):
   - GitHub: add the token's owner to the bypass list (ruleset: "Repository
     admin"; classic branch protection: leave "Do not allow bypassing the above
@@ -364,7 +365,7 @@ Two workflows (`releasaurus_workflow`, see
 
 For your own settings (prereleases, a monorepo, changelog options), set
 `releasaurus_config` to your file, with `tag_prefix = ""` in its `[[package]]`
-to keep the tags brigade's CI deploys. See
+to keep the tags brigade's CI publishes. See
 [Releasaurus configuration](https://releasaurus.rgon.io/configuration.html).
 
 On GitHub and Gitea, it works with the CI's own token, with three manual
@@ -383,7 +384,7 @@ steps:
 - The release pull request starts no checks (GitHub shows failed runs with no
   job): re-run them, or merge with a bypass of the required checks.
 
-- The tag starts no CI: run `deploy` by hand after each release.
+- The tag starts no CI: run `publish` by hand after each release.
 
 A bot token avoids all three: the pull request and the tag start the CI as
 usual. GitLab needs the token: until it is set, the first pipeline on the
@@ -407,20 +408,138 @@ merge commit can leave a branch's older commits out of the next release.
 | Gitea | `RELEASAURUS_GITEA_TOKEN` | repository, issue and misc: read and write |
 | Forgejo | `RELEASAURUS_FORGEJO_TOKEN` | repository, issue and misc: read and write |
 
+## publish
+
+CI runs this stage on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones Releasaurus
+pushes, and on a manual run ("Run workflow" on the Publish workflow; GitLab:
+retry the job).
+
+It publishes the tagged version as an artifact to a registry (`uv`, `node`,
+`bun`, `deno`, `rust`, `maven`, `gradle`, `docker`, `goreleaser`, `helm`): a
+package, an image or a chart, installed by whoever needs it. Publishing belongs
+here, not in `release`: `release` runs on every push to the default branch and
+only decides the version, while `publish` runs once per tag and is the only job
+that gets the registry tokens. A version is published once: registries refuse it
+again, so running `publish` again on the same tag fails or does nothing new (see
+each tool below). To install a release again, run [deploy](#deploy), which
+publishes nothing.
+
+`goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches
+the archives and their checksums to the release Releasaurus made for the tag (it
+needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a
+`GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed
+GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your
+`.gitignore`. A manual run needs a tag at the checked out commit.
+
+`node:publish` (the `node` tool, with the `npm_publish: true` answer) publishes
+the package with `npm publish`, once per tag: the version is the one in
+`package.json`, which Releasaurus bumps in the release PR. Build it in a
+`prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret
+(CI/CD variable on GitLab), and give npm the line that reads it in your
+`.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its
+host, and `publishConfig.registry` in `package.json`). A scoped public package
+needs `"publishConfig": {"access": "public"}`. A version already published
+fails: a manual run on the same tag does nothing new.
+
+`bun:publish` (the `bun` tool, with the `bun_publish: true` answer) publishes
+the package with `bun publish`, as `node:publish` does: the version is the one in
+`package.json`, which Releasaurus bumps, the `NPM_TOKEN` secret is read by your
+`.npmrc`, and a version already published fails.
+
+`deno:publish` (the `deno` tool, with the `deno_publish: true` answer) publishes
+the package to JSR with `deno publish --set-version X.Y.Z`: the version is the
+tag's (Releasaurus does not update `deno.json`). In CI, add a `JSR_TOKEN`
+secret (CI/CD variable on GitLab), a token of your JSR account. A version
+already published fails.
+
+`rust:publish` (the `rust` tool, with the `cargo_publish: true` answer) publishes
+the crate with `cargo publish`, once per tag: the version is the one in
+`Cargo.toml`, which Releasaurus bumps in the release PR. In CI, add a
+`CARGO_REGISTRY_TOKEN` secret (CI/CD variable on GitLab): a crates.io API token
+with the `publish-update` scope (and `publish-new` for the first release).
+Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in
+`.cargo/config.toml`; cargo reads its token from
+`CARGO_REGISTRIES_<NAME>_TOKEN`, which your `mise.toml` can take from the same
+secret (`[env]`:
+`CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version
+already published fails: a manual run on the same tag does nothing new.
+
+`maven:publish` (the `maven` tool, with the `maven_publish: true` answer)
+publishes the artifacts with `mvn deploy`, once per tag: the version is the one
+in `pom.xml`, which Releasaurus bumps in the release PR (a `-SNAPSHOT` version
+goes to a snapshot repository). The repository is `MAVEN_REPOSITORY_URL` (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
+(`[env]`) or as a CI variable; else `distributionManagement` in your `pom.xml`,
+whose repository needs the id `brigade` for the login. In CI, add
+`MAVEN_USERNAME` and `MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), read
+by `.brigade/configs/maven-settings.xml` (Maven's global settings: your
+`~/.m2/settings.xml` still applies). A release repository refuses a version
+already published: a manual run on the same tag fails.
+
+`gradle:publish` (the `gradle` tool, with the `gradle_publish: true` answer)
+runs `gradle publish`, once per tag: your build applies the `maven-publish`
+plugin with its publications, and its `version` is the one Releasaurus bumps in
+the release PR. With `MAVEN_REPOSITORY_URL` set (your `mise.toml` `[env]` or a
+CI variable), `.brigade/configs/gradle-init.gradle` (an init script) adds it as
+a repository named `brigade`, logged in with the `MAVEN_USERNAME` and
+`MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), over plain HTTP for an
+`http://` URL; else only the repositories of your build. A release repository
+refuses a version already published: a manual run on the same tag fails.
+
+`docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
+(`.brigade/scripts/docker_publish.py`). The image is `DOCKER_IMAGE`
+(`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the
+repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token
+(the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another
+registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It
+needs Docker in CI, which brigade's GitLab image does not have: `docker` and
+`container-structure-test` are not offered on GitLab yet. A manual run needs a
+tag at the checked out commit.
+
+`helm:publish` (the `helm` tool, with the `helm_publish: true` answer) packages
+each chart at the tag's version (`helm package --version X.Y.Z`) and pushes it
+(`.brigade/scripts/helm_charts.py`). The registry is `HELM_REGISTRY`
+(`oci://host/path`, `http://host/path` for a plain HTTP one; in your `mise.toml`
+`[env]` or a CI variable), else the repository's: `oci://ghcr.io/<owner>/<repo>`
+on GitHub, pushed with the workflow token, `<server>/<owner>/<repo>` on Gitea.
+Another registry, or Gitea: add `HELM_REGISTRY_USERNAME` and
+`HELM_REGISTRY_PASSWORD` secrets (CI/CD variables on GitLab, where
+`HELM_REGISTRY` is needed). A manual run needs a tag at the checked out commit.
+
+`uv:publish` (the `uv` tool, with the `uv_publish: true` answer) publishes the
+Python package built by uv (`uv build --clear`, then `uv publish` without the
+empty `UV_PUBLISH_*` variables, which GitHub and Gitea pass for a secret that is
+not set), once per tag: the
+version is the one in `pyproject.toml`, which Releasaurus bumps in the release
+PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus,
+Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
+(`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD
+variable on GitLab): the index's token (on PyPI, an API token scoped to the
+project once it exists); or, for an index with a user and a password (Nexus...),
+`UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already
+published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL
+(`https://pypi.org/simple/`), which skips the files already there.
+
 ## deploy
 
-CI runs this stage on its own, on tags `X.Y.Z` (or `vX.Y.Z`), such as the ones
-Releasaurus pushes, and on a manual run, to deploy without a release: for
-example to fix a typo in the documentation.
+It deploys the tagged version to an environment (`pages`, `ansible`). It
+publishes nothing, so it can run as often as needed.
 
-It ships the tagged version, in one of two ways: it **publishes** an artifact to
-a registry (`uv`, `node`, `bun`, `deno`, `rust`, `maven`, `gradle`, `docker`,
-`goreleaser`, `helm`: a package, an image or a chart, installed by whoever needs
-it), or it **deploys** to an environment (`ansible`, `pages`). Publishing belongs
-here, not in `release`: `release` runs on every push to the default branch and
-only decides the version, while `deploy` runs once per tag, can be run again on
-the same tag when a push failed, and is the only job that gets the registry
-tokens. `helm:deploy` publishes the chart: it installs nothing on a cluster.
+CI runs it:
+
+- **After `publish`**, on the same tag: by itself with `deploy_auto: true` (the
+  default), or only when you start it with `deploy_auto: false`. GitHub, Gitea,
+  Forgejo: the Publish workflow's last job starts the Deploy workflow on the tag
+  (`.brigade/scripts/ci_dispatch.py`, with the workflow token, which may start a
+  workflow this way). GitLab: the `deploy` job of the tag's pipeline, run by
+  itself or by hand ("Play").
+- **By hand**: "Run workflow" on the Deploy workflow, on a tag (that release
+  again) or a branch (e.g. a typo in the documentation); GitLab: "Run pipeline"
+  (deploy only), or retry the job in the tag's pipeline.
+
+Without the publish stage (`publish_enabled: false`), it runs on `X.Y.Z` tags
+itself. Several environments (dev, qa, prod) are not supported yet
+([#342](https://github.com/pa-decarvalho/brigade/issues/342)).
 
 `pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site
 to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:
@@ -443,102 +562,6 @@ namespace has a dot). Set it in your build: Vite's `base`, Angular's
 the same base, so they pass either way: check the deployed site once.
 
 Add `site/` and `.cache/` to your `.gitignore`.
-
-`goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches
-the archives and their checksums to the release Releasaurus made for the tag (it
-needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a
-`GITLAB_TOKEN` CI/CD variable (a token with the `api` scope); a self-managed
-GitLab also needs its URLs in the config (`gitlab_urls`). Add `dist/` to your
-`.gitignore`. A manual run needs a tag at the checked out commit.
-
-`node:deploy` (the `node` tool, with the `npm_publish: true` answer) publishes
-the package with `npm publish`, once per tag: the version is the one in
-`package.json`, which Releasaurus bumps in the release PR. Build it in a
-`prepublishOnly` script (`npm run build`). In CI, add an `NPM_TOKEN` secret
-(CI/CD variable on GitLab), and give npm the line that reads it in your
-`.npmrc`: `//registry.npmjs.org/:_authToken=${NPM_TOKEN}` (another registry: its
-host, and `publishConfig.registry` in `package.json`). A scoped public package
-needs `"publishConfig": {"access": "public"}`. A version already published
-fails: a manual run on the same tag does nothing new.
-
-`bun:deploy` (the `bun` tool, with the `bun_publish: true` answer) publishes
-the package with `bun publish`, as `node:deploy` does: the version is the one in
-`package.json`, which Releasaurus bumps, the `NPM_TOKEN` secret is read by your
-`.npmrc`, and a version already published fails.
-
-`deno:deploy` (the `deno` tool, with the `deno_publish: true` answer) publishes
-the package to JSR with `deno publish --set-version X.Y.Z`: the version is the
-tag's (Releasaurus does not update `deno.json`). In CI, add a `JSR_TOKEN`
-secret (CI/CD variable on GitLab), a token of your JSR account. A version
-already published fails.
-
-`rust:deploy` (the `rust` tool, with the `cargo_publish: true` answer) publishes
-the crate with `cargo publish`, once per tag: the version is the one in
-`Cargo.toml`, which Releasaurus bumps in the release PR. In CI, add a
-`CARGO_REGISTRY_TOKEN` secret (CI/CD variable on GitLab): a crates.io API token
-with the `publish-update` scope (and `publish-new` for the first release).
-Another registry: `publish = ["<name>"]` in `Cargo.toml` and the registry in
-`.cargo/config.toml`; cargo reads its token from
-`CARGO_REGISTRIES_<NAME>_TOKEN`, which your `mise.toml` can take from the same
-secret (`[env]`:
-`CARGO_REGISTRIES_<NAME>_TOKEN = "{{env.CARGO_REGISTRY_TOKEN}}"`). A version
-already published fails: a manual run on the same tag does nothing new.
-
-`maven:deploy` (the `maven` tool, with the `maven_publish: true` answer) deploys
-the artifacts with `mvn deploy`, once per tag: the version is the one in
-`pom.xml`, which Releasaurus bumps in the release PR (a `-SNAPSHOT` version goes
-to a snapshot repository). The repository is `MAVEN_REPOSITORY_URL` (Nexus,
-Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
-(`[env]`) or as a CI variable; else `distributionManagement` in your `pom.xml`,
-whose repository needs the id `brigade` for the login. In CI, add
-`MAVEN_USERNAME` and `MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), read
-by `.brigade/configs/maven-settings.xml` (Maven's global settings: your
-`~/.m2/settings.xml` still applies). A release repository refuses a version
-already deployed: a manual run on the same tag fails.
-
-`gradle:deploy` (the `gradle` tool, with the `gradle_publish: true` answer)
-runs `gradle publish`, once per tag: your build applies the `maven-publish`
-plugin with its publications, and its `version` is the one Releasaurus bumps in
-the release PR. With `MAVEN_REPOSITORY_URL` set (your `mise.toml` `[env]` or a
-CI variable), `.brigade/configs/gradle-init.gradle` (an init script) adds it as
-a repository named `brigade`, logged in with the `MAVEN_USERNAME` and
-`MAVEN_PASSWORD` secrets (CI/CD variables on GitLab), over plain HTTP for an
-`http://` URL; else only the repositories of your build. A release repository
-refuses a version already published: a manual run on the same tag fails.
-
-`docker` builds the image of the tag and pushes it as `X.Y.Z` and `latest`
-(`.brigade/scripts/docker_deploy.py`). The image is `DOCKER_IMAGE`
-(`registry/owner/name`, in your `mise.toml` `[env]` or a CI variable), else the
-repository's: `ghcr.io/<owner>/<repo>` on GitHub, pushed with the workflow token
-(the job has `packages: write`), `<server>/<owner>/<repo>` on Gitea. Another
-registry, or Gitea: add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets. It
-needs Docker in CI, which brigade's GitLab image does not have: `docker` and
-`container-structure-test` are not offered on GitLab yet. A manual run needs a
-tag at the checked out commit.
-
-`helm:deploy` (the `helm` tool, with the `helm_publish: true` answer) packages
-each chart at the tag's version (`helm package --version X.Y.Z`) and pushes it
-(`.brigade/scripts/helm_charts.py`). The registry is `HELM_REGISTRY`
-(`oci://host/path`, `http://host/path` for a plain HTTP one; in your `mise.toml`
-`[env]` or a CI variable), else the repository's: `oci://ghcr.io/<owner>/<repo>`
-on GitHub, pushed with the workflow token, `<server>/<owner>/<repo>` on Gitea.
-Another registry, or Gitea: add `HELM_REGISTRY_USERNAME` and
-`HELM_REGISTRY_PASSWORD` secrets (CI/CD variables on GitLab, where
-`HELM_REGISTRY` is needed). A manual run needs a tag at the checked out commit.
-
-`uv:deploy` (the `uv` tool, with the `uv_publish: true` answer) publishes the
-Python package built by uv (`uv build --clear`, then `uv publish` without the
-empty `UV_PUBLISH_*` variables, which GitHub and Gitea pass for a secret that is
-not set), once per tag: the
-version is the one in `pyproject.toml`, which Releasaurus bumps in the release
-PR. The index is PyPI, or the upload URL in `UV_PUBLISH_URL` (Nexus,
-Artifactory, GitLab or Gitea package registry...): set it in your `mise.toml`
-(`[env]`) or as a CI variable. In CI, add a `UV_PUBLISH_TOKEN` secret (CI/CD
-variable on GitLab): the index's token (on PyPI, an API token scoped to the
-project once it exists); or, for an index with a user and a password (Nexus...),
-`UV_PUBLISH_USERNAME` and `UV_PUBLISH_PASSWORD`. A manual run on a tag already
-published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL
-(`https://pypi.org/simple/`), which skips the files already there.
 
 ## operate
 
@@ -611,7 +634,7 @@ keep the PR open.
 ## Ansible
 
 `ansible` installs `ansible-core` and runs your playbooks on your inventory:
-`playbooks/deploy.yml` in the deploy stage (on `X.Y.Z` tags and manual runs),
+`playbooks/deploy.yml` in the deploy stage (after `publish`, and manual runs),
 `playbooks/operate.yml` in the operate stage (manual runs and
 `operate_schedule`), both with `-i inventory`. Other paths or options: change
 the commands (`ansible_deploy_command`, `ansible_operate_command`), or add

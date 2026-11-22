@@ -20,11 +20,11 @@ description = "Build the Java project and run its tests and checks (mvn verify)"
 run = '''{{ maven_test_command | default('mvn --batch-mode --no-transfer-progress verify', true) }}'''
 {%- if maven_publish %}
 
-[tasks."maven:deploy"]
+[tasks."maven:publish"]
 description = "Deploy the artifacts to a Maven repository"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The repository: MAVEN_REPOSITORY_URL, else distributionManagement in pom.xml; its login:
 # the MAVEN_USERNAME and MAVEN_PASSWORD secrets, read by the settings file (--global-settings:
 # yours in ~/.m2/settings.xml still applies).
-run = '''{{ maven_deploy_command | default('mvn --batch-mode --no-transfer-progress --global-settings ' ~ config ~ ' deploy -DskipTests', true) }}'''
+run = '''{{ maven_publish_command | default('mvn --batch-mode --no-transfer-progress --global-settings ' ~ config ~ ' deploy -DskipTests', true) }}'''
 {%- endif %}

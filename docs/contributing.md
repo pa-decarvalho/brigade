@@ -108,11 +108,13 @@ PR), each in a temporary folder:
 4. `brigade:update` to this checkout's `HEAD`, in a pull request whose CI
    passes; merged;
 5. the release PR, then the `X.Y.Z` tag (not on `github`: GitHub's API);
-6. the deploy, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm,
-   Maven and image repositories, each deploy logged in as a deploy user.
+6. the publish, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm,
+   Maven and image repositories, each logged in as Nexus' deploy user; then the
+   deploy that publish starts on the tag (Gitea, Forgejo; GitLab: the tag's
+   pipeline).
 
-The release and the deploy run with the checkout's files: a fix to them is
-tested before it is released.
+The release, the publish and the deploy run with the checkout's files: a fix to
+them is tested before it is released.
 
 The checkout is the projects' `_src_path`, mounted at the same path in the
 jobs, uncommitted changes included. GitLab takes a few minutes to start; with

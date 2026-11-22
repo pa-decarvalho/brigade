@@ -20,10 +20,10 @@ description = "Run the Rust tests"
 run = '''{{ rust_test_command | default('cargo test', true) }}'''
 {%- if cargo_publish %}
 
-[tasks."rust:deploy"]
+[tasks."rust:publish"]
 description = "Publish the crate to its registry"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The registry: crates.io, or publish = [...] in Cargo.toml; its token: the
 # CARGO_REGISTRY_TOKEN secret, which cargo reads.
-run = '''{{ rust_deploy_command | default('cargo publish', true) }}'''
+run = '''{{ rust_publish_command | default('cargo publish', true) }}'''
 {%- endif %}

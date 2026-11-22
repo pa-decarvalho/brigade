@@ -186,7 +186,8 @@ class Gitea(Forge):
                 "name": (r.get("path") or r["workflow_id"])
                 .split("@")[0]
                 .rsplit("/")[-1],
-                "event": r["event"],
+                # Forgejo leaves a dispatched run's event empty.
+                "event": r["event"] or "workflow_dispatch",
                 "status": run_state(r),
             }
             for r in found.get("workflow_runs") or []

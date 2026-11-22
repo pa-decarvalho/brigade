@@ -1,7 +1,7 @@
 ---
 uv_publish:
   type: bool
-  help: Publish the package to its index on each release (uv:deploy)?
+  help: Publish the package to its index on each release (uv:publish)?
   default: false
   when: "{{ 'uv' in tools }}"
 
@@ -11,8 +11,8 @@ uv_build_command:
   default: ""
   when: "{{ customize_tools and 'uv' in tools }}"
 
-uv_deploy_command:
+uv_publish_command:
   type: str
-  help: Command of uv:deploy (empty for brigade's)
+  help: Command of uv:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'uv' in tools and uv_publish }}"

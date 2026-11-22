@@ -2,8 +2,12 @@
 deploy:
   stage: deploy
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/
-    # "Run pipeline": deploy without a release, e.g. a typo in the docs.
+    # A tag: after publish, {% if publish_enabled and not deploy_auto %}when played (deploy_auto: false){% else %}by itself{% endif %}; re-deploy: retry or play the job.
+    - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/ && $CI_PIPELINE_SOURCE == "push"
+{%- if publish_enabled and not deploy_auto %}
+      when: manual
+{%- endif %}
+    # "Run pipeline": deploy only, e.g. a typo in the docs (nothing published).
     - if: $CI_PIPELINE_SOURCE == "web"
 {%- if 'deploy' in split_stages and 'pages' not in tools %}
   # One job per command of the stage (the jobs answer: the deploy-<name> tasks).

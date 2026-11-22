@@ -1,4 +1,4 @@
-"""docker:deploy: build the image of the tagged commit and push it to its registry.
+"""docker:publish: build the image of the tagged commit and push it to its registry.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 The image is DOCKER_IMAGE (registry/owner/name), else the CI's repository: ghcr.io on
@@ -22,14 +22,14 @@ def main() -> int:
     )
     if tag.returncode:
         print(
-            "docker:deploy: no tag on this commit (deploy runs on X.Y.Z tags)",
+            "docker:publish: no tag on this commit (deploy runs on X.Y.Z tags)",
             file=sys.stderr,
         )
         return 1
     version = tag.stdout.strip()
     image = os.environ.get("DOCKER_IMAGE") or ci_image()
     if not image:
-        print("docker:deploy: set DOCKER_IMAGE (registry/owner/name)", file=sys.stderr)
+        print("docker:publish: set DOCKER_IMAGE (registry/owner/name)", file=sys.stderr)
         return 1
     registry = image.split("/")[0]
     user = os.environ.get("DOCKER_USERNAME", "")
