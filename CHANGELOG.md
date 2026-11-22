@@ -1,3 +1,13 @@
+# [0.39.0](https://github.com/pa-decarvalho/brigade/compare/0.38.0...0.39.0) - 2026-11-22
+
+### 🚀 Features
+
+- a publish stage before deploy, with an automatic or manual deploy (#345) [_(43497589)_](https://github.com/pa-decarvalho/brigade/commit/43497589dd3217aeb5f1b263a036551fa785598d)
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#343) [_(63903411)_](https://github.com/pa-decarvalho/brigade/commit/639034110f3e06d9bf6f503ed31532de8578ec94)
+
 # [0.38.0](https://github.com/pa-decarvalho/brigade/compare/0.37.0...0.38.0) - 2026-11-22
 
 ### 🚀 Features
