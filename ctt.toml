@@ -361,10 +361,8 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
-    # deno:deploy on a tag, without uploading (no local JSR): the package checked at the tag's version.
-    ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "tag", "0.2.0"],
-    ["git", "--no-pager", "diff", ".brigade/mise.lock"],
-    ["mise", "run", "deno:deploy", "--", "--dry-run"],
+    # No deno:deploy -- --dry-run until #339: in CI, mise rewrites .brigade/mise.lock and deno
+    # publish refuses the dirty tree.
 ]
 
 [output.".ctt/hugo-github"]
