@@ -36,8 +36,8 @@ API). No Renovate: its update is what `brigade:update` does.
 - Per forge (`gitea`, `github`, `forgejo`, `gitlab`; `tests/e2e/up.py`):
   `<forge>:up` (start, admin token, runner; `.forges/<server>.json`),
   `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
-  `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`, `ansible`; all by
-  default), `<forge>:down`
+  `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`, `ansible`,
+  `app`; all by default), `<forge>:down`
   (remove it and its data; images stay),
   `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
   needed, `down` at the end. Every forge: `forges:test [type...]` (each in

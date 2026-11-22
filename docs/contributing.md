@@ -87,7 +87,7 @@ Gitea, whose runner runs GitHub Actions workflows). Each forge has four tasks:
   and prints its URL and login (an up forge is reused);
 - `mise run <forge>:run [type...]`: the tests on it, all or the given ones
   (`python`, `python-direct`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`,
-  `helm`, `ansible`);
+  `helm`, `ansible`, `app`);
 - `mise run <forge>:down`: removes it and its data (its containers, network
   and volumes); images stay for the next run;
 - `mise run <forge>:test [type...]`: `up`, `run`, then `down`, even when the
@@ -103,7 +103,7 @@ volumes, named ones included; images are pulled again when needed).
 To work on a failure: `up` once, `run` as often as needed, then `down`. pytest
 runs on this machine, one test per project type of `tests/e2e/projects.py`
 (`python`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`,
-`ansible`), the Python
+`ansible`, `app`), the Python
 one with both Releasaurus workflows (`python`: a release PR; `python-direct`: no
 PR), each in a temporary folder:
 
@@ -124,7 +124,9 @@ PR), each in a temporary folder:
 7. where the type deploys, per environment: `dev` once published, `prod`
    deployed by hand. `helm`: its charts on a k3s cluster next to the forge
    (`tests/fixtures/compose.yml`, profile `cluster`), each checked running in
-   its namespace. `ansible` (not on GitLab: #139): a playbook over SSH to a
+   its namespace; `app` (not on GitLab: #208) too, its image published to
+   Nexus and pulled by the cluster, checked to be the release's. `ansible` (not
+   on GitLab: #139): a playbook over SSH to a
    server (profile `ssh`), with a vault-encrypted variable, each checked by the
    file it writes (environment, commit, the vault's value).
 

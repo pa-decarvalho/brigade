@@ -12,8 +12,8 @@ CI's repository: ghcr.io on GitHub, the server itself on Gitea. Login:
 HELM_REGISTRY_USERNAME and HELM_REGISTRY_PASSWORD, else the workflow token for ghcr.io;
 none for a registry that needs none.
 deploy installs or upgrades each chart from the checkout (the tag CI starts it on), as
-a release named after its folder: helm upgrade --install --rollback-on-failure (rolled
-back when it does not become ready). The cluster: KUBECONFIG_DATA (a kubeconfig's
+a release named after the chart (Chart.yaml's name): helm upgrade --install
+--rollback-on-failure (rolled back when it does not become ready). The cluster: KUBECONFIG_DATA (a kubeconfig's
 content, the CI secret), else kubectl's usual config. The namespace: HELM_NAMESPACE,
 else the environment (BRIGADE_ENVIRONMENT), else the kubeconfig's. With an environment,
 the chart's values-<environment>.yaml is added when it exists.
@@ -21,6 +21,7 @@ the chart's values-<environment>.yaml is added when it exists.
 
 import glob
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -35,7 +36,10 @@ def main() -> int:
     charts = [
         path.parent
         for path in sorted(Path(p) for p in glob.glob("**/Chart.yaml", recursive=True))
-        if not (path.parent.parent.name == "charts" and (path.parents[2] / "Chart.yaml").exists())
+        if not (
+            path.parent.parent.name == "charts"
+            and (path.parents[2] / "Chart.yaml").exists()
+        )
     ]
     if not charts:
         return 0
@@ -47,6 +51,17 @@ def main() -> int:
     if sys.argv[1] == "deploy":
         return deploy(charts)
     return publish(charts)
+
+
+def name(chart: Path) -> str:
+    """The chart's name (Chart.yaml's name: a chart at the project root has no
+    folder name), else its folder's."""
+    found = re.search(
+        r"^name:\s*['\"]?([^'\"\s#]+)",
+        (chart / "Chart.yaml").read_text(encoding="utf-8"),
+        re.M,
+    )
+    return found.group(1) if found else chart.name
 
 
 def deploy(charts: list[Path]) -> int:
@@ -62,7 +77,7 @@ def deploy(charts: list[Path]) -> int:
         for chart in charts:
             values = chart / f"values-{environment}.yaml"
             extra = ["-f", str(values)] if environment and values.exists() else []
-            command = ["helm", "upgrade", chart.name, str(chart), "--install"]
+            command = ["helm", "upgrade", name(chart), str(chart), "--install"]
             command += ["--rollback-on-failure", "--timeout", "5m", *options, *extra]
             print("$", " ".join(command), flush=True)
             if code := subprocess.call(command):
@@ -78,7 +93,10 @@ def publish(charts: list[Path]) -> int:
         text=True,
     )
     if tag.returncode:
-        print("helm:publish: no tag on this commit (publish runs on X.Y.Z tags)", file=sys.stderr)
+        print(
+            "helm:publish: no tag on this commit (publish runs on X.Y.Z tags)",
+            file=sys.stderr,
+        )
         return 1
     version = tag.stdout.strip()
     registry = os.environ.get("HELM_REGISTRY") or ci_registry()
@@ -92,16 +110,30 @@ def publish(charts: list[Path]) -> int:
     password = os.environ.get("HELM_REGISTRY_PASSWORD", "")
     host = path.split("/")[0]
     if not password and host == "ghcr.io":
-        user, password = os.environ.get("GITHUB_ACTOR", ""), os.environ.get("GITHUB_TOKEN", "")
+        user, password = (
+            os.environ.get("GITHUB_ACTOR", ""),
+            os.environ.get("GITHUB_TOKEN", ""),
+        )
     if password:
-        login = ["helm", "registry", "login", host, "-u", user, "--password-stdin", *options]
+        login = [
+            "helm",
+            "registry",
+            "login",
+            host,
+            "-u",
+            user,
+            "--password-stdin",
+            *options,
+        ]
         subprocess.run(login, input=password, text=True, check=True)
     with tempfile.TemporaryDirectory() as out:
         for chart in charts:
             package = ["helm", "package", str(chart), "--version", version, "-d", out]
             subprocess.run(package, check=True)
         for archive in sorted(Path(out).glob("*.tgz")):
-            subprocess.run(["helm", "push", str(archive), f"oci://{path}", *options], check=True)
+            subprocess.run(
+                ["helm", "push", str(archive), f"oci://{path}", *options], check=True
+            )
     return 0
 
 

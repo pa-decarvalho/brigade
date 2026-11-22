@@ -305,6 +305,11 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
                 if project.target == "cluster":  # running in its namespace
                     rollout = ("rollout", "status", "deployment/demo", "--timeout=180s")
                     up.kubectl(forge.server, "--namespace", name, *rollout)
+                    if project.image:  # the image publish pushed
+                        jsonpath = "{.spec.template.spec.containers[0].image}"
+                        get = ("get", "deployment/demo", "-o", f"jsonpath={jsonpath}")
+                        found = up.kubectl(forge.server, "--namespace", name, *get)
+                        assert found == project.image.format(tag=tag), found
                 else:  # the playbook's file: environment, commit, vault secret
                     found = up.ssh_target(forge.server, "cat", f"/srv/{name}/version")
                     assert found == f"{name} {tag_sha} from the vault\n", found

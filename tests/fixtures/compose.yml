@@ -7,6 +7,15 @@ networks:
   default:
     name: brigade-forges
 
+configs:
+  # k3s pulls the images publish pushed (localhost:5099/..., as the host's
+  # Docker daemon names them) from Nexus, in plain HTTP.
+  k3s-registries:
+    content: |
+      mirrors:
+        "localhost:5099":
+          endpoint: ["http://nexus:5000"]
+
 services:
   # Nexus, as companies run it: Python (uv:deploy), npm (node:deploy) and image
   # (docker:deploy) repositories, each deploy logged in as a deploy user,
@@ -42,6 +51,9 @@ services:
       - --disable=servicelb
     privileged: true
     tmpfs: [/run, /var/run]
+    configs:
+      - source: k3s-registries
+        target: /etc/rancher/k3s/registries.yaml
     healthcheck:
       test: [CMD, kubectl, get, --raw, /readyz]
       interval: 3s
