@@ -11,7 +11,7 @@ variables:
     /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 default:
-  image: jdxcode/mise:2026.11.10-debian
+  image: jdxcode/mise:2026.11.12-debian
   cache:
     key: mise
     paths:

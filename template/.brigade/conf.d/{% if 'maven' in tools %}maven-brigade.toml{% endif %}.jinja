@@ -4,7 +4,7 @@
 # renovate: datasource=java-version depName=java-jdk
 java = "temurin-{{ maven_java_version | default('25.0.5+8', true) }}"
 # renovate: datasource=maven depName=org.apache.maven:apache-maven
-maven = "{{ maven_version | default('3.10.1', true) }}"
+maven = "{{ maven_version | default('3.10.2', true) }}"
 
 # Maven runs the project's pom.xml; it downloads its dependencies to ~/.m2/repository
 # (not cached in CI). --batch-mode and --no-transfer-progress: plain logs, no download lines.

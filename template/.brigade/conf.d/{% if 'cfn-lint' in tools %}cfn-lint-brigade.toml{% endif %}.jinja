@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=cfn-lint
-"pipx:cfn-lint" = { version = "{{ cfn_lint_version | default('1.60.1', true) }}", python = "3.14" }
+"pipx:cfn-lint" = { version = "{{ cfn_lint_version | default('1.61.0', true) }}", python = "3.14" }
 
 [tasks."cfn-lint:lint"]
 description = "Check CloudFormation templates with cfn-lint"
