@@ -27,7 +27,8 @@ inputs:
 runs:
   using: composite
   steps:
-    # A run started by hand may name an environment the project does not have.
+    # A run started by hand may name an environment the project does not have
+    # (none: nothing to check; sys.exit('') would fail).
     - shell: bash
       env:
         ENVIRONMENT: ${{ inputs.environment }}
@@ -35,7 +36,8 @@ runs:
       run: >-
         python3 -c "import json, os, sys; e = os.environ['ENVIRONMENT'];
         names = json.loads(os.environ['ENVIRONMENTS']);
-        sys.exit(e and e not in names and f'unknown environment {e}: {names}')"
+        sys.exit(f'unknown environment {e}: {names}' if e and e not in names
+        else 0)"
     - uses: ./.brigade/ci/gitea/actions/mise # zizmor: ignore[self-repository]
     - shell: bash
       env:
