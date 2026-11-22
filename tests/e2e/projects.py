@@ -28,7 +28,24 @@ class Project:
     # Where its deploy goes, checked per environment of its environments answer:
     # "cluster" (k3s, up.reset_cluster), "ssh" (a server, up.reset_ssh_target).
     target: str = ""
+    # The image its cluster deploy must run ("{tag}": the release's), if any.
+    image: str = ""
 
+
+# A web server on port 80, as helm create's chart probes it.
+APP_DOCKERFILE = 'FROM python:3.14-alpine\nCMD ["python", "-m", "http.server", "80"]\n'
+
+# helm create's chart, made the app's: its image, tagged with the chart's
+# version (the release) rather than appVersion.
+APP_CHART = (
+    "import pathlib\n"
+    "values = pathlib.Path('values.yaml')\n"
+    "values.write_text(values.read_text().replace('repository: nginx',"
+    " 'repository: localhost:5099/demo'))\n"
+    "deployment = pathlib.Path('templates/deployment.yaml')\n"
+    "deployment.write_text(deployment.read_text().replace('.Chart.AppVersion',"
+    " '.Chart.Version'))\n"
+)
 
 # The inventory: the SSH server (up.reset_ssh_target), as root.
 ANSIBLE_INVENTORY = (
@@ -389,6 +406,44 @@ PROJECTS = {
             "KUBECONFIG_DATA": "{kubeconfig}",
         },
         published=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
+    ),
+    # An app published then deployed: its image (docker:publish) and its chart
+    # (helm:publish), at the project's root so that Releasaurus sets the chart's
+    # version to the release, which the image tag follows; installed on the
+    # cluster (helm:deploy), which pulls the image from Nexus: dev once
+    # published, prod by hand. Not on GitLab: no Docker daemon in brigade's
+    # image (#208).
+    "app": Project(
+        tools=[*BASE, "docker", "helm"],
+        data={
+            "helm_publish": True,
+            "helm_install": True,
+            "environments": [{"name": "dev", "auto": True}, {"name": "prod"}],
+        },
+        target="cluster",
+        image="localhost:5099/demo:{tag}",
+        not_on=("gitlab",),
+        files={
+            "Dockerfile": APP_DOCKERFILE,
+            "README.md": "# Demo\n\nA demo app, its image and its chart.\n",
+        },
+        commands=[
+            ["sh", "-c", "helm create demo && cp -R demo/. . && rm -rf demo"],
+            ["uv", "run", "--no-project", "python", "-c", APP_CHART],
+        ],
+        # The host's Docker daemon pushes the image; helm pushes from the job.
+        env={
+            "DOCKER_IMAGE": "localhost:5099/demo",
+            "HELM_REGISTRY": "http://nexus:5000/charts",
+        },
+        secrets={
+            "DOCKER_USERNAME": "{deploy_user}",
+            "DOCKER_PASSWORD": "{deploy_password}",
+            "HELM_REGISTRY_USERNAME": "{deploy_user}",
+            "HELM_REGISTRY_PASSWORD": "{deploy_password}",
+            "KUBECONFIG_DATA": "{kubeconfig}",
+        },
+        published=("http://localhost:5099/v2/demo/tags/list", '"{tag}"'),
     ),
     # A playbook deployed over SSH to a server (up.reset_ssh_target), with a
     # vault-encrypted variable: dev once published, prod by hand. Not on GitLab:
