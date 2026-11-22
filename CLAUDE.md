@@ -195,7 +195,8 @@ Its own env lives in `mise.toml`; it is tested only with the tools it ships (no
 hand-written test scripts), added as needed, except `tests/e2e/`: pytest
 end-to-end tests on a local forge with its runner (`tests/fixtures/`, Docker
 Compose, local only; one test per project type of `tests/e2e/projects.py`,
-`mise run <forge>:test`, or `:up`, `:run`, `:down`, the `e2e` skill; Nexus
+`mise run <forge>:test`, or `:up`, `:run`, `:down`, `mise run forges:test` for
+every forge then the Docker-wide cleanup, the `e2e` skill; Nexus
 for publish, a k3s cluster for the `helm` type's deploy), whose
 notes in `.forges/` list what to improve. `mise run lint` checks this repo
 (yamllint, jactionlint, zizmor, taplo, editorconfig-checker, gitleaks, typos,

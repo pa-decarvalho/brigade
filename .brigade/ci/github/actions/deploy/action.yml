@@ -6,6 +6,18 @@ inputs:
   task:
     description: The task to run (a job of a split stage), else the stage
     default: deploy
+  environment:
+    description: The environment to deploy to (BRIGADE_ENVIRONMENT), if any
+    default: ""
+  environments:
+    description: The project's environments, a JSON list, to check environment
+    default: "[]"
+  kubeconfig-data:
+    description: Cluster's kubeconfig, helm:deploy (KUBECONFIG_DATA secret)
+    default: ""
+  helm-namespace:
+    description: Namespace, helm:deploy (HELM_NAMESPACE variable)
+    default: ""
   ansible-private-key:
     description: SSH private key for Ansible (ANSIBLE_PRIVATE_KEY secret)
     default: ""
@@ -15,6 +27,15 @@ inputs:
 runs:
   using: composite
   steps:
+    # A run started by hand may name an environment the project does not have.
+    - shell: bash
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+        ENVIRONMENTS: ${{ inputs.environments }}
+      run: >-
+        python3 -c "import json, os, sys; e = os.environ['ENVIRONMENT'];
+        names = json.loads(os.environ['ENVIRONMENTS']);
+        sys.exit(e and e not in names and f'unknown environment {e}: {names}')"
     # Not the mise action: no cache restored where a release is published.
     - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
       with:
@@ -23,6 +44,9 @@ runs:
     - shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        BRIGADE_ENVIRONMENT: ${{ inputs.environment }}
+        KUBECONFIG_DATA: ${{ inputs.kubeconfig-data }}
+        HELM_NAMESPACE: ${{ inputs.helm-namespace }}
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}

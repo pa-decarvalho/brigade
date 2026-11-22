@@ -3,11 +3,15 @@
 In a temporary folder: the project, brigade applied from this checkout at its
 latest tag, then pushed to the forge. Its pull request, then brigade:update to
 the checkout (HEAD) in a pull request whose CI passes, both merged; then the
-release, the publish and the deploy, made by the checkout's files. The checkout is the
+release, the publish and the deploy, made by the checkout's files. A type whose
+tools or answers the latest release lacks (the current branch adds them) starts
+from the checkout instead, with no update to make; E2E_FROM_HEAD=1 does so for
+every type (a changed tool, a quicker run). The checkout is the
 projects' _src_path, mounted at the same path in the jobs (tests/fixtures/).
 """
 
 import json
+import os
 import re
 import time
 import urllib.error
@@ -53,6 +57,14 @@ def template_at(tag: str) -> str:
     return str(clone)
 
 
+def questions(template: str) -> set[str]:
+    """The names of a template's questions (.copier/questions/)."""
+    found = set()
+    for path in Path(template, ".copier/questions").rglob("*.yml"):
+        found |= set(re.findall(r"^([a-z][a-z0-9_]*):", path.read_text(), re.MULTILINE))
+    return found
+
+
 def fetch(url: str) -> str:
     """A page's text, "" when absent."""
     try:
@@ -95,12 +107,18 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     with note.step("create"):
         tools = list(project.tools)
         tools += ["releasaurus"] if full else []
-        template = template_at(latest_tag())
-        # A new tool: its type runs once a release offers it (the test starts there).
+        start = latest_tag()
+        template = template_at(start)
+        # A tool or an answer the release lacks (the branch adds it): from the
+        # checkout (HEAD, uncommitted changes included), with no update to make.
         offered = Path(template, ".copier/questions/common.yml").read_text()
         missing = [t for t in tools if f": {t}\n" not in offered]
-        if missing:
-            pytest.skip(f"{', '.join(missing)}: not in {latest_tag()} yet")
+        missing += sorted(set(project.data) - questions(template))
+        why = f"{', '.join(missing)}: not in {latest_tag()}" if missing else ""
+        if os.environ.get("E2E_FROM_HEAD"):  # every type, e.g. a changed tool
+            why = why or "E2E_FROM_HEAD"
+        if why:
+            start, template = "HEAD", str(up.ROOT)
         # A release without this ci (forgejo before 0.33): ci: gitea, then the update
         # moves to it, as docs/ci.md says.
         known = (
@@ -124,6 +142,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
                 "copy",
                 "--trust",
                 "--defaults",
+                *(["--vcs-ref", "HEAD"] if start == "HEAD" else []),
                 *data_args(with_cli),
                 template,
                 ".",
@@ -137,6 +156,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
                 "copy",
                 "--trust",
                 "--defaults",
+                *(["--vcs-ref", "HEAD"] if start == "HEAD" else []),
                 *data_args(data),
                 template,
                 ".",
@@ -192,41 +212,46 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         if full:  # release, on pushes to main
             forge.wait_runs(repo, merged, "push")
 
-    with note.step("update"):
+    if start == "HEAD":  # already the checkout's files
         if workflow == "pr":
             merge(pr, "feat: say hello")
-        run("git", "switch", "-q", "main")
-        run("git", "pull", "-q", "origin", "main")
-        run("git", "switch", "-q", "-c", "update")
-        answers = path / ".brigade/copier/answers.yml"
-        answers.write_text(answers.read_text().replace(template, str(up.ROOT)))
-        run("git", "commit", "-qam", "ci: brigade from the checkout")
-        data_file = path / ".brigade/copier/data.yml"
-        text = data_file.read_text()
-        if ci != forge.ci:
-            assert f'ci: "{ci}"' in text, text
-            text = text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"')
-        if cli_later:
-            text = text.replace("tools:\n", f'tools:\n  - "{forge.cli}"\n', 1)
-        for key, value in project.data_later.items():  # JSON: YAML too
-            text += f"{key}: {json.dumps(value)}\n"
-        data_file.write_text(text)
-        run("mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD")
-        if cli_later:
-            cli_settings()
-        if ci != forge.ci:  # Copier moved the workflows
-            assert (path / f".{forge.ci}/workflows/lint.yml").exists()
-            assert not (path / f".{ci}/workflows").exists()
-        assert f"_commit: {latest_tag()}\n" not in answers.read_text(), (
-            "HEAD is the tag"
-        )
-        run("git", "add", "-A")
-        run("git", "commit", "-qm", "ci: update brigade")
-        run("git", "push", "-q", "-u", "origin", "update")
-        update = forge.open_pr(repo, "update", "ci: update brigade")
-        sha = run("git", "rev-parse", "HEAD").strip()
-        forge.wait_runs(repo, sha, "pull_request", names)
-        merge(update, "ci: update brigade")
+        note.skip("update", reason=f"started from HEAD ({why})")
+    else:
+        with note.step("update"):
+            if workflow == "pr":
+                merge(pr, "feat: say hello")
+            run("git", "switch", "-q", "main")
+            run("git", "pull", "-q", "origin", "main")
+            run("git", "switch", "-q", "-c", "update")
+            answers = path / ".brigade/copier/answers.yml"
+            answers.write_text(answers.read_text().replace(template, str(up.ROOT)))
+            run("git", "commit", "-qam", "ci: brigade from the checkout")
+            data_file = path / ".brigade/copier/data.yml"
+            text = data_file.read_text()
+            if ci != forge.ci:
+                assert f'ci: "{ci}"' in text, text
+                text = text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"')
+            if cli_later:
+                text = text.replace("tools:\n", f'tools:\n  - "{forge.cli}"\n', 1)
+            data_file.write_text(text)
+            run(
+                "mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD"
+            )
+            if cli_later:
+                cli_settings()
+            if ci != forge.ci:  # Copier moved the workflows
+                assert (path / f".{forge.ci}/workflows/lint.yml").exists()
+                assert not (path / f".{ci}/workflows").exists()
+            assert f"_commit: {latest_tag()}\n" not in answers.read_text(), (
+                "HEAD is the tag"
+            )
+            run("git", "add", "-A")
+            run("git", "commit", "-qm", "ci: update brigade")
+            run("git", "push", "-q", "-u", "origin", "update")
+            update = forge.open_pr(repo, "update", "ci: update brigade")
+            sha = run("git", "rev-parse", "HEAD").strip()
+            forge.wait_runs(repo, sha, "pull_request", names)
+            merge(update, "ci: update brigade")
 
     if not full:
         note.skip(
@@ -267,7 +292,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
             forge.wait_runs(repo, tag_sha, "workflow_dispatch", ("deploy",), 600)
 
     if project.cluster:
-        environments = project.data_later["environments"]
+        environments = project.data["environments"]
         with note.step("cluster", go_on=True):
             # The automatic ones, installed once published; then the others,
             # deployed by hand on the tag; each running in its namespace.

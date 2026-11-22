@@ -12,7 +12,9 @@ pushed anywhere but the local forge.
 
 `tests/e2e/test_projects.py`, one test per project type (`tests/e2e/projects.py`),
 in a temporary folder: the project created with its ecosystem's tool, brigade
-applied from this checkout at its latest tag, pushed to the forge, then:
+applied from this checkout at its latest tag (at its `HEAD` when that release
+lacks a tool or an answer of the type, or with `E2E_FROM_HEAD=1`: no update
+step then), pushed to the forge, then:
 `<cli>:setup` and `<cli>:check`, a pull request (lint, build, test),
 `brigade:update` to the checkout's `HEAD` in a pull request whose CI passes
 (both merged), then the release (release PR, `X.Y.Z` tag), the publish to a
@@ -36,10 +38,11 @@ API). No Renovate: its update is what `brigade:update` does.
   `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
   `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`; all by
   default), `<forge>:down`
-  (remove it, then everything Docker no longer uses, volumes included),
+  (remove it and its data; images stay),
   `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
-  needed, `down` at the end. GitLab takes a few minutes and, with Nexus and
-  the jobs, about 3.2 GB at peak: one forge at a time.
+  needed, `down` at the end. Every forge: `forges:test [type...]` (each in
+  turn, then the big Docker-wide cleanup). GitLab takes a few minutes and,
+  with Nexus and the jobs, about 3.2 GB at peak: one forge at a time.
 - Each type takes 5 to 10 minutes: run it in the background and wait for the
   notification.
 - `<forge>:up` prints the UI's URL and login; links the forge writes use its
