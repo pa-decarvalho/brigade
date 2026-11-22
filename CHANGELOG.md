@@ -1,3 +1,9 @@
+# [0.40.0](https://github.com/pa-decarvalho/brigade/compare/0.39.0...0.40.0) - 2026-11-22
+
+### 🚀 Features
+
+- environments for the deploy stage, and helm:deploy on a cluster (#347) [_(3561e492)_](https://github.com/pa-decarvalho/brigade/commit/3561e49202ca085dc3b411695e8109f244da7ea8)
+
 # [0.39.0](https://github.com/pa-decarvalho/brigade/compare/0.38.0...0.39.0) - 2026-11-22
 
 ### 🚀 Features
