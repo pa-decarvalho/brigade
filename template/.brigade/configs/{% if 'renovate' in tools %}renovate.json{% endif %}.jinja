@@ -84,8 +84,10 @@
             // Tool fragments: the version is brigade's default in the Jinja file.
             "customType": "regex",
             "managerFilePatterns": ["/^template/\\.brigade/conf\\.d/.+\\.jinja$/"],
-            "matchStrings": ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
-            "extractVersionTemplate": "^v?(?<version>.*)$"
+            // An optional extractVersion=<regex> after depName reads tags with a prefix
+            // (kustomize/vX.Y.Z).
+            "matchStrings": ["# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: extractVersion=(?<extractVersion>\\S+))?\\n[^\\n]*default\\('(?<currentValue>[^']+)', true\\)"],
+            "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{else}}^v?(?<version>.*)${{/if}}"
         }{% endraw %}
 {%- endif %}
     ],

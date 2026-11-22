@@ -73,6 +73,8 @@ tools:
     tflint (lint): tflint
     opentofu (lint): opentofu
     helm (lint, deploy): helm
+    kustomize (build): kustomize
+    kubeconform (lint): kubeconform
     checkov (lint): checkov
     cfn-lint (lint): cfn-lint
     dotenv-linter (lint): dotenv-linter

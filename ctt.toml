@@ -210,8 +210,9 @@ assert (repo / "demo/lib/0.1.0/lib-0.1.0.jar").exists(), sorted(repo.rglob("*"))
 ]
 
 [output.".ctt/helm-github"]
-# The Kubernetes example: a Helm chart made by helm create, pushed to an OCI registry on each release.
-tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "helm", "releasaurus", "renovate"]
+# The Kubernetes example: a Helm chart made by helm create, pushed to an OCI registry on each release,
+# and kustomize overlays, all validated by kubeconform.
+tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "helm", "kustomize", "kubeconform", "releasaurus", "renovate"]
 ci = "github"
 helm_publish = true
 _post_tasks = [
@@ -228,6 +229,23 @@ pathlib.Path("renovate.json").write_text("{}\n")
 pathlib.Path("README.md").write_text("# Demo\n\nA demo Helm chart.\n")
 '''],
     ["mise", "exec", "--", "helm", "create", "charts/demo"],
+    # A kustomize base and overlay (its patch is not a whole manifest: left to kustomize build)
+    # and a plain manifest, for kustomize:build and kubeconform:lint.
+    ["uv", "run", "--no-project", "python", "-c", '''
+import pathlib
+k = "---\napiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\n"
+deployment = "---\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web\nspec:\n  selector:\n    matchLabels:\n      app: web\n  template:\n    metadata:\n      labels:\n        app: web\n    spec:\n      containers:\n        - name: web\n          image: nginx:1.27\n"
+files = {
+    "k8s/base/deployment.yaml": deployment,
+    "k8s/base/kustomization.yaml": k + "resources:\n  - deployment.yaml\n",
+    "k8s/overlays/prod/kustomization.yaml": k + "resources:\n  - ../../base\npatches:\n  - path: replicas.yaml\n",
+    "k8s/overlays/prod/replicas.yaml": "---\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web\nspec:\n  replicas: 3\n",
+    "k8s/namespace.yaml": "---\napiVersion: v1\nkind: Namespace\nmetadata:\n  name: demo\n",
+}
+for name, text in files.items():
+    pathlib.Path(name).parent.mkdir(parents=True, exist_ok=True)
+    pathlib.Path(name).write_text(text)
+'''],
     ["git", "add", "-A"],
     ["git", "-c", "user.name=brigade", "-c", "user.email=brigade@localhost", "commit", "-qm", "init"],
     ["mise", "run", "lint"],

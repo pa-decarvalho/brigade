@@ -1,0 +1,11 @@
+[tools]
+# renovate: datasource=github-releases depName=kubernetes-sigs/kustomize extractVersion=^kustomize/v(?<version>.*)$
+"aqua:kubernetes-sigs/kustomize" = "{{ kustomize_version | default('5.8.3', true) }}"
+
+# The kustomizations: every folder holding a kustomization.yaml, components left out
+# (.brigade/scripts/kubernetes_manifests.py).
+
+[tasks."kustomize:build"]
+description = "Build the kustomizations (kustomize build), output discarded"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ kustomize_build_command | default('uv run --no-project python .brigade/scripts/kubernetes_manifests.py build', true) }}'''

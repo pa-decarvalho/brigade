@@ -1,0 +1,12 @@
+---
+kustomize_version:
+  type: str
+  help: kustomize version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'kustomize' in tools }}"
+
+kustomize_build_command:
+  type: str
+  help: Command of kustomize:build (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'kustomize' in tools }}"

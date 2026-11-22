@@ -1,0 +1,14 @@
+{%- set renders = (' --kustomize' if 'kustomize' in tools else '') ~ (' --helm' if 'helm' in tools else '') -%}
+[tools]
+# renovate: datasource=github-releases depName=yannh/kubeconform
+"aqua:yannh/kubeconform" = "{{ kubeconform_version | default('0.8.0', true) }}"
+
+# The manifests: YAML files holding apiVersion: and kind: outside kustomizations and Helm
+# charts, and, with those tools, kustomize build and helm template outputs
+# (.brigade/scripts/kubernetes_manifests.py). The schemas are downloaded on each run (network);
+# a resource without one (a custom resource) is skipped.
+
+[tasks."kubeconform:lint"]
+description = "Validate the Kubernetes manifests against their schemas (kubeconform)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+run = '''{{ kubeconform_lint_command | default('uv run --no-project python .brigade/scripts/kubernetes_manifests.py lint' ~ renders ~ ' -- kubeconform -strict -summary -ignore-missing-schemas', true) }}'''

@@ -1,0 +1,12 @@
+---
+kubeconform_version:
+  type: str
+  help: kubeconform version (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'kubeconform' in tools }}"
+
+kubeconform_lint_command:
+  type: str
+  help: Command of kubeconform:lint (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'kubeconform' in tools }}"
