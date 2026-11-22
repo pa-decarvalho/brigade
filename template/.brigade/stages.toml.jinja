@@ -7,7 +7,8 @@
   ('build', 'build', build_enabled, build_commands),
   ('test', 'tests', test_enabled, test_commands),
   ('release', 'release (CI runs it on pushes to the default branch)', release_enabled, release_commands),
-  ('deploy', 'deploy (CI runs it on X.Y.Z tags or on a manual run)', deploy_enabled, deploy_commands),
+  ('publish', 'publish (CI runs it on X.Y.Z tags or on a manual run)', publish_enabled, publish_commands),
+  ('deploy', 'deploy (CI runs it after publish, or on a manual run)', deploy_enabled, deploy_commands),
   ('operate', 'operate (CI runs it on manual runs, or GitLab schedules)', operate_enabled, operate_commands),
 ] %}
 {%- if enabled %}

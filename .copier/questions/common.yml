@@ -72,7 +72,7 @@ tools:
     revive (lint): revive
     tflint (lint): tflint
     opentofu (lint): opentofu
-    helm (lint, deploy): helm
+    helm (lint, publish): helm
     kustomize (build): kustomize
     kubeconform (lint): kubeconform
     checkov (lint): checkov
@@ -91,7 +91,7 @@ tools:
     deno (lint, test): deno
     maven (build, test): maven
     gradle (build, test): gradle
-    docker (build, deploy):
+    docker (build, publish):
       value: docker
       validator: >-
         {% if ci == 'gitlab' %}needs a Docker daemon in CI: not on
@@ -109,7 +109,7 @@ tools:
     codeceptjs (test, needs node): codeceptjs
     releasaurus (release): releasaurus
     ansible (deploy, operate): ansible
-    goreleaser (deploy):
+    goreleaser (publish):
       value: goreleaser
       validator: >-
         {% if ci not in ['github', 'gitlab'] %}needs GitHub
@@ -197,10 +197,29 @@ release_commands:
   default: []
   when: "{{ release_enabled }}"
 
+publish_enabled:
+  type: bool
+  help: Add the publish stage?
+  default: true
+
+publish_commands:
+  type: yaml
+  help: Commands of the publish stage, run in order (empty for all its tools)
+  default: []
+  when: "{{ publish_enabled }}"
+
 deploy_enabled:
   type: bool
   help: Add the deploy stage?
   default: true
+
+deploy_auto:
+  type: bool
+  help: >-
+    Deploy by itself once each release is published (else only when started
+    by hand)?
+  default: true
+  when: "{{ deploy_enabled and publish_enabled and ci != 'none' }}"
 
 deploy_commands:
   type: yaml
@@ -239,8 +258,8 @@ jobs:
   default: {}
   when: "{{ ci != 'none' }}"
   validator: >-
-    {%- set stages = ['lint', 'build', 'test', 'release', 'deploy',
-      'operate'] -%}
+    {%- set stages = ['lint', 'build', 'test', 'release', 'publish',
+      'deploy', 'operate'] -%}
     {%- if jobs is not mapping -%}
     a mapping of stages to lists of jobs
     {%- else -%}

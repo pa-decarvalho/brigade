@@ -1,7 +1,7 @@
 ---
 bun_publish:
   type: bool
-  help: Publish the package to its npm registry on each release (bun:deploy)?
+  help: Publish the package to its npm registry on each release (bun:publish)?
   default: false
   when: "{{ 'bun' in tools }}"
 
@@ -29,8 +29,8 @@ bun_test_command:
   default: ""
   when: "{{ customize_tools and 'bun' in tools }}"
 
-bun_deploy_command:
+bun_publish_command:
   type: str
-  help: Command of bun:deploy (empty for brigade's)
+  help: Command of bun:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'bun' in tools and bun_publish }}"

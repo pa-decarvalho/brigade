@@ -2,7 +2,7 @@
 maven_publish:
   type: bool
   help: >-
-    Deploy the artifacts to a Maven repository on each release (maven:deploy)?
+    Deploy the artifacts to a Maven repository on each release (maven:publish)?
   default: false
   when: "{{ 'maven' in tools }}"
 
@@ -21,7 +21,7 @@ maven_java_version:
 maven_config:
   type: str
   help: >-
-    Settings file of maven:deploy, from the project root (empty for brigade's)
+    Settings file of maven:publish, from the project root (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'maven' in tools and maven_publish }}"
 
@@ -37,8 +37,8 @@ maven_test_command:
   default: ""
   when: "{{ customize_tools and 'maven' in tools }}"
 
-maven_deploy_command:
+maven_publish_command:
   type: str
-  help: Command of maven:deploy (empty for brigade's)
+  help: Command of maven:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'maven' in tools and maven_publish }}"

@@ -11,7 +11,7 @@
   <a href="https://github.com/copier-org/copier"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json" alt="Copier"></a>
 </p>
 
-<p align="center"><code>lint · build · test · release · deploy · operate</code><br>on GitHub · GitLab · Gitea · your laptop</p>
+<p align="center"><code>lint · build · test · release · publish · deploy · operate</code><br>on GitHub · GitLab · Gitea · Forgejo · your laptop</p>
 
 <p align="center"><a href="https://pa-decarvalho.github.io/brigade/"><strong>Documentation</strong></a> · <a href="https://pa-decarvalho.github.io/brigade/getting-started/">Getting started</a> · <a href="https://pa-decarvalho.github.io/brigade/recipes/">Recipes</a> · <a href="https://github.com/pa-decarvalho/brigade/blob/main/CHANGELOG.md">Changelog</a></p>
 
@@ -60,7 +60,7 @@ after it; brigade staffs the kitchen:
 |---|---|
 | Mise en place | `mise install`: every tool pinned and ready before you start |
 | One station per cook | One file per tool, `.brigade/conf.d/<tool>-brigade.toml`, with its tasks |
-| The service, course after course | The stages: `lint`, `build`, `test`, `release`, `deploy`, `operate` |
+| The service, course after course | The stages: `lint`, `build`, `test`, `release`, `publish`, `deploy`, `operate` |
 | The chef calling the orders | `mise run <stage>`: every station's task for that stage |
 | The pass, where each plate is checked | CI, running the same stages on every pull request |
 | The house recipe | The template, with your answers in `.brigade/copier/data.yml` |

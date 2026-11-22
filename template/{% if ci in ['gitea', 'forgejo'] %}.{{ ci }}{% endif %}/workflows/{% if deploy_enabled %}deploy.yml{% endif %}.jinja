@@ -1,13 +1,16 @@
 {% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Runs on X.Y.Z tags: mise run deploy.
-name: Deploy
+{% endraw %}{% if publish_enabled %}{% raw %}# Runs when started: by the publish workflow once a release is published
+# (deploy_auto), or by hand, on a tag (that release) or a branch (e.g. a typo
+# in the documentation): mise run deploy. Nothing is published again.
+{% endraw %}{% else %}{% raw %}# Runs on X.Y.Z tags, or by hand (e.g. a typo in the documentation): mise run
+# deploy.
+{% endraw %}{% endif %}{% raw %}name: Deploy
 
 on:
-  push:
+{% endraw %}{% if not publish_enabled %}{% raw %}  push:
     tags: ["*.*.*"]
-  # Deploy without a release, e.g. a typo in the documentation.
-  workflow_dispatch:
+{% endraw %}{% endif %}{% raw %}  workflow_dispatch:
 
 # A new run waits for the running one: no half-done deploy.
 concurrency:
@@ -29,16 +32,4 @@ jobs:
 {% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
 {% endraw %}{% endif %}{% raw %}          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
           ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          uv-publish-token: ${{ secrets.UV_PUBLISH_TOKEN }}
-          uv-publish-username: ${{ secrets.UV_PUBLISH_USERNAME }}
-          uv-publish-password: ${{ secrets.UV_PUBLISH_PASSWORD }}
-          npm-token: ${{ secrets.NPM_TOKEN }}
-          jsr-token: ${{ secrets.JSR_TOKEN }}
-          cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          maven-username: ${{ secrets.MAVEN_USERNAME }}
-          maven-password: ${{ secrets.MAVEN_PASSWORD }}
-          helm-registry-username: ${{ secrets.HELM_REGISTRY_USERNAME }}
-          helm-registry-password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
-          docker-username: ${{ secrets.DOCKER_USERNAME }}
-          docker-password: ${{ secrets.DOCKER_PASSWORD }}
 {% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

@@ -13,7 +13,7 @@
   <a href="https://github.com/copier-org/copier"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json" alt="Copier"></a>
 </p>
 
-<p align="center"><code>lint · build · test · release · deploy · operate</code><br>on GitHub · GitLab · Gitea · your laptop</p>
+<p align="center"><code>lint · build · test · release · publish · deploy · operate</code><br>on GitHub · GitLab · Gitea · Forgejo · your laptop</p>
 
 <p align="center"><a href="https://pa-decarvalho.github.io/brigade/"><strong>Documentation</strong></a> · <a href="https://pa-decarvalho.github.io/brigade/getting-started/">Getting started</a> · <a href="https://pa-decarvalho.github.io/brigade/recipes/">Recipes</a> · <a href="https://github.com/pa-decarvalho/brigade/blob/main/CHANGELOG.md">Changelog</a></p>
 
@@ -39,9 +39,9 @@ mise tasks
 ```
 
 Pick your tools in one list: each brings its tasks for the lint, build, test,
-release and deploy stages, with custom versions and commands. CI: GitHub,
-GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks. Update a
-project with `mise run brigade:update`.
+release, publish and deploy stages, with custom versions and commands. CI:
+GitHub, GitLab, Gitea/Forgejo or none. Optional mirrors for corporate networks.
+Update a project with `mise run brigade:update`.
 
 Examples: an Angular app
 [on GitHub](https://github.com/pa-decarvalho/brigade-example-angular) and

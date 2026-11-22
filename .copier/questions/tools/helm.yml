@@ -2,7 +2,7 @@
 helm_publish:
   type: bool
   help: >-
-    Push the charts to an OCI registry on each release (helm:deploy)?
+    Push the charts to an OCI registry on each release (helm:publish)?
   default: false
   when: "{{ 'helm' in tools }}"
 
@@ -18,8 +18,8 @@ helm_lint_command:
   default: ""
   when: "{{ customize_tools and 'helm' in tools }}"
 
-helm_deploy_command:
+helm_publish_command:
   type: str
-  help: Command of helm:deploy (empty for brigade's)
+  help: Command of helm:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'helm' in tools and helm_publish }}"

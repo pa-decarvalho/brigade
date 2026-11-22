@@ -4,7 +4,7 @@ description = "Build the Python package with uv (dist/)"
 run = '''{{ uv_build_command | default('uv build', true) }}'''
 {%- if uv_publish %}
 
-[tasks."uv:deploy"]
+[tasks."uv:publish"]
 description = "Build the Python package with uv, then publish it to its index"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # --clear: dist/ holds this version only. The index: PyPI, or UV_PUBLISH_URL (Nexus,
@@ -12,5 +12,5 @@ description = "Build the Python package with uv, then publish it to its index"
 # and UV_PUBLISH_PASSWORD); UV_PUBLISH_CHECK_URL skips the files already there. Empty
 # UV_PUBLISH_* variables are dropped: GitHub and Gitea pass a secret that is not set as an
 # empty one, and uv counts an empty token with a user as both.
-run = '''{{ uv_deploy_command | default('uv build --clear && uv run --no-project python -c "import os, subprocess, sys; env = {k: v for k, v in os.environ.items() if v or not k.startswith(\'UV_PUBLISH_\')}; sys.exit(subprocess.call([\'uv\', \'publish\'], env=env))"', true) }}'''
+run = '''{{ uv_publish_command | default('uv build --clear && uv run --no-project python -c "import os, subprocess, sys; env = {k: v for k, v in os.environ.items() if v or not k.startswith(\'UV_PUBLISH_\')}; sys.exit(subprocess.call([\'uv\', \'publish\'], env=env))"', true) }}'''
 {%- endif %}

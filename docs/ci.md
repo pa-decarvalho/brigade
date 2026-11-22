@@ -11,16 +11,17 @@ same tools.
 
 On every platform, `lint`, `build` and `test` run on pull requests (merge
 requests on GitLab), side by side; `release` runs on pushes to the default
-branch, `deploy` on `X.Y.Z` tags and manual runs, and `operate` on manual runs
+branch, `publish` on `X.Y.Z` tags and manual runs, `deploy` after `publish`
+(by itself or not: `deploy_auto`) and on manual runs, and `operate` on manual runs
 and on the `operate_schedule` answer (scheduled pipelines on GitLab).
 
 ## GitHub (`ci: github`)
 
 | File | Role |
 |---|---|
-| `.github/workflows/<stage>.yml` | One workflow per stage, with one job that checks out the code and runs the stage's action: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to the default branch, `deploy.yml` on `X.Y.Z` tags and manual runs, `operate.yml` on manual runs and on the `operate_schedule` answer. |
+| `.github/workflows/<stage>.yml` | One workflow per stage, with one job that checks out the code and runs the stage's action: `lint.yml`, `build.yml` and `test.yml` on pull requests, `release.yml` on pushes to the default branch, `publish.yml` on `X.Y.Z` tags and manual runs (then, with `deploy_auto`, a job that starts the Deploy workflow on the tag), `deploy.yml` when started, `operate.yml` on manual runs and on the `operate_schedule` answer. |
 | `.brigade/ci/github/actions/<stage>/action.yml` | The stage's steps: install mise and the tools, then `mise run <stage>` with the stage's environment (Releasaurus, Renovate). Secrets are passed as inputs: `token` (release), `renovate-token` (operate). |
-| `.brigade/ci/github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools, with a cache. `deploy` installs them without a cache. |
+| `.brigade/ci/github/actions/mise/action.yml` | Installs the pinned mise ([mise-action](https://github.com/jdx/mise-action)) and the tools, with a cache. `publish` and `deploy` install them without a cache. |
 
 GitHub only reads workflows in `.github/workflows/`: everything else lives in
 `.brigade/`.
@@ -29,7 +30,8 @@ GitHub only reads workflows in `.github/workflows/`: everything else lives in
 workflows and the actions, with its default rules: actions pinned by commit SHA
 (Renovate updates the SHA and its version comment), `permissions:`,
 `timeout-minutes`, `concurrency:` (pull request runs cancel the older ones,
-release and deploy runs wait), and no cache restored in `deploy`.
+release, publish and deploy runs wait), and no cache restored in `publish` and
+`deploy`.
 
 ### Stages
 
@@ -103,7 +105,8 @@ jobs:
         - "mise run ctt:test -- -t .ctt/go"
 ```
 
-- The keys are stages (`lint`, `build`, `test`, `release`, `deploy`, `operate`);
+- The keys are stages (`lint`, `build`, `test`, `release`, `publish`, `deploy`,
+  `operate`);
   a job has a `name` (letters, digits, `.`, `_`, `-`; unique in its stage) and a
   `run` list.
 - Each job becomes a hidden `<stage>-<name>` task in `.brigade/stages.toml`,
@@ -122,8 +125,10 @@ jobs:
 
 ## Manual run
 
-To deploy without a release, use "Run workflow" on the Deploy workflow (GitHub,
-Gitea), or "Run pipeline" on GitLab: only `deploy` runs. To run `operate` now,
+To deploy again, or without a release, use "Run workflow" on the Deploy workflow
+(GitHub, Gitea, Forgejo) on a tag or a branch, or "Run pipeline" on GitLab: only
+`deploy` runs, nothing is published. To publish again, "Run workflow" on the
+Publish workflow, or retry the `publish` job on GitLab. To run `operate` now,
 use "Run workflow" on the Operate workflow (GitHub, Gitea), or a pipeline
 schedule on GitLab.
 

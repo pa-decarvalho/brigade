@@ -21,11 +21,11 @@ description = "Build the Java project and run its tests and checks (gradle check
 run = '''{{ gradle_test_command | default('gradle --console=plain check', true) }}'''
 {%- if gradle_publish %}
 
-[tasks."gradle:deploy"]
+[tasks."gradle:publish"]
 description = "Publish the artifacts to a Maven repository (gradle publish)"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The project applies maven-publish with its publications. The repository: MAVEN_REPOSITORY_URL,
 # added by the init script, else the project's own; its login: the MAVEN_USERNAME and
 # MAVEN_PASSWORD secrets.
-run = '''{{ gradle_deploy_command | default('gradle --console=plain --init-script ' ~ config ~ ' publish', true) }}'''
+run = '''{{ gradle_publish_command | default('gradle --console=plain --init-script ' ~ config ~ ' publish', true) }}'''
 {%- endif %}

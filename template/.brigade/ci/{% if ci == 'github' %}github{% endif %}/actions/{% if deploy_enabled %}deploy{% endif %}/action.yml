@@ -12,42 +12,6 @@ inputs:
   ansible-vault-password:
     description: Ansible vault password (ANSIBLE_VAULT_PASSWORD secret)
     default: ""
-  uv-publish-token:
-    description: Index token, uv:deploy (UV_PUBLISH_TOKEN secret)
-    default: ""
-  uv-publish-username:
-    description: Index user, uv:deploy (UV_PUBLISH_USERNAME secret)
-    default: ""
-  uv-publish-password:
-    description: Index password, uv:deploy (UV_PUBLISH_PASSWORD secret)
-    default: ""
-  npm-token:
-    description: npm registry token, node:deploy (NPM_TOKEN secret)
-    default: ""
-  jsr-token:
-    description: JSR token, deno:deploy (JSR_TOKEN secret)
-    default: ""
-  cargo-registry-token:
-    description: Crate registry token, rust:deploy (CARGO_REGISTRY_TOKEN secret)
-    default: ""
-  maven-username:
-    description: Maven repository user, maven:deploy (MAVEN_USERNAME secret)
-    default: ""
-  maven-password:
-    description: Maven repository password, maven:deploy (MAVEN_PASSWORD secret)
-    default: ""
-  helm-registry-username:
-    description: Registry user, helm:deploy (HELM_REGISTRY_USERNAME secret)
-    default: ""
-  helm-registry-password:
-    description: Registry password, helm:deploy (HELM_REGISTRY_PASSWORD secret)
-    default: ""
-  docker-username:
-    description: Registry user, docker:deploy (DOCKER_USERNAME secret)
-    default: ""
-  docker-password:
-    description: Registry password, docker:deploy (DOCKER_PASSWORD secret)
-    default: ""
 runs:
   using: composite
   steps:
@@ -61,18 +25,6 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         ANSIBLE_PRIVATE_KEY: ${{ inputs.ansible-private-key }}
         ANSIBLE_VAULT_PASSWORD: ${{ inputs.ansible-vault-password }}
-        UV_PUBLISH_TOKEN: ${{ inputs.uv-publish-token }}
-        UV_PUBLISH_USERNAME: ${{ inputs.uv-publish-username }}
-        UV_PUBLISH_PASSWORD: ${{ inputs.uv-publish-password }}
-        NPM_TOKEN: ${{ inputs.npm-token }}
-        JSR_TOKEN: ${{ inputs.jsr-token }}
-        CARGO_REGISTRY_TOKEN: ${{ inputs.cargo-registry-token }}
-        MAVEN_USERNAME: ${{ inputs.maven-username }}
-        MAVEN_PASSWORD: ${{ inputs.maven-password }}
-        HELM_REGISTRY_USERNAME: ${{ inputs.helm-registry-username }}
-        HELM_REGISTRY_PASSWORD: ${{ inputs.helm-registry-password }}
-        DOCKER_USERNAME: ${{ inputs.docker-username }}
-        DOCKER_PASSWORD: ${{ inputs.docker-password }}
         GIT_COMMITTER_NAME: ${{ github.actor }}
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
         TASK: ${{ inputs.task }}

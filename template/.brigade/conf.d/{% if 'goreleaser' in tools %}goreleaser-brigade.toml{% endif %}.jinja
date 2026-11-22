@@ -2,9 +2,9 @@
 # renovate: datasource=github-releases depName=goreleaser/goreleaser
 "aqua:goreleaser/goreleaser" = "{{ goreleaser_version | default('2.20.3', true) }}"
 
-[tasks."goreleaser:deploy"]
+[tasks."goreleaser:publish"]
 description = "Build the Go binaries and attach them to the release with GoReleaser"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # Config: .brigade/configs/goreleaser.yaml (the project's). Needs Go (the go tool) and the tag
 # at HEAD; adds the archives to the release Releasaurus made (GITHUB_TOKEN, or GITLAB_TOKEN).
-run = '''{{ goreleaser_deploy_command | default('goreleaser release --clean -f .brigade/configs/goreleaser.yaml', true) }}'''
+run = '''{{ goreleaser_publish_command | default('goreleaser release --clean -f .brigade/configs/goreleaser.yaml', true) }}'''

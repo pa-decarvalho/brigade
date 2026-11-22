@@ -1,0 +1,17 @@
+---
+publish:
+  stage: publish
+  # On X.Y.Z tags (publish again: retry the job).
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/ && $CI_PIPELINE_SOURCE == "push"
+{%- if 'publish' in split_stages %}
+  # One job per command of the stage (the jobs answer: the publish-<name> tasks).
+  parallel:
+    matrix:
+      - TASK: [{% for job in jobs['publish'] %}publish-{{ job.name }}{{ ', ' if not loop.last else '' }}{% endfor %}]
+  script:
+    - mise run "$TASK"
+{%- else %}
+  script:
+    - mise run publish
+{%- endif %}

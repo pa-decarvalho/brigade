@@ -3,7 +3,7 @@
 # GitLab only reads this file. It includes brigade's jobs (.brigade/ci/gitlab/)
 # and yours: add them in .gitlab/ci/*.yml.
 stages:
-{%- for stage, enabled in [('lint', lint_enabled), ('build', build_enabled), ('test', test_enabled), ('release', release_enabled), ('deploy', deploy_enabled), ('operate', operate_enabled)] %}
+{%- for stage, enabled in [('lint', lint_enabled), ('build', build_enabled), ('test', test_enabled), ('release', release_enabled), ('publish', publish_enabled), ('deploy', deploy_enabled), ('operate', operate_enabled)] %}
 {%- if enabled %}
   - {{ stage }}
 {%- endif %}

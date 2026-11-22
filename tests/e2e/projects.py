@@ -1,8 +1,8 @@
-"""The project types the tests create: their tools, files and deploy.
+"""The project types the tests create: their tools, files and publish.
 
-Each one is created with its ecosystem's tools on top of brigade, deploys to a
-Nexus repository (tests/fixtures/compose.yml) on its release tag, logged in
-as its deploy user, and its deploy is checked there.
+Each one is created with its ecosystem's tools on top of brigade, publishes to
+a Nexus repository (tests/fixtures/compose.yml) on its release tag, logged in
+as Nexus' deploy user, and what it published is checked there.
 """
 
 from dataclasses import dataclass, field
@@ -19,7 +19,7 @@ class Project:
     # CI secrets; "{user}" and "{token}": the admin's; "{deploy_user}",
     # "{deploy_password}" and "{npm_token}": Nexus' (up.reset_registries)
     secrets: dict[str, str]
-    deployed: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
+    published: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
     data: dict = field(default_factory=dict)  # more Copier answers
     not_on: tuple[str, ...] = ()  # forges brigade refuses it on
 
@@ -206,7 +206,7 @@ PROJECTS = {
             "UV_PUBLISH_USERNAME": "{deploy_user}",
             "UV_PUBLISH_PASSWORD": "{deploy_password}",
         },
-        deployed=("http://localhost:8099/repository/pypi/simple/demo/", "demo-{tag}"),
+        published=("http://localhost:8099/repository/pypi/simple/demo/", "demo-{tag}"),
     ),
     # A TypeScript library published to an npm registry (Nexus' npm repository).
     "node": Project(
@@ -227,7 +227,7 @@ PROJECTS = {
         commands=[["npm", "install", "--package-lock-only"]],
         env={},
         secrets={"NPM_TOKEN": "{npm_token}"},
-        deployed=(
+        published=(
             "http://localhost:8099/repository/npm/@brigade-forges%2fdemo",
             '"{tag}"',
         ),
@@ -249,7 +249,7 @@ PROJECTS = {
         commands=[["bun", "install"]],
         env={},
         secrets={"NPM_TOKEN": "{npm_token}"},
-        deployed=(
+        published=(
             "http://localhost:8099/repository/npm/@brigade-forges%2fbun-demo",
             '"{tag}"',
         ),
@@ -282,11 +282,11 @@ PROJECTS = {
             "DOCKER_USERNAME": "{deploy_user}",
             "DOCKER_PASSWORD": "{deploy_password}",
         },
-        deployed=("http://localhost:5099/v2/demo/tags/list", '"{tag}"'),
+        published=("http://localhost:5099/v2/demo/tags/list", '"{tag}"'),
         # The docker tool's validator: no Docker daemon in GitLab's CI yet.
         not_on=("gitlab",),
     ),
-    # A Java library deployed to a Maven repository (Nexus' maven repository).
+    # A Java library published to a Maven repository (Nexus' maven repository).
     "java-maven": Project(
         tools=[*BASE, "maven"],
         data={"maven_publish": True},
@@ -303,12 +303,12 @@ PROJECTS = {
             "MAVEN_USERNAME": "{deploy_user}",
             "MAVEN_PASSWORD": "{deploy_password}",
         },
-        deployed=(
+        published=(
             "http://localhost:8099/repository/maven/demo/demo/maven-metadata.xml",
             "<version>{tag}</version>",
         ),
     ),
-    # The same with Gradle, published by gradle:deploy (its init script adds the repository).
+    # The same with Gradle, published by gradle:publish (its init script adds the repository).
     "java-gradle": Project(
         tools=[*BASE, "gradle"],
         data={"gradle_publish": True},
@@ -326,7 +326,7 @@ PROJECTS = {
             "MAVEN_USERNAME": "{deploy_user}",
             "MAVEN_PASSWORD": "{deploy_password}",
         },
-        deployed=(
+        published=(
             "http://localhost:8099/repository/maven/demo/demo-gradle/maven-metadata.xml",
             "<version>{tag}</version>",
         ),
@@ -342,7 +342,7 @@ PROJECTS = {
             "HELM_REGISTRY_USERNAME": "{deploy_user}",
             "HELM_REGISTRY_PASSWORD": "{deploy_password}",
         },
-        deployed=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
+        published=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
     ),
 }
 

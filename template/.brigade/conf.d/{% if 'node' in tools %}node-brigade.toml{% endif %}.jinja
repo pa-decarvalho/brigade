@@ -22,10 +22,10 @@ description = "Install the dependencies and run the test script"
 run = '''{{ node_test_command | default('npm ci && npm test --if-present', true) }}'''
 {%- if npm_publish %}
 
-[tasks."node:deploy"]
+[tasks."node:publish"]
 description = "Install the dependencies and publish the package to its registry"
 {% raw %}dir = "{{config_root}}/../.."{% endraw %}
 # The registry: npm's, or publishConfig in package.json; its token: the NPM_TOKEN secret,
 # read by a line of the project's .npmrc (//registry.npmjs.org/:_authToken=${NPM_TOKEN}).
-run = '''{{ node_deploy_command | default('npm ci && npm publish', true) }}'''
+run = '''{{ node_publish_command | default('npm ci && npm publish', true) }}'''
 {%- endif %}

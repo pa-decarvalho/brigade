@@ -277,7 +277,7 @@ def gitea(checks: set[str]) -> None:
         report(
             has(secrets, secret),
             f"{secret} secret (else the CI token: release PRs start"
-            " no checks, tags no deploy)",
+            " no checks, tags no publish)",
             f"{url}/actions/secrets",
             required=False,
         )

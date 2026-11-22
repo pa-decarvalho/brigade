@@ -1,0 +1,66 @@
+{% raw %}---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+# Runs on X.Y.Z tags: mise run publish{% endraw %}{% if deploy_enabled and deploy_auto %}{% raw %}, then starts the deploy workflow on the
+# same tag{% endraw %}{% endif %}{% raw %}.
+name: Publish
+
+on:
+  push:
+    tags: ["*.*.*"]
+  # Publish again by hand, e.g. after a registry outage.
+  workflow_dispatch:
+
+# A new run waits for the running one: no half-done publish.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+# No token rights by default: each job sets its own.
+permissions: {}
+
+jobs:
+{% endraw %}{% with stage = 'publish' %}{% if stage in split_stages %}{% include '.copier/ci/run.yml.jinja' %}{% else %}{% raw %}  publish:
+{% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # goreleaser:publish attaches its files to the release
+      packages: write # docker:publish and helm:publish push to ghcr.io
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: mise run publish # zizmor: ignore[self-repository]
+        uses: ./.brigade/ci/github/actions/publish
+        with:
+{% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
+{% endraw %}{% endif %}{% raw %}          uv-publish-token: ${{ secrets.UV_PUBLISH_TOKEN }}
+          uv-publish-username: ${{ secrets.UV_PUBLISH_USERNAME }}
+          uv-publish-password: ${{ secrets.UV_PUBLISH_PASSWORD }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
+          jsr-token: ${{ secrets.JSR_TOKEN }}
+          cargo-registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          maven-username: ${{ secrets.MAVEN_USERNAME }}
+          maven-password: ${{ secrets.MAVEN_PASSWORD }}
+          helm-registry-username: ${{ secrets.HELM_REGISTRY_USERNAME }}
+          helm-registry-password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
+{% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith %}
+{%- if deploy_enabled and deploy_auto %}{% raw %}
+  # deploy_auto: once published, the deploy workflow on the same tag (a run
+  # started with the workflow token: the exception to "it starts no workflow").
+  start-deploy:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write # starts the deploy workflow
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Start the deploy workflow # zizmor: ignore[self-repository]
+        uses: ./.brigade/ci/github/actions/dispatch
+        with:
+          workflow: deploy.yml
+{% endraw %}{%- endif -%}

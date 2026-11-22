@@ -3,7 +3,7 @@
 In a temporary folder: the project, brigade applied from this checkout at its
 latest tag, then pushed to the forge. Its pull request, then brigade:update to
 the checkout (HEAD) in a pull request whose CI passes, both merged; then the
-release and the deploy, made by the checkout's files. The checkout is the
+release, the publish and the deploy, made by the checkout's files. The checkout is the
 projects' _src_path, mounted at the same path in the jobs (tests/fixtures/).
 """
 
@@ -109,7 +109,7 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         data = {**project.data, "ci": ci, "tools": tools}
         if workflow == "direct":
             data |= {"customize_tools": True, "releasaurus_workflow": "direct"}
-        if not full:  # no deploy without a release
+        if not full:  # no publish without a release
             data = {k: v for k, v in data.items() if not k.endswith("_publish")}
         run("git", "init", "-q", "-b", "main")
         # A release refusing the forge's CLI (tea on Forgejo before 0.33.1): the
@@ -225,7 +225,9 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         merge(update, "ci: update brigade")
 
     if not full:
-        note.skip("release", "deploy", reason="not covered: they call GitHub's API")
+        note.skip(
+            "release", "publish", "deploy", reason="not covered: they call GitHub's API"
+        )
         return
 
     with note.step("release"):
@@ -247,12 +249,17 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
         assert all(SEMVER.fullmatch(t) for t in forge.tags(repo)), forge.tags(repo)
         tag_sha = forge.tag_sha(repo, tags[0])
 
-    with note.step("deploy", go_on=True):
+    with note.step("publish", go_on=True):
         tag = tags[0]
-        names = (tag,) if forge.server == "gitlab" else ("deploy",)
+        names = (tag,) if forge.server == "gitlab" else ("publish",)
         forge.wait_runs(repo, tag_sha, "push", names)
-        url, text = project.deployed
-        page = wait_for("deployed release", lambda: fetch(url), 120)
+        url, text = project.published
+        page = wait_for("published release", lambda: fetch(url), 120)
         assert text.format(tag=tag) in page, page
+
+    # GitLab: deploy is a job of the tag's pipeline, waited for above.
+    if forge.server != "gitlab":
+        with note.step("deploy", go_on=True):  # started by publish (deploy_auto)
+            forge.wait_runs(repo, tag_sha, "workflow_dispatch", ("deploy",), 600)
 
     assert not note.failed, f"failed steps: {note.failed}"
