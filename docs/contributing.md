@@ -87,7 +87,7 @@ Gitea, whose runner runs GitHub Actions workflows). Each forge has four tasks:
   and prints its URL and login (an up forge is reused);
 - `mise run <forge>:run [type...]`: the tests on it, all or the given ones
   (`python`, `python-direct`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`,
-  `helm`);
+  `helm`, `ansible`);
 - `mise run <forge>:down`: removes it and its data (its containers, network
   and volumes); images stay for the next run;
 - `mise run <forge>:test [type...]`: `up`, `run`, then `down`, even when the
@@ -102,7 +102,8 @@ volumes, named ones included; images are pulled again when needed).
 
 To work on a failure: `up` once, `run` as often as needed, then `down`. pytest
 runs on this machine, one test per project type of `tests/e2e/projects.py`
-(`python`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`), the Python
+(`python`, `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`,
+`ansible`), the Python
 one with both Releasaurus workflows (`python`: a release PR; `python-direct`: no
 PR), each in a temporary folder:
 
@@ -120,9 +121,12 @@ PR), each in a temporary folder:
    Maven and image repositories, each logged in as Nexus' deploy user; then the
    deploy that publish starts on the tag (Gitea, Forgejo; GitLab: the tag's
    pipeline);
-7. for the `helm` type, its charts installed on a k3s cluster next to the forge
-   (`tests/fixtures/compose.yml`, profile `cluster`): `dev` once published,
-   `prod` deployed by hand, each checked running in its namespace.
+7. where the type deploys, per environment: `dev` once published, `prod`
+   deployed by hand. `helm`: its charts on a k3s cluster next to the forge
+   (`tests/fixtures/compose.yml`, profile `cluster`), each checked running in
+   its namespace. `ansible` (not on GitLab: #139): a playbook over SSH to a
+   server (profile `ssh`), with a vault-encrypted variable, each checked by the
+   file it writes (environment, commit, the vault's value).
 
 The release, the publish and the deploy run with the checkout's files: a fix to
 them is tested before it is released.

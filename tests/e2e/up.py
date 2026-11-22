@@ -21,6 +21,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -230,6 +231,39 @@ def reset_cluster(server: str) -> str:
     return config.replace("https://127.0.0.1:6443", "https://k3s:6443")
 
 
+def reset_ssh_target(server: str) -> str:
+    """The SSH server started, its key replaced and /srv emptied; the private
+    key, for projects.Project.secrets ("{ssh_private_key}")."""
+    compose(server, "--profile", "ssh", "up", "-d", "--wait", "ssh-target")
+    with tempfile.TemporaryDirectory() as tmp:
+        key = Path(tmp, "key")
+        subprocess.run(
+            ["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "brigade-e2e"]
+            + ["-f", str(key)],
+            check=True,
+        )
+        script = (
+            "cat > /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys"
+            " && rm -rf /srv/*"
+        )
+        compose(
+            server,
+            "exec",
+            "-T",
+            "ssh-target",
+            "sh",
+            "-c",
+            script,
+            stdin=Path(f"{key}.pub").read_text(),
+        )
+        return key.read_text()
+
+
+def ssh_target(server: str, *command: str) -> str:
+    """A command on the SSH server; its stdout."""
+    return compose(server, "exec", "-T", "ssh-target", *command)
+
+
 def seed(server: str) -> str:
     """The admin's token; the runner registered and started."""
     if server in ("gitea", "forgejo"):
@@ -294,7 +328,7 @@ def down(server: str) -> None:
     what the jobs left stay for the next run (clean removes them)."""
     compose(
         server,
-        *("--profile", "runner", "--profile", "cluster"),
+        *("--profile", "runner", "--profile", "cluster", "--profile", "ssh"),
         *("down", "--volumes", "--remove-orphans"),
     )
     (STATE / f"{server}.json").unlink(missing_ok=True)
