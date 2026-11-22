@@ -18,3 +18,12 @@ description = "Package the Helm charts at the tag's version and push them to an 
 # token for ghcr.io.
 run = '''{{ helm_publish_command | default('uv run --no-project python .brigade/scripts/helm_charts.py publish', true) }}'''
 {%- endif %}
+{%- if helm_install %}
+
+[tasks."helm:deploy"]
+description = "Install or upgrade the Helm charts on a cluster (helm upgrade --install)"
+{% raw %}dir = "{{config_root}}/../.."{% endraw %}
+# The cluster: KUBECONFIG_DATA (the CI secret), else kubectl's config; the namespace:
+# HELM_NAMESPACE, else the environment (BRIGADE_ENVIRONMENT); values-<environment>.yaml added.
+run = '''{{ helm_deploy_command | default('uv run --no-project python .brigade/scripts/helm_charts.py deploy', true) }}'''
+{%- endif %}

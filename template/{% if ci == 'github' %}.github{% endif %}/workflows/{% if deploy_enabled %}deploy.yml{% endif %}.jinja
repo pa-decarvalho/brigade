@@ -1,8 +1,15 @@
+{%- set names = environments | map(attribute='name') | list -%}
+{#- An environment's secret or variable: the job's environment scopes it
+(GitHub Environments); a dynamic secrets[...] would give the job every secret. -#}
+{%- macro secret(name, context='secrets') -%}
+{{ '${{ ' ~ context ~ '.' ~ name ~ ' }}' }}
+{%- endmacro -%}
 {% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
 {% endraw %}{% if publish_enabled %}{% raw %}# Runs when started: by the publish workflow once a release is published
-# (deploy_auto), or by hand, on a tag (that release) or a branch (e.g. a typo
-# in the documentation): mise run deploy. Nothing is published again.
+# (deploy_auto, auto environments), or by hand, on a tag (that release) or a
+# branch (e.g. a typo in the documentation): mise run deploy. Nothing is
+# published again.
 {% endraw %}{% else %}{% raw %}# Runs on X.Y.Z tags, or by hand (e.g. a typo in the documentation): mise run
 # deploy.
 {% endraw %}{% endif %}{% raw %}name: Deploy
@@ -11,17 +18,33 @@ on:
 {% endraw %}{% if not publish_enabled %}{% raw %}  push:
     tags: ["*.*.*"]
 {% endraw %}{% endif %}{% raw %}  workflow_dispatch:
-
+{% endraw %}{% if names %}{% raw %}    inputs:
+      environments:
+        description: Environments to deploy to, a JSON list ({% endraw %}{{ names | join(', ') }}{% raw %})
+        required: true
+        default: '{% endraw %}{{ (auto_environments or names[:1]) | tojson }}{% raw %}'
+{% endraw %}{% else %}{% raw %}
 # A new run waits for the running one: no half-done deploy.
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-
+{% endraw %}{% endif %}{% raw %}
 # No token rights by default: each job sets its own.
 permissions: {}
 
 jobs:
 {% endraw %}{% with stage = 'deploy' %}{% if stage in split_stages %}{% include '.copier/ci/run.yml.jinja' %}{% else %}{% raw %}  deploy:
+{% endraw %}{% endif %}{% if names %}{% raw %}    name: deploy (${{ matrix.environment }})
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(inputs.environments || '{% endraw %}{{ (auto_environments or names[:1]) | tojson }}{% raw %}') }}
+    # Its secrets and variables, protection rules and deployments (GitHub).
+    environment: ${{ matrix.environment }}
+    # A new run waits for the running one, per environment.
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.environment }}
+      cancel-in-progress: false
 {% endraw %}{% endif %}{% raw %}    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -34,6 +57,12 @@ jobs:
         uses: ./.brigade/ci/github/actions/deploy
         with:
 {% endraw %}{% if stage in split_stages %}{% raw %}          task: ${{ matrix.task }}
-{% endraw %}{% endif %}{% raw %}          ansible-private-key: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
-          ansible-vault-password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-{% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}
+{% endraw %}{% endif %}{% if names %}{% raw %}          environment: ${{ matrix.environment }}
+          environments: '{% endraw %}{{ names | tojson }}{% raw %}'
+{% endraw %}{% endif %}          ansible-private-key: {{ secret('ANSIBLE_PRIVATE_KEY') }}
+          ansible-vault-password: {{ secret('ANSIBLE_VAULT_PASSWORD') }}
+{%- if 'helm' in tools and helm_install %}
+          kubeconfig-data: {{ secret('KUBECONFIG_DATA') }}
+          helm-namespace: {{ secret('HELM_NAMESPACE', 'vars') }}
+{%- endif %}
+{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith -%}

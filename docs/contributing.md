@@ -111,7 +111,10 @@ PR), each in a temporary folder:
 6. the publish, to a local Nexus (`tests/fixtures/compose.yml`): Python, npm,
    Maven and image repositories, each logged in as Nexus' deploy user; then the
    deploy that publish starts on the tag (Gitea, Forgejo; GitLab: the tag's
-   pipeline).
+   pipeline);
+7. for the `helm` type, its charts installed on a k3s cluster next to the forge
+   (`tests/fixtures/compose.yml`, profile `cluster`): `dev` once published,
+   `prod` deployed by hand, each checked running in its namespace.
 
 The release, the publish and the deploy run with the checkout's files: a fix to
 them is tested before it is released.

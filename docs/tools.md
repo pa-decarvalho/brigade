@@ -92,6 +92,7 @@ list, e.g. `presets: [[ruff, ty, pytest, uv]]` in `.brigade/copier/data.yml`.
 | `opentofu` | `opentofu:lint` | `tofu fmt -check -recursive` (Terraform and OpenTofu formatting), outside hidden folders |
 | `helm` | `helm:lint` | `helm lint --strict` on each chart (a folder holding a `Chart.yaml`, outside hidden folders), after `helm dependency build` for a chart with dependencies (into its `charts/`: ignore `*.tgz` there) |
 | | `helm:publish` | With `helm_publish: true`: the charts at the tag's version, to an OCI registry on each release: see [publish](#publish) |
+| | `helm:deploy` | With `helm_install: true`: `helm upgrade --install --rollback-on-failure` on a cluster, per environment: see [helm](#helm) |
 | `kustomize` | `kustomize:build` | `kustomize build` on each kustomization (a folder holding a `kustomization.yaml`, outside hidden folders; components are built by the kustomizations using them), output discarded: fails when one does not build |
 | `kubeconform` | `kubeconform:lint` | `kubeconform -strict -ignore-missing-schemas` on the Kubernetes manifests: YAML files holding `apiVersion:` and `kind:` outside kustomizations and Helm charts (there, they are patches and templates), plus each kustomization's `kustomize build` (with `kustomize`) and each chart's `helm template` (with `helm`); downloads the schemas on each run (network), so a schema change can fail it without a project change; a resource without a schema (custom resources) is skipped |
 | `checkov` | `checkov:lint` | `checkov` on the project (Terraform, Kubernetes, Dockerfiles, workflows...), with no download from Prisma Cloud and without reading the repository's settings through the GitHub API ([config](#tool-configs)) |
@@ -522,8 +523,9 @@ published fails unless `UV_PUBLISH_CHECK_URL` is set to the index URL
 
 ## deploy
 
-It deploys the tagged version to an environment (`pages`, `ansible`). It
-publishes nothing, so it can run as often as needed.
+It deploys the tagged version to an environment (`pages`, `ansible`, `helm`
+with `helm_install: true`). It publishes nothing, so it can run as often as
+needed.
 
 CI runs it:
 
@@ -538,8 +540,57 @@ CI runs it:
   (deploy only), or retry the job in the tag's pipeline.
 
 Without the publish stage (`publish_enabled: false`), it runs on `X.Y.Z` tags
-itself. Several environments (dev, qa, prod) are not supported yet
-([#342](https://github.com/pa-decarvalho/brigade/issues/342)).
+itself.
+
+### Environments
+
+The `environments` answer lists where the same release is deployed, in order,
+each automatic or not:
+
+```yaml
+environments:
+  - {name: dev, auto: true}
+  - {name: qa}
+  - {name: prod}
+```
+
+Once a release is published, the automatic ones are deployed; the others when
+you start them, on the release's tag. The release is published once: each
+environment gets the same version, with its own settings. Empty (the default):
+one deployment, automatic with `deploy_auto`.
+
+The deploy tasks read the environment in `BRIGADE_ENVIRONMENT`. Locally:
+`BRIGADE_ENVIRONMENT=qa mise run deploy`.
+
+| | Start one by hand | Its secrets and variables |
+|---|---|---|
+| GitHub | "Run workflow" on the Deploy workflow, `environments: ["qa"]` (a JSON list: several at once); one job per environment | an [environment](https://docs.github.com/actions/deployment/targeting-different-environments) per name, holding them under their usual names (`KUBECONFIG_DATA`); its protection rules (required reviewers: public repositories or paid plans) apply |
+| Gitea, Forgejo | the same | no environment secrets: suffixed with the environment, `KUBECONFIG_DATA_QA` (`pre-prod`: `_PRE_PROD`), else the plain name for all |
+| GitLab | one job per environment in the tag's pipeline (`deploy-qa`), automatic or "Play"; "Run pipeline" offers them all | CI/CD variables scoped to the environment |
+
+A name not in the answer fails before deploying. `pages` publishes one site: on
+GitLab, from the first environment's job. The order (`qa` before `prod`) is
+yours, or the forge's protection rules'. Named deploy jobs (`jobs`) do not
+combine with environments yet.
+
+### helm
+
+`helm:deploy` (the `helm` tool, with `helm_install: true`) installs or upgrades
+each chart on a cluster, from the tag's checkout (the same chart `helm:publish`
+pushed): `helm upgrade <folder> <chart> --install --rollback-on-failure`, which
+waits until the release is ready and rolls it back when it is not
+(`.brigade/scripts/helm_charts.py`).
+
+- The cluster: the `KUBECONFIG_DATA` secret, a kubeconfig's content (written to
+  a temporary file); else kubectl's usual config (locally).
+- The namespace: the `HELM_NAMESPACE` variable, else the environment's name,
+  else the kubeconfig's; created when missing.
+- The values: the chart's `values.yaml`, plus `values-<environment>.yaml` next
+  to it when it exists (`values-prod.yaml`).
+- A kubeconfig for CI: a service account with the rights to install the
+  charts' resources in the namespace, and a token that does not expire. GitLab
+  cannot mask a value on several lines: protect the variable instead (and the
+  tags), or keep the cluster's credentials out of the repository's settings.
 
 `pages` needs GitHub or GitLab, and a `<tool>:build` task that writes the site
 to the `pages_dir` folder (`site` by default): `zensical`, `node` (a Vite app:

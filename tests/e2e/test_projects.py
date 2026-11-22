@@ -79,6 +79,8 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     path, repo = tmp_path / "demo", f"demo-{kind}-{int(time.time())}"
     path.mkdir()
     full = forge.name != "github"  # github on Gitea: GitHub's API is not there
+    if project.cluster and full:
+        registry["kubeconfig"] = up.reset_cluster(forge.server)
     env = {"MISE_YES": "1", "MISE_TRUSTED_CONFIG_PATHS": str(path)}
     # Config files of their own (tea and glab logins, no global mise config):
     # a new user's, and this machine's left untouched.
@@ -206,6 +208,8 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
             text = text.replace(f'ci: "{ci}"', f'ci: "{forge.ci}"')
         if cli_later:
             text = text.replace("tools:\n", f'tools:\n  - "{forge.cli}"\n', 1)
+        for key, value in project.data_later.items():  # JSON: YAML too
+            text += f"{key}: {json.dumps(value)}\n"
         data_file.write_text(text)
         run("mise", "run", "brigade:update", "--", "--defaults", "--vcs-ref", "HEAD")
         if cli_later:
@@ -261,5 +265,16 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     if forge.server != "gitlab":
         with note.step("deploy", go_on=True):  # started by publish (deploy_auto)
             forge.wait_runs(repo, tag_sha, "workflow_dispatch", ("deploy",), 600)
+
+    if project.cluster:
+        environments = project.data_later["environments"]
+        with note.step("cluster", go_on=True):
+            # The automatic ones, installed once published; then the others,
+            # deployed by hand on the tag; each running in its namespace.
+            for env_ in environments:
+                if not env_.get("auto"):
+                    forge.deploy_by_hand(repo, tag, tag_sha, env_["name"])
+                rollout = ("rollout", "status", "deployment/demo", "--timeout=180s")
+                up.kubectl(forge.server, "--namespace", env_["name"], *rollout)
 
     assert not note.failed, f"failed steps: {note.failed}"

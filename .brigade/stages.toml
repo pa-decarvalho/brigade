@@ -149,8 +149,13 @@ description = "Stage: release (CI runs it on pushes to the default branch)"
 dir = "{{config_root}}/.."
 depends = [{ task = "*:release", optional = true }]
 
+[tasks.publish]
+description = "Stage: publish (CI runs it on X.Y.Z tags or on a manual run)"
+dir = "{{config_root}}/.."
+depends = [{ task = "*:publish", optional = true }]
+
 [tasks.deploy]
-description = "Stage: deploy (CI runs it on X.Y.Z tags or on a manual run)"
+description = "Stage: deploy (CI runs it after publish, or on a manual run)"
 dir = "{{config_root}}/.."
 depends = [{ task = "*:deploy", optional = true }]
 

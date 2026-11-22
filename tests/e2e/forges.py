@@ -89,6 +89,11 @@ class Forge:
         """The commit a tag points to."""
         raise NotImplementedError
 
+    def deploy_by_hand(self, repo: str, tag: str, sha: str, environment: str) -> None:
+        """Deploy a tag to one environment by hand (the tag's commit: sha), then
+        wait for it to end."""
+        raise NotImplementedError
+
     # -- shared ----------------------------------------------------------------
 
     def wait_runs(
@@ -224,6 +229,22 @@ class Gitea(Forge):
         assert isinstance(branch, dict)
         return branch["commit"]["id"]
 
+    def deploy_by_hand(self, repo: str, tag: str, sha: str, environment: str) -> None:
+        def dispatched() -> int:
+            return sum(r["event"] == "workflow_dispatch" for r in self.runs(repo, sha))
+
+        before = dispatched()
+        self.api(
+            "POST",
+            f"/repos/{self.user}/{repo}/actions/workflows/deploy.yml/dispatches",
+            {
+                "ref": f"refs/tags/{tag}",
+                "inputs": {"environments": json.dumps([environment])},
+            },
+        )
+        wait_for(f"deploy run for {environment}", lambda: dispatched() > before, 120)
+        self.wait_runs(repo, sha, "workflow_dispatch", ("deploy",), 900)
+
 
 class GitHubOnGitea(Gitea):
     """A ci: github project on Gitea: its workflows, not GitHub's API."""
@@ -253,8 +274,9 @@ class GitLab(Forge):
         self.api("POST", "/projects", {"name": repo, "visibility": "public"})
 
     def set_secret(self, repo: str, name: str, value: str) -> None:
-        # GitLab masks values of 8 characters or more only.
-        body = {"key": name, "value": value, "masked": len(value) >= 8}
+        # GitLab masks values of 8 characters or more only, on one line.
+        masked = len(value) >= 8 and "\n" not in value
+        body = {"key": name, "value": value, "masked": masked}
         self.api("POST", f"/projects/{self.project(repo)}/variables", body)
 
     def login(self) -> list[str]:
@@ -323,6 +345,31 @@ class GitLab(Forge):
                     f"{job['name']}:\n{excerpt(str(log), 'ERROR: Job failed')}"
                 )
         return "\n".join(parts) or "no failed job"
+
+    def deploy_by_hand(self, repo: str, tag: str, sha: str, environment: str) -> None:
+        base = f"/projects/{self.project(repo)}"
+        pipelines = self.api("GET", f"{base}/pipelines?sha={sha}")
+        assert isinstance(pipelines, list)
+        pipeline = next(p for p in pipelines if p["ref"] == tag)
+        jobs = self.api("GET", f"{base}/pipelines/{pipeline['id']}/jobs")
+        assert isinstance(jobs, list)
+        job = next(j for j in jobs if j["name"] == f"deploy-{environment}")
+        self.api("POST", f"{base}/jobs/{job['id']}/play")
+
+        def ended() -> dict | None:
+            found = self.api("GET", f"{base}/jobs/{job['id']}")
+            assert isinstance(found, dict)
+            return (
+                found if found["status"] in ("success", "failed", "canceled") else None
+            )
+
+        status = wait_for(f"deploy-{environment}", ended, 900)["status"]
+        if status != "success":
+            log = self.api("GET", f"{base}/jobs/{job['id']}/trace")
+            self.logs.append(
+                f"### deploy-{environment}\n\n```\n{excerpt(str(log), 'ERROR: Job failed')}\n```"
+            )
+        assert status == "success", f"deploy-{environment}: {status}"
 
     def tags(self, repo: str) -> list[str]:
         found = self.api("GET", f"/projects/{self.project(repo)}/repository/tags")

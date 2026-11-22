@@ -1,11 +1,12 @@
 ---
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: 0.36.0
+_commit: 0.39.0
 _src_path: gh:pa-decarvalho/brigade
 build_commands: []
 build_enabled: true
 ci: github
 customize_tools: false
+deploy_auto: true
 deploy_commands: []
 deploy_enabled: true
 github_mirror: ''
@@ -81,6 +82,8 @@ operate_enabled: true
 operate_schedule: 0 5 * * *
 pages_dir: site
 presets: []
+publish_commands: []
+publish_enabled: true
 pypi_index: ''
 release_commands: []
 release_enabled: true

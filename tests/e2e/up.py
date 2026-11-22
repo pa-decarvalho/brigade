@@ -210,6 +210,24 @@ def reset_registries(server: str) -> dict:
     }
 
 
+# The namespaces the tests' deploys install into (projects.Project.cluster).
+NAMESPACES = ("dev", "prod")
+
+
+def kubectl(server: str, *args: str) -> str:
+    """kubectl in the cluster; its stdout."""
+    return compose(server, "exec", "-T", "k3s", "kubectl", *args)
+
+
+def reset_cluster(server: str) -> str:
+    """k3s started, the tests' namespaces deleted; its kubeconfig as the jobs
+    reach it (https://k3s:6443), for projects.Project.secrets ("{kubeconfig}")."""
+    compose(server, "--profile", "cluster", "up", "-d", "--wait", "k3s")
+    kubectl(server, "delete", "namespace", *NAMESPACES, "--ignore-not-found")
+    config = compose(server, "exec", "-T", "k3s", "cat", "/etc/rancher/k3s/k3s.yaml")
+    return config.replace("https://127.0.0.1:6443", "https://k3s:6443")
+
+
 def seed(server: str) -> str:
     """The admin's token; the runner registered and started."""
     if server in ("gitea", "forgejo"):
@@ -272,7 +290,11 @@ def docker(*args: str) -> list[str]:
 def down(server: str) -> None:
     """The forge and its data, then all Docker no longer uses (a dev machine:
     images are pulled again when needed)."""
-    compose(server, "--profile", "runner", "down", "--volumes", "--remove-orphans")
+    compose(
+        server,
+        *("--profile", "runner", "--profile", "cluster"),
+        *("down", "--volumes", "--remove-orphans"),
+    )
     (STATE / f"{server}.json").unlink(missing_ok=True)
     shutil.rmtree(TEMPLATES, ignore_errors=True)
     # Stopped containers (the jobs'), unused images, networks, build cache, then

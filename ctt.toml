@@ -210,11 +210,14 @@ assert (repo / "demo/lib/0.1.0/lib-0.1.0.jar").exists(), sorted(repo.rglob("*"))
 ]
 
 [output.".ctt/helm-github"]
-# The Kubernetes example: a Helm chart made by helm create, pushed to an OCI registry on each release,
-# and kustomize overlays, all validated by kubeconform.
+# The Kubernetes example: a Helm chart made by helm create, pushed to an OCI registry on each release
+# and installed on a cluster per environment (kind), and kustomize overlays, all validated by
+# kubeconform.
 tools = ["brigade", "yamllint", "gitleaks", "typos", "editorconfig-checker", "zizmor", "ls-lint", "helm", "kustomize", "kubeconform", "releasaurus", "renovate"]
 ci = "github"
 helm_publish = true
+helm_install = true
+environments = [{ name = "dev", auto = true }, { name = "prod" }]
 _post_tasks = [
     ["git", "init", "-q"],
     # The tools' pins and checksums, as brigade:update writes them.
@@ -229,6 +232,8 @@ pathlib.Path("renovate.json").write_text("{}\n")
 pathlib.Path("README.md").write_text("# Demo\n\nA demo Helm chart.\n")
 '''],
     ["mise", "exec", "--", "helm", "create", "charts/demo"],
+    # dev's values (values-dev.yaml, added by helm:deploy for BRIGADE_ENVIRONMENT=dev).
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib; pathlib.Path('charts/demo/values-dev.yaml').write_text('---\\nreplicaCount: 2\\n')"],
     # A kustomize base and overlay (its patch is not a whole manifest: left to kustomize build)
     # and a plain manifest, for kustomize:build and kubeconform:lint.
     ["uv", "run", "--no-project", "python", "-c", '''
@@ -274,6 +279,20 @@ tags = json.load(urllib.request.urlopen("http://127.0.0.1:5098/v2/charts/demo/ta
 assert tags == ["0.2.0"], tags
 '''],
     ["docker", "rm", "-f", "brigade-ctt-charts"],
+    # helm:deploy (the deploy stage) for dev, on a cluster in Docker (kind), with the kubeconfig as
+    # CI passes it (KUBECONFIG_DATA): the release in the dev namespace, with dev's values, and its test.
+    ["mise", "exec", "aqua:kubernetes-sigs/kind@0.33.0", "--", "kind", "delete", "cluster", "--name", "brigade-ctt"],
+    ["mise", "exec", "aqua:kubernetes-sigs/kind@0.33.0", "--", "kind", "create", "cluster", "--name", "brigade-ctt", "--kubeconfig", ".git/kubeconfig", "--wait", "180s"],
+    ["uv", "run", "--no-project", "python", "-c", '''
+import os, pathlib, subprocess
+env = {**os.environ, "KUBECONFIG_DATA": pathlib.Path(".git/kubeconfig").read_text(), "BRIGADE_ENVIRONMENT": "dev"}
+subprocess.run(["mise", "run", "deploy"], env=env, check=True)
+helm = ["mise", "exec", "--", "helm", "--kubeconfig", ".git/kubeconfig", "--namespace", "dev"]
+values = subprocess.run([*helm, "get", "values", "demo"], capture_output=True, text=True, check=True).stdout
+assert "replicaCount: 2" in values, values
+subprocess.run([*helm, "test", "demo"], check=True)
+'''],
+    ["mise", "exec", "aqua:kubernetes-sigs/kind@0.33.0", "--", "kind", "delete", "cluster", "--name", "brigade-ctt"],
 ]
 
 [output.".ctt/bun-github"]
@@ -645,6 +664,8 @@ _post_tasks = [
 # matrix jobs, replayed by gitlab-ci-local (few tools: each job imports the tool cache).
 tools = ["yamllint", "gitleaks", "typos", "ctt", "gitlab-ci-local"]
 ci = "gitlab"
+# Two environments: the deploy files per environment, linted.
+environments = [{ name = "dev", auto = true }, { name = "pre-prod" }]
 jobs = { test = [
     { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
     { name = "replay", run = ["mise run gitlab-ci-local:test"] },
@@ -666,6 +687,8 @@ _post_tasks = [
 # test stage, replayed by act.
 tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
 ci = "forgejo"
+# Two environments: the deploy files per environment, linted.
+environments = [{ name = "dev", auto = true }, { name = "pre-prod" }]
 jobs = { test = [
     { name = "ctt", run = ["mise run typos:lint", "mise run ctt:test -- -t .out"] },
     { name = "replay", run = ["mise run act:test"] },
