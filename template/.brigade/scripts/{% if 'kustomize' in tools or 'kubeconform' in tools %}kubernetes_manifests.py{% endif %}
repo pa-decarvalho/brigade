@@ -1,0 +1,104 @@
+"""kustomize:build and kubeconform:lint: build the project's kustomizations, or validate
+its Kubernetes manifests.
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+Usage: kubernetes_manifests.py build
+       kubernetes_manifests.py lint [--kustomize] [--helm] -- VALIDATOR...
+The kustomizations are the folders holding a kustomization.yaml, kustomization.yml or
+Kustomization (hidden folders and components left out: their kustomizations build
+them). build runs kustomize build on each, its output discarded: it fails when one does
+not build.
+lint runs VALIDATOR (kubeconform and its options) on the manifests: the YAML files
+holding apiVersion: and kind: outside the kustomizations and the Helm charts (there,
+they are patches and templates), with --kustomize each kustomization's kustomize build
+output, and with --helm each chart's helm template output (the charts: the folders
+holding a Chart.yaml, subcharts left out). Nothing to build or validate: nothing to do.
+"""
+
+import glob
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+KUSTOMIZATIONS = ("kustomization.yaml", "kustomization.yml", "Kustomization")
+
+
+def kustomizations() -> list[Path]:
+    found = []
+    for name in KUSTOMIZATIONS:
+        for path in glob.glob(f"**/{name}", recursive=True):
+            text = Path(path).read_text(encoding="utf-8")
+            if not re.search(r"^kind:\s*Component\s*$", text, re.MULTILINE):
+                found.append(Path(path).parent)
+    return sorted(set(found))
+
+
+def charts() -> list[Path]:
+    return [
+        path.parent
+        for path in sorted(Path(p) for p in glob.glob("**/Chart.yaml", recursive=True))
+        if not (path.parent.parent.name == "charts" and (path.parents[2] / "Chart.yaml").exists())
+    ]
+
+
+def manifests(skipped: list[Path]) -> list[Path]:
+    """The YAML files holding apiVersion: and kind:, outside the skipped folders."""
+    files = []
+    for pattern in ("**/*.yaml", "**/*.yml"):
+        for name in glob.glob(pattern, recursive=True):
+            path = Path(name)
+            if any(folder == path.parent or folder in path.parents for folder in skipped):
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if re.search(r"^apiVersion:", text, re.MULTILINE) and re.search(
+                r"^kind:", text, re.MULTILINE
+            ):
+                files.append(path)
+    return sorted(set(files))
+
+
+def output(command: list[str]) -> str:
+    """The command's output, or exit with its error."""
+    result = subprocess.run(command, capture_output=True, text=True, check=False)
+    if result.returncode:
+        sys.stderr.write(result.stderr)
+        sys.exit(result.returncode)
+    return result.stdout
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    if args == ["build"]:
+        for folder in kustomizations():
+            print(f"kustomize build {folder.as_posix()}", flush=True)
+            output(["kustomize", "build", str(folder)])
+        return 0
+    if not args or args[0] != "lint" or "--" not in args or args[-1] == "--":
+        print(__doc__, file=sys.stderr)
+        return 2
+    options, validator = args[1 : args.index("--")], args[args.index("--") + 1 :]
+    folders = kustomizations()
+    chart_folders = charts()
+    files = [str(path) for path in manifests(folders + chart_folders)]
+    with tempfile.TemporaryDirectory() as tmp:
+        if "--kustomize" in options:
+            for folder in folders:
+                out = Path(tmp, f"kustomize-{'_'.join(folder.parts) or 'root'}.yaml")
+                out.write_text(output(["kustomize", "build", str(folder)]), encoding="utf-8")
+                files.append(str(out))
+        if "--helm" in options:
+            for chart in chart_folders:
+                if "dependencies:" in (chart / "Chart.yaml").read_text(encoding="utf-8"):
+                    subprocess.run(["helm", "dependency", "build", str(chart)], check=True)
+                out = Path(tmp, f"helm-{'_'.join(chart.parts) or 'root'}.yaml")
+                out.write_text(output(["helm", "template", str(chart)]), encoding="utf-8")
+                files.append(str(out))
+        if not files:
+            return 0
+        return subprocess.call([*validator, *files])
+
+
+if __name__ == "__main__":
+    sys.exit(main())
