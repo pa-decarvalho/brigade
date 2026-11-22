@@ -18,15 +18,50 @@ class Project:
     env: dict[str, str]  # the project's mise.toml [env]: its registry, from CI
     # CI secrets; "{user}" and "{token}": the admin's; "{deploy_user}",
     # "{deploy_password}" and "{npm_token}": Nexus' (up.reset_registries);
-    # "{kubeconfig}": the cluster's (up.reset_cluster)
+    # "{kubeconfig}": the cluster's (up.reset_cluster); "{ssh_private_key}":
+    # the SSH server's key (up.reset_ssh_target)
     secrets: dict[str, str]
-    published: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
+    # (URL from this machine, text once "{tag}" is out); None: nothing published
+    published: tuple[str, str] | None
     data: dict = field(default_factory=dict)  # more Copier answers
     not_on: tuple[str, ...] = ()  # forges brigade refuses it on
-    # Its deploy installs on the cluster (up.reset_cluster, "{kubeconfig}"): the
-    # environments of its environments answer are checked there.
-    cluster: bool = False
+    # Where its deploy goes, checked per environment of its environments answer:
+    # "cluster" (k3s, up.reset_cluster), "ssh" (a server, up.reset_ssh_target).
+    target: str = ""
 
+
+# The inventory: the SSH server (up.reset_ssh_target), as root.
+ANSIBLE_INVENTORY = (
+    "---\n"
+    "all:\n"
+    "  hosts:\n"
+    "    ssh-target:\n"
+    "      ansible_user: root\n"
+    "      ansible_ssh_common_args: >-\n"
+    "        -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null\n"
+)
+
+# Writes the environment, the deployed commit and the vault's secret.
+ANSIBLE_PLAYBOOK = (
+    "---\n"
+    "- name: Deploy\n"
+    "  hosts: all\n"
+    "  gather_facts: false\n"
+    "  vars:\n"
+    "    environment_name: \"{{ lookup('env', 'BRIGADE_ENVIRONMENT') }}\"\n"
+    "    commit: \"{{ lookup('pipe', 'git rev-parse HEAD') }}\"\n"
+    "  tasks:\n"
+    "    - name: The environment's folder\n"
+    "      ansible.builtin.file:\n"
+    '        path: "/srv/{{ environment_name }}"\n'
+    "        state: directory\n"
+    '        mode: "0755"\n'
+    "    - name: The deployed version\n"
+    "      ansible.builtin.copy:\n"
+    '        content: "{{ environment_name }} {{ commit }} {{ secret }}\\n"\n'
+    '        dest: "/srv/{{ environment_name }}/version"\n'
+    '        mode: "0644"\n'
+)
 
 PYTHON_TEST = "import demo\n\n\ndef test_hello():\n    assert demo.hello()\n"
 
@@ -344,7 +379,7 @@ PROJECTS = {
             "helm_install": True,
             "environments": [{"name": "dev", "auto": True}, {"name": "prod"}],
         },
-        cluster=True,
+        target="cluster",
         files={"README.md": "# Demo\n\nA demo Helm chart.\n"},
         commands=[["helm", "create", "demo"]],
         env={"HELM_REGISTRY": "http://nexus:5000/charts"},
@@ -354,6 +389,39 @@ PROJECTS = {
             "KUBECONFIG_DATA": "{kubeconfig}",
         },
         published=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
+    ),
+    # A playbook deployed over SSH to a server (up.reset_ssh_target), with a
+    # vault-encrypted variable: dev once published, prod by hand. Not on GitLab:
+    # brigade's image has no SSH client (#139).
+    "ansible": Project(
+        tools=[*BASE, "ansible"],
+        data={"environments": [{"name": "dev", "auto": True}, {"name": "prod"}]},
+        target="ssh",
+        not_on=("gitlab",),
+        files={
+            "inventory/hosts.yml": ANSIBLE_INVENTORY,
+            "playbooks/deploy.yml": ANSIBLE_PLAYBOOK,
+            "README.md": "# Demo\n\nA demo Ansible deployment.\n",
+        },
+        commands=[
+            [
+                "sh",
+                "-c",
+                (
+                    "mkdir -p inventory/group_vars/all"
+                    " && { echo ---; ANSIBLE_VAULT_PASSWORD=brigade ansible-vault"
+                    " encrypt_string --vault-password-file"
+                    " .brigade/scripts/ansible_vault_password.py --name secret"
+                    " 'from the vault'; } > inventory/group_vars/all/vault.yml"
+                ),
+            ]
+        ],
+        env={},
+        secrets={
+            "ANSIBLE_PRIVATE_KEY": "{ssh_private_key}",
+            "ANSIBLE_VAULT_PASSWORD": "brigade",
+        },
+        published=None,
     ),
 }
 
