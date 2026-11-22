@@ -1,6 +1,6 @@
 {% raw %}---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Runs on X.Y.Z tags: mise run publish{% endraw %}{% if deploy_enabled and deploy_auto %}{% raw %}, then starts the deploy workflow on the
+# Runs on X.Y.Z tags: mise run publish{% endraw %}{% if deploy_enabled and auto_environments %}{% raw %}, then starts the deploy workflow on the
 # same tag{% endraw %}{% endif %}{% raw %}.
 name: Publish
 
@@ -46,9 +46,10 @@ jobs:
           docker-username: ${{ secrets.DOCKER_USERNAME }}
           docker-password: ${{ secrets.DOCKER_PASSWORD }}
 {% endraw %}{% if stage in split_stages %}{% include '.copier/ci/summary.yml.jinja' %}{% endif %}{% endwith %}
-{%- if deploy_enabled and deploy_auto %}{% raw %}
-  # deploy_auto: once published, the deploy workflow on the same tag (a run
-  # started with the workflow token: the exception to "it starts no workflow").
+{%- if deploy_enabled and auto_environments %}{% raw %}
+  # deploy_auto (or the auto environments): once published, the deploy
+  # workflow on the same tag (a run started with the workflow token: the
+  # exception to "it starts no workflow").
   start-deploy:
     needs: [publish]
     runs-on: ubuntu-latest
@@ -63,4 +64,4 @@ jobs:
         uses: ./.brigade/ci/github/actions/dispatch
         with:
           workflow: deploy.yml
-{% endraw %}{%- endif -%}
+{% endraw %}{% if environments %}{{ "          environments: '" ~ (auto_environments | tojson) ~ "'\n" }}{% endif %}{%- endif -%}

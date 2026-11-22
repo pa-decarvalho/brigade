@@ -19,7 +19,10 @@ applied from this checkout at its latest tag, pushed to the forge, then:
 local Nexus (`tests/fixtures/compose.yml`: pypi, npm, maven and docker
 repositories, logged in as its deploy user) and the deploy publish starts on the
 tag, all made by the checkout's files: a fix to them is tested before its
-release.
+release. The `helm` type also installs on a k3s cluster (profile `cluster`,
+`up.reset_cluster`): `dev` once published, `prod` by hand
+(`Forge.deploy_by_hand`), each checked with `kubectl rollout status`. Answers
+the latest release lacks go in `Project.data_later`, added for the update.
 The checkout is the projects' `_src_path`, mounted at the same path in the
 jobs: uncommitted changes are in it.
 

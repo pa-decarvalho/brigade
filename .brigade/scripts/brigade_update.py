@@ -5,8 +5,9 @@ Usage: brigade_update.py uvx copier@<version> update ... (from mise.toml, which 
 Copier), then the task's extra arguments. Copier refuses a dirty tree: when data.yml
 is the only change, its edits are set aside in .git/brigade-data.yml, data.yml is
 restored, and Copier reads the edits from there. Then brigade_data.py writes all the
-answers back to data.yml, so the edits and the update end up in one diff, and mise
--C .brigade lock writes the tools' pins and checksums to .brigade/mise.lock, and,
+answers back to data.yml, so the edits and the update end up in one diff, mise
+-C .brigade install then lock write the tools' pins and checksums to
+.brigade/mise.lock, and,
 outside CI, the forge CLI's check (gh, glab or tea) lists missing settings. On
 failure or Ctrl+C, the edits are put back; after a killed run, the next run puts
 them back first.
@@ -75,12 +76,16 @@ def update(command: list[str], data: str) -> int:
         return code
     # The tools' new pins and checksums, in .brigade/mise.lock: not a failure of
     # the update (offline, conflict markers left by Copier...). From .brigade/: from
-    # the root, mise locks only the project's mise.toml when there is one.
-    if subprocess.call(["mise", "-C", ".brigade", "lock"]):
-        print(
-            "brigade:update: mise -C .brigade lock failed, run it again",
-            file=sys.stderr,
-        )
+    # the root, mise locks only the project's mise.toml when there is one. Installed
+    # first: mise lock leaves out what only an install records (an npm package's
+    # provenance), which CI's install would then write, dirtying the tree that
+    # deno publish and goreleaser check.
+    for step in ("install", "lock"):
+        if subprocess.call(["mise", "-C", ".brigade", step]):
+            print(
+                f"brigade:update: mise -C .brigade {step} failed, run it again",
+                file=sys.stderr,
+            )
     check()
     return 0
 

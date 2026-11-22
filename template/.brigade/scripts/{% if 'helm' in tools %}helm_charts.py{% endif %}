@@ -1,7 +1,8 @@
-"""helm:lint and helm:publish: lint the project's Helm charts, or push them to a registry.
+"""helm:lint, helm:publish and helm:deploy: lint the project's Helm charts, push them
+to a registry, or install them on a cluster.
 
 brigade-owned: updated by mise run brigade:update, do not edit.
-Usage: helm_charts.py lint|publish
+Usage: helm_charts.py lint|publish|deploy
 The charts are the folders holding a Chart.yaml (hidden folders and the subcharts in a
 chart's charts/ left out); a chart with dependencies gets them first (helm dependency
 build: charts/*.tgz, to ignore). No chart: nothing to do.
@@ -10,6 +11,12 @@ HELM_REGISTRY (oci://host/path, http://host/path for a plain HTTP registry), els
 CI's repository: ghcr.io on GitHub, the server itself on Gitea. Login:
 HELM_REGISTRY_USERNAME and HELM_REGISTRY_PASSWORD, else the workflow token for ghcr.io;
 none for a registry that needs none.
+deploy installs or upgrades each chart from the checkout (the tag CI starts it on), as
+a release named after its folder: helm upgrade --install --rollback-on-failure (rolled
+back when it does not become ready). The cluster: KUBECONFIG_DATA (a kubeconfig's
+content, the CI secret), else kubectl's usual config. The namespace: HELM_NAMESPACE,
+else the environment (BRIGADE_ENVIRONMENT), else the kubeconfig's. With an environment,
+the chart's values-<environment>.yaml is added when it exists.
 """
 
 import glob
@@ -22,7 +29,7 @@ from pathlib import Path
 
 
 def main() -> int:
-    if sys.argv[1:] not in (["lint"], ["publish"]):
+    if sys.argv[1:] not in (["lint"], ["publish"], ["deploy"]):
         print(__doc__, file=sys.stderr)
         return 2
     charts = [
@@ -37,7 +44,30 @@ def main() -> int:
             subprocess.run(["helm", "dependency", "build", str(chart)], check=True)
     if sys.argv[1] == "lint":
         return subprocess.call(["helm", "lint", "--strict", *map(str, charts)])
+    if sys.argv[1] == "deploy":
+        return deploy(charts)
     return publish(charts)
+
+
+def deploy(charts: list[Path]) -> int:
+    environment = os.environ.get("BRIGADE_ENVIRONMENT", "")
+    namespace = os.environ.get("HELM_NAMESPACE") or environment
+    with tempfile.TemporaryDirectory() as tmp:
+        options = ["--namespace", namespace, "--create-namespace"] if namespace else []
+        if os.environ.get("KUBECONFIG_DATA"):
+            config = Path(tmp, "kubeconfig")
+            config.write_text(os.environ["KUBECONFIG_DATA"], encoding="utf-8")
+            config.chmod(0o600)
+            options += ["--kubeconfig", str(config)]
+        for chart in charts:
+            values = chart / f"values-{environment}.yaml"
+            extra = ["-f", str(values)] if environment and values.exists() else []
+            command = ["helm", "upgrade", chart.name, str(chart), "--install"]
+            command += ["--rollback-on-failure", "--timeout", "5m", *options, *extra]
+            print("$", " ".join(command), flush=True)
+            if code := subprocess.call(command):
+                return code
+    return 0
 
 
 def publish(charts: list[Path]) -> int:

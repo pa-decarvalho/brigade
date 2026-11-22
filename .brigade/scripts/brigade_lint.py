@@ -4,7 +4,8 @@ brigade-owned: updated by mise run brigade:update, do not edit.
 Renders the template at the version of .brigade/copier/answers.yml into a temporary
 folder, then compares each rendered file with the project's (but the tool configs
 that hold the project's content): data.yml differs when
-edited answers are not applied yet. Also tells when a newer brigade release is out
+edited answers are not applied yet, and fails when git ignores one (a .gitignore
+pattern such as build: anchor it, /build). Also tells when a newer brigade release is out
 (a notice, not a failure).
 """
 
@@ -91,10 +92,12 @@ def main() -> int:
         )
         rendered = pathlib.Path(tmp)
         problems = []
+        names = []
         for path in sorted(rendered.rglob("*")):
             name = path.relative_to(rendered).as_posix()
             if not path.is_file() or name == ANSWERS or name in PROJECT_CONFIGS:
                 continue
+            names.append(name)
             mine = pathlib.Path(name)
             if not mine.is_file():
                 problems.append(f"  {name}: missing")
@@ -102,6 +105,18 @@ def main() -> int:
                 problems.append(
                     f"  {name}: {'not applied' if name == DATA else 'edited'}"
                 )
+        # A .gitignore pattern such as build (gradle init) also matches brigade's
+        # files (.brigade/ci/<ci>/actions/build/): never committed, missing in CI.
+        ignored = subprocess.run(
+            ["git", "check-ignore", "-v", "--stdin"],
+            input="\n".join(names),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        for line in ignored.stdout.splitlines():
+            rule, name = line.split("\t", 1)
+            problems.append(f"  {name}: ignored by git ({rule}), never committed")
     if problems:
         print(f"brigade:lint: brigade-owned files differ from the template ({ref}):")
         print("\n".join(problems))

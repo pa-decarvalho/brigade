@@ -1,14 +1,28 @@
 ---
-deploy:
+{%- for env in environments or [{'name': ''}] %}
+{%- set auto = (env.auto | default(false)) if environments else (deploy_auto or not publish_enabled) %}
+{%- if not loop.first %}
+{% endif %}
+{{ 'deploy-' ~ env.name if env.name else 'deploy' }}:
   stage: deploy
+{%- if env.name %}
+  # Its variables (scoped to the environment) and deployments.
+  environment:
+    name: {{ env.name }}
+  variables:
+    BRIGADE_ENVIRONMENT: {{ env.name }}
+{%- endif %}
   rules:
-    # A tag: after publish, {% if publish_enabled and not deploy_auto %}when played (deploy_auto: false){% else %}by itself{% endif %}; re-deploy: retry or play the job.
+    # A tag: after publish, {{ 'by itself' if auto else 'when played' }}; re-deploy: retry or play the job.
     - if: $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+$/ && $CI_PIPELINE_SOURCE == "push"
-{%- if publish_enabled and not deploy_auto %}
+{%- if not auto %}
       when: manual
 {%- endif %}
     # "Run pipeline": deploy only, e.g. a typo in the docs (nothing published).
     - if: $CI_PIPELINE_SOURCE == "web"
+{%- if env.name %}
+      when: manual
+{%- endif %}
 {%- if 'deploy' in split_stages and 'pages' not in tools %}
   # One job per command of the stage (the jobs answer: the deploy-<name> tasks).
   parallel:
@@ -20,7 +34,11 @@ deploy:
   script:
     - mise run deploy
 {%- endif %}
-{%- if 'pages' in tools %}
+{%- if 'pages' in tools and loop.first %}
+{%- if env.name %}
+  # One site: published by the first environment's job.
+{%- endif %}
   pages:
     publish: {{ pages_dir }}
 {%- endif %}
+{%- endfor %}

@@ -213,13 +213,43 @@ deploy_enabled:
   help: Add the deploy stage?
   default: true
 
+environments:
+  type: yaml
+  help: >-
+    Environments to deploy to, in order, e.g. [{name: dev, auto: true},
+    {name: prod}] (auto: deployed once each release is published; empty: one)
+  default: []
+  when: "{{ deploy_enabled }}"
+  validator: >-
+    {%- if environments is string or environments is not sequence
+      or environments is mapping -%}
+    a list of {name, auto}
+    {%- else -%}
+    {%- for env in environments -%}
+    {%- if env is not mapping or env.name is not string
+      or not (env.name | regex_search('^[a-z][a-z0-9-]*$'))
+      or (env.auto is defined and env.auto is not sameas true
+      and env.auto is not sameas false)
+      or (env.keys() | reject('in', ['name', 'auto']) | list) -%}
+    each environment needs a name (lowercase letters, digits, -) and an
+    optional auto (true or false).
+    {%- endif -%}
+    {%- endfor -%}
+    {%- if environments | map(attribute='name') | unique | list | length
+      != environments | length -%}
+    environment names must be unique.
+    {%- endif -%}
+    {%- endif -%}
+
 deploy_auto:
   type: bool
   help: >-
     Deploy by itself once each release is published (else only when started
     by hand)?
   default: true
-  when: "{{ deploy_enabled and publish_enabled and ci != 'none' }}"
+  when: >-
+    {{ deploy_enabled and publish_enabled and ci != 'none'
+    and not environments }}
 
 deploy_commands:
   type: yaml
@@ -264,7 +294,9 @@ jobs:
     a mapping of stages to lists of jobs
     {%- else -%}
     {%- for stage, list in jobs.items() -%}
-    {%- if stage not in stages -%}
+    {%- if stage == 'deploy' and list and environments -%}
+    deploy: named jobs and environments do not combine yet.
+    {%- elif stage not in stages -%}
     {{ stage }}: not a stage ({{ stages | join(', ') }}).
     {%- elif list is string or list is not sequence -%}
     {{ stage }}: a list of jobs.

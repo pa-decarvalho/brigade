@@ -17,11 +17,18 @@ class Project:
     commands: list[list[str]]  # then run with mise exec (uv init, npm install...)
     env: dict[str, str]  # the project's mise.toml [env]: its registry, from CI
     # CI secrets; "{user}" and "{token}": the admin's; "{deploy_user}",
-    # "{deploy_password}" and "{npm_token}": Nexus' (up.reset_registries)
+    # "{deploy_password}" and "{npm_token}": Nexus' (up.reset_registries);
+    # "{kubeconfig}": the cluster's (up.reset_cluster)
     secrets: dict[str, str]
     published: tuple[str, str]  # (URL from this machine, text once "{tag}" is out)
     data: dict = field(default_factory=dict)  # more Copier answers
     not_on: tuple[str, ...] = ()  # forges brigade refuses it on
+    # Answers the latest release does not have yet, added to data.yml for the
+    # update to the checkout's HEAD.
+    data_later: dict = field(default_factory=dict)
+    # Its deploy installs on the cluster (up.reset_cluster, "{kubeconfig}"): the
+    # environments of data_later's environments answer are checked there.
+    cluster: bool = False
 
 
 PYTHON_TEST = "import demo\n\n\ndef test_hello():\n    assert demo.hello()\n"
@@ -335,12 +342,19 @@ PROJECTS = {
     "helm": Project(
         tools=[*BASE, "helm"],
         data={"helm_publish": True},
+        # Installed on the cluster: dev once published, prod by hand.
+        data_later={
+            "helm_install": True,
+            "environments": [{"name": "dev", "auto": True}, {"name": "prod"}],
+        },
+        cluster=True,
         files={"README.md": "# Demo\n\nA demo Helm chart.\n"},
         commands=[["helm", "create", "demo"]],
         env={"HELM_REGISTRY": "http://nexus:5000/charts"},
         secrets={
             "HELM_REGISTRY_USERNAME": "{deploy_user}",
             "HELM_REGISTRY_PASSWORD": "{deploy_password}",
+            "KUBECONFIG_DATA": "{kubeconfig}",
         },
         published=("http://localhost:5099/v2/charts/demo/tags/list", '"{tag}"'),
     ),

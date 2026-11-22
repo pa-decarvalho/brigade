@@ -6,6 +6,13 @@ helm_publish:
   default: false
   when: "{{ 'helm' in tools }}"
 
+helm_install:
+  type: bool
+  help: >-
+    Install the charts on a cluster in the deploy stage (helm:deploy)?
+  default: false
+  when: "{{ 'helm' in tools }}"
+
 helm_version:
   type: str
   help: Helm version (empty for brigade's)
@@ -23,3 +30,9 @@ helm_publish_command:
   help: Command of helm:publish (empty for brigade's)
   default: ""
   when: "{{ customize_tools and 'helm' in tools and helm_publish }}"
+
+helm_deploy_command:
+  type: str
+  help: Command of helm:deploy (empty for brigade's)
+  default: ""
+  when: "{{ customize_tools and 'helm' in tools and helm_install }}"

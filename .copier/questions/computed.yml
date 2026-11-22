@@ -9,3 +9,14 @@ split_stages:
     {{ jobs | dictsort | selectattr(1) | map(attribute=0) | list
     if jobs is mapping else [] }}
   when: false
+
+# The environments deploy starts by itself once a release is published: the
+# environments answer's auto ones, or, without environments, "" (one
+# unnamed deploy) when deploy_auto.
+auto_environments:
+  type: yaml
+  default: >-
+    {{ (environments | selectattr('auto', 'defined') | selectattr('auto')
+    | map(attribute='name') | list) if environments
+    else ([''] if deploy_auto else []) }}
+  when: false

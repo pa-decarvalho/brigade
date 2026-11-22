@@ -9,7 +9,7 @@ inputs:
   token:
     description: >-
       Optional bot token: the release PR and tag made with the workflow token
-      start no CI (merge the PR with a bypass, run deploy by hand)
+      start no CI (merge the PR with a bypass, run publish by hand)
     default: ""
 runs:
   using: composite

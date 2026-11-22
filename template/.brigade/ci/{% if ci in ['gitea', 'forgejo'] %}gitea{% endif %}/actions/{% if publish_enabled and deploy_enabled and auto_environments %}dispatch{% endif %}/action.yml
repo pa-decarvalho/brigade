@@ -1,0 +1,24 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+name: dispatch
+description: >-
+  Start a workflow on this run's ref (workflow_dispatch), with the job token
+inputs:
+  workflow:
+    description: The workflow file to start, e.g. deploy.yml
+    required: true
+  environments:
+    description: The environments to deploy to, a JSON list (its input)
+    default: ""
+runs:
+  using: composite
+  steps:
+    # The runner's Python, standard library only: no mise in this short job.
+    - shell: bash
+      env:
+        TOKEN: ${{ github.token }}
+        WORKFLOW: ${{ inputs.workflow }}
+        ENVIRONMENTS: ${{ inputs.environments }}
+      run: >-
+        python3 .brigade/scripts/ci_dispatch.py "$WORKFLOW"
+        ${ENVIRONMENTS:+"environments=$ENVIRONMENTS"}

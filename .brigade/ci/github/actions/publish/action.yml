@@ -1,0 +1,69 @@
+---
+# brigade-owned: updated by mise run brigade:update, do not edit.
+name: publish
+description: mise run publish, with the project's tools
+inputs:
+  task:
+    description: The task to run (a job of a split stage), else the stage
+    default: publish
+  uv-publish-token:
+    description: Index token, uv:publish (UV_PUBLISH_TOKEN secret)
+    default: ""
+  uv-publish-username:
+    description: Index user, uv:publish (UV_PUBLISH_USERNAME secret)
+    default: ""
+  uv-publish-password:
+    description: Index password, uv:publish (UV_PUBLISH_PASSWORD secret)
+    default: ""
+  npm-token:
+    description: npm registry token, node:publish (NPM_TOKEN secret)
+    default: ""
+  jsr-token:
+    description: JSR token, deno:publish (JSR_TOKEN secret)
+    default: ""
+  cargo-registry-token:
+    description: Crate token, rust:publish (CARGO_REGISTRY_TOKEN secret)
+    default: ""
+  maven-username:
+    description: Maven repository user, maven:publish (MAVEN_USERNAME secret)
+    default: ""
+  maven-password:
+    description: Maven password, maven:publish (MAVEN_PASSWORD secret)
+    default: ""
+  helm-registry-username:
+    description: Registry user, helm:publish (HELM_REGISTRY_USERNAME secret)
+    default: ""
+  helm-registry-password:
+    description: Registry password, helm:publish (HELM_REGISTRY_PASSWORD secret)
+    default: ""
+  docker-username:
+    description: Registry user, docker:publish (DOCKER_USERNAME secret)
+    default: ""
+  docker-password:
+    description: Registry password, docker:publish (DOCKER_PASSWORD secret)
+    default: ""
+runs:
+  using: composite
+  steps:
+    # Not the mise action: no cache restored where a release is published.
+    - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
+      with:
+        version: 2026.11.12
+        cache: false
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        UV_PUBLISH_TOKEN: ${{ inputs.uv-publish-token }}
+        UV_PUBLISH_USERNAME: ${{ inputs.uv-publish-username }}
+        UV_PUBLISH_PASSWORD: ${{ inputs.uv-publish-password }}
+        NPM_TOKEN: ${{ inputs.npm-token }}
+        JSR_TOKEN: ${{ inputs.jsr-token }}
+        CARGO_REGISTRY_TOKEN: ${{ inputs.cargo-registry-token }}
+        MAVEN_USERNAME: ${{ inputs.maven-username }}
+        MAVEN_PASSWORD: ${{ inputs.maven-password }}
+        HELM_REGISTRY_USERNAME: ${{ inputs.helm-registry-username }}
+        HELM_REGISTRY_PASSWORD: ${{ inputs.helm-registry-password }}
+        DOCKER_USERNAME: ${{ inputs.docker-username }}
+        DOCKER_PASSWORD: ${{ inputs.docker-password }}
+        TASK: ${{ inputs.task }}
+      run: mise run "$TASK"

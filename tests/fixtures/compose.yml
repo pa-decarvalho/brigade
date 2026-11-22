@@ -1,7 +1,8 @@
 ---
-# What every forge shares, included by <forge>/compose.yml: the network and the
-# registry deploys publish to. Jobs reach it by service name on the
-# brigade-forges network. Throwaway setup, for local tests only.
+# What every forge shares, included by <forge>/compose.yml: the network, the
+# registry publish pushes to and the cluster deploy installs on. Jobs reach
+# them by service name on the brigade-forges network. Throwaway setup, for
+# local tests only.
 networks:
   default:
     name: brigade-forges
@@ -24,5 +25,24 @@ services:
         - curl
         - -fs
         - http://localhost:8081/service/rest/v1/status/writable
+      interval: 3s
+      retries: 100
+
+  # A Kubernetes cluster (k3s) for helm:deploy, started by the tests that need
+  # one (profile cluster, tests/e2e/up.py reset_cluster). Jobs reach its API as
+  # https://k3s:6443 (in its certificate); its images come from the internet.
+  k3s:
+    image: rancher/k3s:v1.37.2-k3s1
+    profiles: [cluster]
+    command:
+      - server
+      - --tls-san=k3s
+      - --disable=traefik
+      - --disable=metrics-server
+      - --disable=servicelb
+    privileged: true
+    tmpfs: [/run, /var/run]
+    healthcheck:
+      test: [CMD, kubectl, get, --raw, /readyz]
       interval: 3s
       retries: 100

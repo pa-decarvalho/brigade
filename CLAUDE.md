@@ -85,7 +85,11 @@ mise fragment with all its tasks, and stages follow from the tools.
   job starts `deploy.yml` on the tag with `.brigade/scripts/ci_dispatch.py`
   and the job token; GitLab: a job of the tag's pipeline, `when: manual`
   without `deploy_auto`) and on manual runs (on `X.Y.Z` tags itself when
-  `publish` is disabled), and `operate`
+  `publish` is disabled); the `environments` answer (`{name, auto}`) makes it
+  one deploy per environment (`BRIGADE_ENVIRONMENT`; GitHub/Gitea: a matrix
+  over the dispatch's `environments` input, secrets scoped by GitHub
+  Environments or suffixed `<NAME>_<ENV>` on Gitea, never `secrets[...]`;
+  GitLab: one job per environment), and `operate`
   (`renovate:operate`) on manual runs and on the `operate_schedule` cron answer
   (GitLab: scheduled pipelines, since "Run pipeline" deploys). Tokens are
   secrets named after the tool's env var. Each runs `*:<stage>`; tools are
@@ -191,7 +195,8 @@ Its own env lives in `mise.toml`; it is tested only with the tools it ships (no
 hand-written test scripts), added as needed, except `tests/e2e/`: pytest
 end-to-end tests on a local forge with its runner (`tests/fixtures/`, Docker
 Compose, local only; one test per project type of `tests/e2e/projects.py`,
-`mise run <forge>:test`, or `:up`, `:run`, `:down`, the `e2e` skill), whose
+`mise run <forge>:test`, or `:up`, `:run`, `:down`, the `e2e` skill; Nexus
+for publish, a k3s cluster for the `helm` type's deploy), whose
 notes in `.forges/` list what to improve. `mise run lint` checks this repo
 (yamllint, jactionlint, zizmor, taplo, editorconfig-checker, gitleaks, typos,
 ruff, ty, rumdl, lychee, ls-lint, Renovate config schema). `mise run build`
