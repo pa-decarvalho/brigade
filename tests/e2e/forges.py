@@ -12,6 +12,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+POLL = 3  # seconds between two looks at the forge: local, so cheap
+
 
 class Forge:
     name = ""  # gitea, github (on Gitea), forgejo, gitlab
@@ -110,7 +112,7 @@ class Forge:
             started = all(any(n in r["name"].lower() for r in runs) for n in names)
             if runs and started and all(r["status"] != "running" for r in runs):
                 break
-            time.sleep(10)
+            time.sleep(POLL)
         else:
             raise AssertionError(
                 f"{event} runs of {sha[:8]} not done after {timeout}s: "
@@ -412,11 +414,11 @@ def excerpt(log: str, marker: str, size: int = 30) -> str:
 
 
 def wait_for(what: str, check, timeout: int = 900):
-    """check()'s first truthy result, polled every 10 seconds."""
+    """check()'s first truthy result, polled every POLL seconds."""
     deadline = time.time() + timeout
     while time.time() < deadline:
         found = check()
         if found:
             return found
-        time.sleep(10)
+        time.sleep(POLL)
     raise AssertionError(f"no {what} after {timeout}s")

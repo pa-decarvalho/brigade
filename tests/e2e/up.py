@@ -11,13 +11,15 @@ mise's <forge>:<action> and forges:test tasks run it:
 - test: up, run, then down, even when the tests fail;
 - all [type...] (no forge): every forge in turn (up, run, down), then the big
     cleanup, Docker-wide (stopped containers, unused images, networks, build
-    cache, volumes) and brigade's clones, even when the tests fail.
+    cache, volumes) and brigade's clones, even when the tests fail; prints
+    the table forge × type, also written to .forges/summary.md.
 The tests call ensure() themselves: run starts a forge that is not up.
 """
 
 import base64
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -368,11 +370,42 @@ FORGES = {"gitea": "gitea", "github": "gitea", "forgejo": "forgejo", "gitlab": "
 ACTIONS = ("up", "run", "down", "test")
 
 
+def summary(since: float) -> str:
+    """The notes written since a time, as one table forge × type: passed, the
+    first failed step, skipped, or error (no step: stopped before the first);
+    written to .forges/summary.md (both replaced by the next run)."""
+    results: dict[str, dict[str, str]] = {}
+    for note in STATE.glob("*-*.md"):  # <forge>-<type>.md
+        if note.stat().st_mtime < since:
+            continue
+        text = note.read_text()
+        forge, kind = text.splitlines()[0][2:].split(" (")[0].split("-", 1)
+        row = r"^\| ([a-z ]+) \| (passed|failed|skipped) \|"
+        steps = re.findall(row, text, re.MULTILINE)
+        failed = [name for name, result in steps if result == "failed"]
+        result = (
+            f"failed: {failed[0]}" if failed
+            else "error" if not steps  # stopped before its first step
+            else "skipped" if all(r == "skipped" for _, r in steps)
+            else "passed"
+        )  # fmt: skip
+        results.setdefault(kind, {})[forge] = result
+    forges = list(FORGES)
+    lines = ["| Type | " + " | ".join(forges) + " |", "|---" * (len(forges) + 1) + "|"]
+    for kind in (k for k in CASES if k in results):
+        cells = (results[kind].get(f, "") for f in forges)
+        lines.append(f"| {kind} | " + " | ".join(cells) + " |")
+    table = "\n".join(lines) + "\n"
+    (STATE / "summary.md").write_text(table)
+    return table
+
+
 def run_all(types: list[str]) -> int:
     """Every forge in turn (github on Gitea's server, before it goes down): up,
     run, down; then the big cleanup, even after a failure. Its exit code: the
     first failure's."""
     results: dict[str, int] = {}
+    start = time.time()
     try:
         for server in dict.fromkeys(FORGES.values()):
             ensure(server)
@@ -383,6 +416,7 @@ def run_all(types: list[str]) -> int:
                 down(server)
     finally:
         clean()
+        print(summary(start))
         for forge, code in results.items():
             print(f"{forge}: {'passed' if code == 0 else f'failed ({code})'}")
     return next((code for code in results.values() if code), 0)

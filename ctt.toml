@@ -684,8 +684,8 @@ _post_tasks = [
 
 [output.".ctt/template-forgejo"]
 # A Copier template project on Forgejo (Gitea's files in .forgejo/workflows/): jobs splits the
-# test stage, replayed by act.
-tools = ["yamllint", "gitleaks", "typos", "ctt", "act"]
+# test stage, replayed by act. Biome formats the CI files (Gitea's YAML, one blank line at most).
+tools = ["yamllint", "gitleaks", "typos", "biome", "ctt", "act"]
 ci = "forgejo"
 # Two environments: the deploy files per environment, linted.
 environments = [{ name = "dev", auto = true }, { name = "pre-prod" }]

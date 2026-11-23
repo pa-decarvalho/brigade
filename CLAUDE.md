@@ -198,7 +198,8 @@ Compose, local only; one test per project type of `tests/e2e/projects.py`,
 `mise run <forge>:test`, or `:up`, `:run`, `:down`, `mise run forges:test` for
 every forge then the Docker-wide cleanup, the `e2e` skill; Nexus
 for publish, a k3s cluster for the `helm` type's deploy), whose
-notes in `.forges/` list what to improve. `mise run lint` checks this repo
+notes in `.forges/` hold each step and the failed jobs' logs, and a summary
+forge × type after `forges:test`. `mise run lint` checks this repo
 (yamllint, jactionlint, zizmor, taplo, editorconfig-checker, gitleaks, typos,
 ruff, ty, rumdl, lychee, ls-lint, Renovate config schema). `mise run build`
 builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict
