@@ -425,6 +425,13 @@ again, so running `publish` again on the same tag fails or does nothing new (see
 each tool below). To install a release again, run [deploy](#deploy), which
 publishes nothing.
 
+`deno publish`, `cargo publish` and GoReleaser refuse a tree with uncommitted
+changes. In CI, mise can rewrite `.brigade/mise.lock` (it records an npm tool's
+provenance when it installs it, which `mise lock` leaves out): when that file
+and `.brigade/.mise/` are the only changes, `deno:publish` and `rust:publish`
+add `--allow-dirty`, and `goreleaser:publish` adds `--skip=validate` (which also
+skips GoReleaser's tag checks). Any other change still stops them.
+
 `goreleaser` builds the Go binaries for Linux, macOS and Windows and attaches
 the archives and their checksums to the release Releasaurus made for the tag (it
 needs Go: the `go` tool). GitHub: with the workflow token. GitLab: add a
