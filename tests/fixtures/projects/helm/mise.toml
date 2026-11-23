@@ -1,0 +1,3 @@
+# The registry the CI publishes to (tests/fixtures/compose.yml's Nexus).
+[env]
+HELM_REGISTRY = "http://nexus:5000/charts"

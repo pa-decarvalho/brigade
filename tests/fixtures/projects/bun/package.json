@@ -1,0 +1,16 @@
+{
+	"name": "@brigade-forges/bun-demo",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "bun build src/index.ts --outdir dist --target node",
+		"prepublishOnly": "bun run build"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

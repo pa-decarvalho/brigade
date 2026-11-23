@@ -24,3 +24,7 @@ indent_size = 2
 trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
+
+# The end-to-end test projects' JSON: Biome's style (tabs), which their own lint checks.
+[tests/fixtures/projects/{node,bun}/*.json]
+indent_style = tab

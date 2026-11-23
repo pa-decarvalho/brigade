@@ -1,0 +1,5 @@
+# The registry the CI publishes to (tests/fixtures/compose.yml's Nexus).
+[env]
+# The host's Docker daemon pushes the image; helm pushes from the job.
+DOCKER_IMAGE = "localhost:5099/demo"
+HELM_REGISTRY = "http://nexus:5000/charts"
