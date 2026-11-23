@@ -59,7 +59,7 @@ _post_tasks = [
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
     # goreleaser:publish without publishing: a snapshot builds every archive and the checksums.
-    ["mise", "exec", "--", "goreleaser", "release", "--snapshot", "--clean", "-f", ".brigade/configs/goreleaser.yaml"],
+    ["mise", "run", "goreleaser:publish", "--", "--snapshot"],
     ["uv", "run", "--no-project", "python", "-c", "import pathlib\nnames = [p.name for p in pathlib.Path('dist').iterdir()]\nassert any('linux_amd64' in n for n in names) and any('windows_amd64' in n for n in names) and any(n.endswith('checksums.txt') for n in names), names"],
 ]
 
@@ -92,7 +92,7 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo command.\n")
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
     # rust:publish without publishing: cargo packages and checks the crate.
-    ["mise", "exec", "--", "cargo", "publish", "--dry-run"],
+    ["mise", "run", "rust:publish", "--", "--dry-run"],
 ]
 
 [output.".ctt/java-maven-github"]
@@ -398,8 +398,11 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built
     ["mise", "run", "test"],
     # Renders the local template (HEAD) and compares: the generated files are untouched.
     ["mise", "run", "brigade:lint"],
-    # No deno:publish -- --dry-run until #339: in CI, mise rewrites .brigade/mise.lock and deno
-    # publish refuses the dirty tree.
+    # deno:publish on a tag, without uploading (no local JSR): the package checked at the tag's
+    # version. In CI, mise rewrites .brigade/mise.lock (#339): allowed; any other change is not.
+    ["git", "tag", "0.2.0"],
+    ["mise", "run", "deno:publish", "--", "--dry-run"],
+    ["uv", "run", "--no-project", "python", "-c", "import pathlib, subprocess; p = pathlib.Path('mod.ts'); p.write_text(p.read_text() + '// changed\\n'); r = subprocess.run(['mise', 'run', 'deno:publish', '--', '--dry-run'], capture_output=True, text=True); subprocess.run(['git', 'checkout', 'mod.ts'], check=True); assert r.returncode and 'uncommitted changes' in r.stdout + r.stderr, r.stdout + r.stderr"],
 ]
 
 [output.".ctt/hugo-github"]

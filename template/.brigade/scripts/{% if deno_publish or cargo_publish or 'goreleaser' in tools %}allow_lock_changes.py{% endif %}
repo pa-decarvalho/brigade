@@ -1,0 +1,36 @@
+"""Run a publish command that refuses a dirty tree, tolerating mise's lockfile.
+
+brigade-owned: updated by mise run brigade:update, do not edit.
+Usage: allow_lock_changes.py <flag> <command...>. deno publish, cargo publish and
+GoReleaser refuse uncommitted changes. mise can rewrite .brigade/mise.lock (and
+.brigade/.mise/) in CI: an install records an npm tool's provenance, which mise
+lock leaves out (#339). When those are the only changes, the flag that allows a
+dirty tree is added to the command; any other change still stops it.
+"""
+
+import subprocess
+import sys
+
+LOCKS = (".brigade/mise.lock", ".brigade/.mise/")
+
+
+def main() -> int:
+    flag, command = sys.argv[1], sys.argv[2:]
+    # Refreshed first: a file whose content did not change (only its date, as
+    # mise's rewrite on macOS) is no change.
+    subprocess.run(["git", "update-index", "-q", "--refresh"], check=False)
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=all"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    changed = [line[3:] for line in status]
+    if changed and all(path.startswith(LOCKS) for path in changed):
+        print(f"mise's lockfile changed ({', '.join(changed)}): {flag}", file=sys.stderr)
+        command.append(flag)
+    return subprocess.call(command)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
