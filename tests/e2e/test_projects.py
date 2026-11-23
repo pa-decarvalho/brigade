@@ -86,7 +86,9 @@ def test_project(kind: str, workflow: str, forge: Forge, note: Note, tmp_path) -
     direct: the update merges first, then the feat merge releases at once."""
     project = PROJECTS[kind]
     if forge.server in project.not_on:
-        pytest.skip(f"brigade refuses {kind} on {forge.server}")
+        reason = f"brigade refuses {kind} on {forge.server}"
+        note.skip("create", reason=reason)  # for the summary
+        pytest.skip(reason)
     registry = up.reset_registries(forge.server)
     path, repo = tmp_path / "demo", f"demo-{kind}-{int(time.time())}"
     path.mkdir()

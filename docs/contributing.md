@@ -138,8 +138,9 @@ jobs, uncommitted changes included. GitLab takes a few minutes to start; with
 Nexus and the jobs, it peaks at about 3.2 GB of RAM (Docker needs 4 GB).
 `github:up` and `github:down` act on Gitea, the same server.
 Each test writes a note in `.forges/`: every step's result and
-time, the failed jobs' last log lines, and a "To improve" section to turn into
-issues.
+time, the failed jobs' last log lines. `forges:test` ends with a table forge ×
+type (passed, the first failed step, skipped), also written to
+`.forges/summary.md`; each run replaces the notes.
 
 `mise run build` builds this site in strict mode, which fails on broken links.
 CI deploys it (`pages:deploy`, to the `gh-pages` branch) on each release tag and

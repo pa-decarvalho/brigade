@@ -39,7 +39,6 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 {% endraw %}{% endif %}{% raw %}
-
 jobs:
 {% endraw %}{% with stage = 'deploy' %}{% if stage in split_stages %}{% include '.copier/ci/run.yml.jinja' %}{% else %}{% raw %}  deploy:
 {% endraw %}{% endif %}{% if names %}{% raw %}    name: deploy (${{ matrix.environment }})

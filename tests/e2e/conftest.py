@@ -2,8 +2,8 @@
 
 Run on this machine: pytest tests/e2e --forge <gitea|github|forgejo|gitlab>
 (mise run <forge>:run, or <forge>:test). The forge starts on first use (up.py).
-Each test writes .forges/<date>-<forge>-<project>.md: every step's result and
-time, and the failed jobs' last log lines.
+Each test writes .forges/<forge>-<project>.md (replaced by the next run): every
+step's result and time, and the failed jobs' last log lines.
 """
 
 import contextlib
@@ -83,8 +83,8 @@ class Note:
             lines.append(f"| {name} | {outcome} | {seconds:.0f}s | {detail} |")
         if forge.logs:
             lines += ["", "## Failed jobs", "", *forge.logs]
-        lines += ["", "## To improve", "", "-", ""]
-        note = up.STATE / f"{time.strftime('%Y%m%d-%H%M')}-{self.title}.md"
+        lines.append("")
+        note = up.STATE / f"{self.title}.md"
         note.write_text("\n".join(lines))
         return note
 

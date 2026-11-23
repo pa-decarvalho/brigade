@@ -50,8 +50,8 @@ API). No Renovate: its update is what `brigade:update` does.
 
 ## Read the results
 
-Each test writes `.forges/<date>-<forge>-<type>.md`: the steps (result, time,
-error), the failed jobs' last log lines. For each failure:
+Each test writes `.forges/<forge>-<type>.md` (the next run replaces it): the
+steps (result, time, error), the failed jobs' last log lines. For each failure:
 
 1. Test or brigade? A wrong assumption in the tests (a registry not reset, a
    timeout, a forge API detail) is fixed in `tests/e2e/`. A generated file, task
@@ -63,8 +63,8 @@ error), the failed jobs' last log lines. For each failure:
    #302 Releasaurus on Forgejo): `not_on` in `projects.py`, or a comment,
    never a silent skip.
 
-Fill the note's "To improve" section, then report the table forge × type to the
-user.
+Then report the table forge × type to the user (printed by `forges:test`, and
+in `.forges/summary.md`).
 
 ## Add a project type
 
