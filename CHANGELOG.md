@@ -1,3 +1,15 @@
+# [0.40.2](https://github.com/pa-decarvalho/brigade/compare/0.40.1...0.40.2) - 2026-11-23
+
+### 🐛 Bug Fixes
+
+- _(deps)_ update template (#358) [_(40e14dfa)_](https://github.com/pa-decarvalho/brigade/commit/40e14dfab08308f3937f805d50048bea1498f2da)
+
+- publish despite mise's lockfile rewrite in CI (deno, cargo, GoReleaser) (#356) [_(84cab07e)_](https://github.com/pa-decarvalho/brigade/commit/84cab07e31ef395d99e4ec1cb51025ac5cd01b33)
+
+- one blank line before jobs in the Gitea deploy workflow, which Biome refused (#355) [_(d47bc1bd)_](https://github.com/pa-decarvalho/brigade/commit/d47bc1bdc4892fab6a55e5f7417b900f8cb805d0)
+
+- helm:deploy names the release after the chart, for a chart at the root (#353) [_(d68603af)_](https://github.com/pa-decarvalho/brigade/commit/d68603af2161b186124721faec3ade352bf4b9b4)
+
 # [0.40.1](https://github.com/pa-decarvalho/brigade/compare/0.40.0...0.40.1) - 2026-11-22
 
 ### 🐛 Bug Fixes
