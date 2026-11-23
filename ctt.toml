@@ -401,6 +401,8 @@ pathlib.Path("README.md").write_text("# Demo\n\nA demo TypeScript library, built
     # deno:publish on a tag, without uploading (no local JSR): the package checked at the tag's
     # version, and the tree still clean after the stages (deno publish refuses uncommitted changes).
     ["git", "tag", "0.2.0"],
+    # The stages left the tree clean (#339): else the diff, in the log.
+    ["git", "diff", "--exit-code"],
     ["mise", "run", "deno:publish", "--", "--dry-run"],
 ]
 
