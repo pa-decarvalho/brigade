@@ -1,12 +1,12 @@
 ---
 # brigade-owned: updated by mise run brigade:update, do not edit.
-# Runs when started: by the publish workflow once a release is published
-# (deploy_auto, auto environments), or by hand, on a tag (that release) or a
-# branch (e.g. a typo in the documentation): mise run deploy. Nothing is
-# published again.
+# Runs on X.Y.Z tags, or by hand (e.g. a typo in the documentation): mise run
+# deploy.
 name: Deploy
 
 on:
+  push:
+    tags: ["*.*.*"]
   workflow_dispatch:
 
 # A new run waits for the running one: no half-done deploy.
