@@ -12,6 +12,9 @@
     "automerge": true,
     // Your project's dependencies.
     "extends": ["config:recommended"],
+    // Its Java runtime presets come after this file's rules and would take template/'s JDK pins
+    // out of their group, to a version the java-version datasource does not have.
+    "ignorePresets": ["group:java", "workarounds:javaLTSVersions"],
     // brigade itself: on a new release, its PR runs brigade:update (Renovate's own change to
     // _commit is undone first, since Copier diffs from the current version), in its own PR
     // (Copier needs a clean tree).
