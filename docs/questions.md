@@ -58,6 +58,20 @@ sorted, with JSON values (double quotes) and lists indented under their key:
   need `customize_tools: true`), is dropped.
 - Your comments and formatting are not kept.
 
+To add or remove tools, `brigade:add` and `brigade:remove` edit `tools` in
+`data.yml`, then run `brigade:update`:
+
+```sh
+mise run brigade:add ruff pytest
+mise run brigade:remove hadolint
+```
+
+Both end with the project's tools, the ones you can remove; the
+[catalog](tools.md) lists the ones you can add. A new tool's questions take
+their defaults. When the update fails (an unknown
+tool, one your `ci` refuses, other uncommitted changes), `data.yml` is put back
+as it was.
+
 When `data.yml` is your only change, `brigade:update` applies it without a
 commit first: review and commit the edit and the update together. Your edits are
 kept if the update fails or is stopped; after a killed run, the next

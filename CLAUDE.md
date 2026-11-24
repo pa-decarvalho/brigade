@@ -113,6 +113,12 @@ mise fragment with all its tasks, and stages follow from the tools.
   value and stays until changed, an empty answer takes brigade's value in the
   Jinja file. Keep Jinja out of other files that hold pins (Renovate parses
   them): conditions go in file names or in pin-free files.
+- Task arguments are declared with a `usage` spec (`mise run <task> --help`);
+  a Python script reads them from mise's `usage_*` variables (`shlex.split`
+  for a variadic one), not from the `run` string, so that no shell quoting
+  differs between OSes (`brigade:update`'s `--vcs-ref`, `--defaults`, then
+  Copier's other options). Tasks that only forward a tool's own CLI keep `--`
+  (`mise run ctt:test -- -t .ctt/<variant>`, `molecule:converge -- -s <name>`).
 - Add a stage (build, release, publish, deploy...) only when a tool needs it.
 - brigade-owned CI files only install mise and call `mise run <task>`.
   Forgejo (`ci: forgejo`) uses Gitea's files (`.forgejo/workflows/`, the same
@@ -148,8 +154,11 @@ mise fragment with all its tasks, and stages follow from the tools.
   may redefine a key of another (`default.yml` holds the image, cache and
   `before_script`).
 - Linters and formatters are mise tools, not project dependencies.
-- `brigade:*` tasks are brigade's own helpers (`brigade:update`), not pipeline
-  stages, except `brigade:lint`, the task of the
+- `brigade:*` tasks are brigade's own helpers (`brigade:update`; `brigade:add`
+  and `brigade:remove`, which edit `tools` in `data.yml` with
+  `.brigade/scripts/brigade_tools.py`, then run `brigade:update`, putting
+  `data.yml` back on failure), not pipeline stages, except `brigade:lint`, the
+  task of the
   `brigade` tool (selected by default): it renders the template at `_commit`
   (`HEAD` for a local `_src_path`) with the answers and fails when a
   brigade-owned file differs (`.brigade/scripts/brigade_lint.py`); it also
@@ -162,7 +171,7 @@ mise fragment with all its tasks, and stages follow from the tools.
   `.brigade/copier/answers.yml`
   (`_commit`, `_src_path`, `git-tags`) whose `postUpgradeTasks` undo Renovate's
   `_commit` change and run
-  `mise run brigade:update -- --defaults --vcs-ref <version>`, so each release
+  `mise run brigade:update --defaults --vcs-ref <version>`, so each release
   opens an update PR on every forge. Every other task is `<tool>:<action>`.
   `act:test` and `gitlab-ci-local:test` replay the CI in Docker and do nothing
   inside a replay (`ACT`, `GITLAB_CI` set), so the replayed test job does not
