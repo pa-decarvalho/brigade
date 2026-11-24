@@ -138,7 +138,9 @@ Releasaurus workflows, `python`: a release PR; `python-direct`: no PR) is:
    commit, the vault's value).
 
 The test projects' files are linted with this repo (`mise run lint`): their
-Helm charts start with `# yamllint disable-file` (Go templates).
+Helm charts start with `# yamllint disable-file` (Go templates), so
+none of their templates may render empty (a comment alone is not a manifest)
+nor start with `{{-` (it joins the first line to the comment).
 
 The release, the publish and the deploy run with the checkout's files: a fix to
 them is tested before it is released.
@@ -148,10 +150,10 @@ jobs, uncommitted changes included. GitLab takes a few minutes to start; with
 Nexus and the jobs, it peaks at about 3.2 GB of RAM (Docker needs 4 GB).
 `github` acts on Gitea, the same server. Each type's state is in
 `.forges/<forge>-<type>.json`, its project in `/tmp/brigade-forges/projects/`,
-and its note in `.forges/<forge>-<type>.md`: every step's result and time, the
-failed jobs' last log lines. `e2e:test all` ends with a table forge × type
-(passed, the first failed step, skipped), also written to `.forges/summary.md`;
-each run replaces the notes.
+and its note in `.forges/<forge>-<type>.md`: its time, every step's result and
+time, the failed jobs' last log lines. `e2e:test all` ends with a table forge ×
+type (passed, the first failed step, skipped; with the type's time) and the
+run's time, also written to `.forges/summary.md`; each run replaces the notes.
 
 `mise run build` builds this site in strict mode, which fails on broken links.
 CI deploys it (`pages:deploy`, to the `gh-pages` branch) on each release tag and

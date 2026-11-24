@@ -116,6 +116,15 @@ def fetch(url: str) -> str:
         return ""
 
 
+def duration(seconds: float) -> str:
+    """1h02m, 5m12s or 40s."""
+    minutes, secs = divmod(round(seconds), 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}h{minutes:02d}m"
+    return f"{minutes}m{secs:02d}s" if minutes else f"{secs}s"
+
+
 def data_args(data: dict) -> list[str]:
     """Copier --data options: strings as is, the rest as JSON (YAML)."""
     values = {k: v if isinstance(v, str) else json.dumps(v) for k, v in data.items()}
@@ -209,8 +218,11 @@ class Scenario:
         lines += [
             f"Forge: {self.forge.url}/{self.forge.user}/{repo}; project: {self.path}"
         ]
+        steps = self.state.get("steps", {})
+        total = sum(seconds for _, seconds, _ in steps.values())
+        lines += [f"Time: {duration(total)} (the steps')"]
         lines += ["", "| Step | Result | Time | Detail |", "|---|---|---|---|"]
-        for name, (outcome, seconds, message) in self.state.get("steps", {}).items():
+        for name, (outcome, seconds, message) in steps.items():
             detail = " ".join(message.split())[:300].replace("|", "\\|")
             lines.append(f"| {name} | {outcome} | {seconds:.0f}s | {detail} |")
         if self.state.get("logs"):
@@ -538,16 +550,18 @@ def test(forge: str, types: list[str]) -> int:
 
 def summary(since: float) -> str:
     """The notes written since a time, as one table forge x type: passed, the
-    first failed step, skipped, or error (no step: stopped before the first);
-    written to .forges/summary.md (both replaced by the next run)."""
+    first failed step, skipped, or error (no step: stopped before the first),
+    with the type's time; then the run's time, since then. Written to
+    .forges/summary.md (both replaced by the next run)."""
     results: dict[str, dict[str, str]] = {}
     for note in up.STATE.glob("*-*.md"):  # <forge>-<type>.md
         if note.stat().st_mtime < since:
             continue
         text = note.read_text()
         forge, kind = text.splitlines()[0][2:].split(" (")[0].split("-", 1)
-        row = r"^\| ([a-z ]+) \| (passed|failed|skipped) \|"
-        steps = re.findall(row, text, re.MULTILINE)
+        row = r"^\| ([a-z ]+) \| (passed|failed|skipped) \| (\d+)s \|"
+        found = re.findall(row, text, re.MULTILINE)
+        steps = [(name, result) for name, result, _ in found]
         failed = [name for name, result in steps if result == "failed"]
         result = (
             f"failed: {failed[0]}" if failed
@@ -555,11 +569,14 @@ def summary(since: float) -> str:
             else "skipped" if all(r == "skipped" for _, r in steps)
             else "passed"
         )  # fmt: skip
+        if any(r != "skipped" for _, r in steps):
+            result += f" ({duration(sum(int(t) for *_, t in found))})"
         results.setdefault(kind, {})[forge] = result
     lines = ["| Type | " + " | ".join(FORGES) + " |", "|---" * (len(FORGES) + 1) + "|"]
     for kind in (k for k in CASES if k in results):
         cells = (results[kind].get(f, "") for f in FORGES)
         lines.append(f"| {kind} | " + " | ".join(cells) + " |")
+    lines += ["", f"Time: {duration(time.time() - since)}"]
     table = "\n".join(lines) + "\n"
     (up.STATE / "summary.md").write_text(table)
     return table

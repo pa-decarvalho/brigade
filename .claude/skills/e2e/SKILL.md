@@ -62,7 +62,8 @@ name (`http://gitea:3000`): replace with the URL.
 ## Read the results
 
 Each type writes `.forges/<forge>-<type>.md` (started over with the type): the
-steps (result, time, error), the failed jobs' last log lines. For each failure:
+type's time, its steps (result, time, error), the failed jobs' last log
+lines; the summary adds each type's time and the run's. For each failure:
 
 1. Test or brigade? A wrong assumption in the tests (a registry not reset, a
    timeout, a forge API detail) is fixed in `tests/e2e/`. A generated file, task
@@ -83,7 +84,9 @@ in `.forges/summary.md`).
   and lockfiles, made once with its ecosystem's tool, and a `mise.toml` with
   its registry's `[env]` (`http://nexus:8081/repository/<name>/`, the jobs);
   they pass `mise run lint` (a Helm chart's YAML starts with
-  `# yamllint disable-file`).
+  `# yamllint disable-file`, so no template may render empty: helm refuses
+  a manifest that is only a comment; nor start with `{{-`, which joins its
+  first line to the comment).
 - An entry in `PROJECTS` (`tests/e2e/projects.py`): its tools (copy a ctt
   variant's), secrets, the published URL (from this machine) and the text it
   must hold, `not_on` for the forges brigade refuses it on.
