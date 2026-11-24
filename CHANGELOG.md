@@ -1,3 +1,9 @@
+# [0.40.3](https://github.com/pa-decarvalho/brigade/compare/0.40.2...0.40.3) - 2026-11-24
+
+### 🐛 Bug Fixes
+
+- Renovate on a Copier template with dependencies keeps the JDK pins in its group; Renovate updates the tests' pins (#362) [_(09c5ad87)_](https://github.com/pa-decarvalho/brigade/commit/09c5ad8779df2f4c79698a60c2a390c6f21d2b2d)
+
 # [0.40.2](https://github.com/pa-decarvalho/brigade/compare/0.40.1...0.40.2) - 2026-11-23
 
 ### 🐛 Bug Fixes
