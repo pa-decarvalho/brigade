@@ -1,3 +1,13 @@
+# [0.41.0](https://github.com/pa-decarvalho/brigade/compare/0.40.3...0.41.0) - 2026-11-24
+
+### 🚀 Features
+
+- brigade:add and brigade:remove, and brigade:update's options in its help (#370) [_(790b119d)_](https://github.com/pa-decarvalho/brigade/commit/790b119dc5e52f315d9675678ee632464ac72f5a)
+
+### 🐛 Bug Fixes
+
+- Renovate's template update stays a fix (a release) with dependencies (#368) [_(1b72279e)_](https://github.com/pa-decarvalho/brigade/commit/1b72279e2386484f902b86c67e9bb8d062d1c48f)
+
 # [0.40.3](https://github.com/pa-decarvalho/brigade/compare/0.40.2...0.40.3) - 2026-11-24
 
 ### 🐛 Bug Fixes
