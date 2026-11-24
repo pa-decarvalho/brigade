@@ -10,5 +10,23 @@ uv = "0.13.9"
 [tasks."brigade:update"]
 description = "Update brigade files from the template"
 dir = "{{config_root}}/.."
-# Applies data.yml, even uncommitted (see the script); extra arguments go to Copier.
+# Applies data.yml, even uncommitted (see the script). The script reads the arguments from
+# mise's usage_* variables: no shell quoting, the same on every OS.
+usage = '''
+flag "--vcs-ref <version>" help="The brigade version (a tag) to update to; default: the latest release"
+flag "--defaults" help="Do not ask new questions: take their defaults"
+arg "[copier]..." var=#true help="Other copier update options, e.g. --pretend"
+'''
 run = "uv run --no-project python .brigade/scripts/brigade_update.py uvx copier@9.19.1 update -a .brigade/copier/answers.yml"
+
+[tasks."brigade:add"]
+description = "Add tools to the project (the tools answer), then update brigade files"
+dir = "{{config_root}}/.."
+usage = 'arg "<tool>..." var=#true help="Tools of the catalog (docs/tools.md), e.g. ruff"'
+run = "uv run --no-project python .brigade/scripts/brigade_tools.py add"
+
+[tasks."brigade:remove"]
+description = "Remove tools from the project (the tools answer), then update brigade files"
+dir = "{{config_root}}/.."
+usage = 'arg "<tool>..." var=#true help="Tools to remove, e.g. ruff"'
+run = "uv run --no-project python .brigade/scripts/brigade_tools.py remove"

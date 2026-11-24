@@ -12,6 +12,11 @@ This runs `copier update` with the answers in `.brigade/copier/answers.yml`
 brigade release: new tool versions, new tasks, CI changes. Commit your work
 first: Copier needs a clean git tree, and shows conflicts as inline markers.
 
+`mise run brigade:update --help` lists its options: `--vcs-ref X.Y.Z` updates
+to that version instead of the latest, `--defaults` takes the default of each
+new question instead of asking it, and Copier's other `copier update` options
+follow (`mise run brigade:update --pretend`).
+
 With the `renovate` tool, Renovate opens this update as a PR on each release
 (see [brigade updates](tools.md#brigade-updates)); with the `brigade` tool,
 `brigade:lint` tells when a release is out.

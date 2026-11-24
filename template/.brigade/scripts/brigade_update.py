@@ -2,7 +2,8 @@
 
 brigade-owned: updated by mise run brigade:update, do not edit.
 Usage: brigade_update.py uvx copier@<version> update ... (from mise.toml, which pins
-Copier), then the task's extra arguments. Copier refuses a dirty tree: when data.yml
+Copier); the task's arguments (--vcs-ref, --defaults, Copier's other options) come
+from mise's usage_* variables. Copier refuses a dirty tree: when data.yml
 is the only change, its edits are set aside in .git/brigade-data.yml, data.yml is
 restored, and Copier reads the edits from there. Then brigade_data.py writes all the
 answers back to data.yml, so the edits and the update end up in one diff, mise
@@ -15,6 +16,7 @@ them back first.
 
 import os
 import pathlib
+import shlex
 import subprocess
 import sys
 
@@ -22,7 +24,7 @@ DATA = ".brigade/copier/data.yml"
 
 
 def main() -> int:
-    command = sys.argv[1:]
+    command = sys.argv[1:] + options()
     data = pathlib.Path(DATA)
     # In .git/: out of the work tree, which Copier needs clean, and kept if killed.
     aside = pathlib.Path(git("rev-parse", "--git-path", "brigade-data.yml").strip())
@@ -51,6 +53,17 @@ def main() -> int:
             print(f"brigade:update: failed, {DATA} keeps your edits", file=sys.stderr)
         aside.unlink()
     return code
+
+
+def options() -> list[str]:
+    """The task's arguments, from the variables mise sets (usage in mise.toml)."""
+    env = os.environ
+    vcs_ref = env.get("usage_vcs_ref")
+    return (
+        (["--vcs-ref", vcs_ref] if vcs_ref else [])
+        + (["--defaults"] if env.get("usage_defaults") == "true" else [])
+        + shlex.split(env.get("usage_copier", ""))
+    )
 
 
 def git(*args: str) -> str:
