@@ -216,8 +216,9 @@ after `e2e:test all`. `mise run lint` checks this repo
 ruff, ty, rumdl, lychee, ls-lint, Renovate config schema). `mise run build`
 builds the documentation site (`docs/`, `zensical.toml`) with Zensical in strict
 mode, which fails on broken links; `mise run deploy` pushes it to the `gh-pages`
-branch (CI: after the publish of each `X.Y.Z` tag, made with the
-`RELEASAURUS_GITHUB_TOKEN` secret, and manual runs; a `docs:` change waits for
+branch (CI: on each `X.Y.Z` tag, made with the `RELEASAURUS_GITHUB_TOKEN`
+secret (brigade sets `publish_enabled: false`: nothing to publish), and
+manual runs; a `docs:` change waits for
 the next release or a manual run).
 `mise run test` renders each `ctt.toml` variant into `.ctt/` (`ctt:test`),
 creates a real project there with the ecosystem's tool, then runs its mise
