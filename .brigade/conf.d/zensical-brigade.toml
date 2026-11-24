@@ -1,6 +1,6 @@
 [tools]
 # renovate: datasource=pypi depName=zensical
-"pipx:zensical" = { version = "0.1.2", python = "3.14" }
+"pipx:zensical" = { version = "0.1.3", python = "3.14" }
 
 [tasks."zensical:build"]
 description = "Build the documentation site with Zensical (needs zensical.toml)"
