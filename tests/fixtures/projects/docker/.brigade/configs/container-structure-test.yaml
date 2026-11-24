@@ -1,0 +1,9 @@
+---
+schemaVersion: 2.0.0
+metadataTest:
+  user: "65534"
+  entrypoint: [/app/.venv/bin/demo]
+commandTests:
+  - name: the app runs
+    command: /app/.venv/bin/demo
+    expectedOutput: [Hello from demo!]

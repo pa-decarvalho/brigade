@@ -1,0 +1,21 @@
+{
+	"name": "@brigade-forges/demo",
+	"version": "0.1.0",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "node --test",
+		"prepublishOnly": "npm run build"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"typescript": "7.0.2"
+	}
+}

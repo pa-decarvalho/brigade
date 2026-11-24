@@ -10,11 +10,12 @@ pushed anywhere but the local forge.
 
 ## What they test
 
-`tests/e2e/test_projects.py`, one test per project type (`tests/e2e/projects.py`),
-in a temporary folder: the project created with its ecosystem's tool, brigade
-applied from this checkout at its latest tag (at its `HEAD` when that release
-lacks a tool or an answer of the type, or with `E2E_FROM_HEAD=1`: no update
-step then), pushed to the forge, then:
+`tests/e2e/phases.py`, one scenario per project type (`tests/e2e/projects.py`),
+in `/tmp/brigade-forges/projects/<forge>-<type>/`: brigade applied from this
+checkout at its latest tag (at its `HEAD` when that release lacks a tool or an
+answer of the type, or with `E2E_FROM_HEAD=1`: no update step then), then the
+type's files (`tests/fixtures/projects/<type>/`, without brigade), pushed to
+the forge, then:
 `<cli>:setup` and `<cli>:check`, a pull request (lint, build, test),
 `brigade:update` to the checkout's `HEAD` in a pull request whose CI passes
 (both merged), then the release (release PR, `X.Y.Z` tag), the publish to a
@@ -22,36 +23,47 @@ local Nexus (`tests/fixtures/compose.yml`: pypi, npm, maven and docker
 repositories, logged in as its deploy user) and the deploy publish starts on the
 tag, all made by the checkout's files: a fix to them is tested before its
 release. Deploys go to a target per environment (`dev` once published,
-`prod` by hand, `Forge.deploy_by_hand`): `helm` to a k3s cluster (profile
-`cluster`, `up.reset_cluster`, `kubectl rollout status`), `ansible` over SSH
-to a server (profile `ssh`, `up.reset_ssh_target`, the file it writes).
-The checkout is the projects' `_src_path`, mounted at the same path in the
-jobs: uncommitted changes are in it.
+`prod` by hand, `Forge.deploy_by_hand`): `helm` and `app` to a k3s cluster
+(profile `cluster`, `up.reset_cluster`, `kubectl rollout status`), `ansible`
+over SSH to a server (profile `ssh`, `up.reset_ssh_target`, the file it
+writes). The checkout is the projects' `_src_path`, mounted at the same path in
+the jobs: uncommitted changes are in it.
 
 `github` is a `ci: github` project on Gitea: no release, publish nor deploy (GitHub's
 API). No Renovate: its update is what `brigade:update` does.
 
 ## Run
 
-- Per forge (`gitea`, `github`, `forgejo`, `gitlab`; `tests/e2e/up.py`):
-  `<forge>:up` (start, admin token, runner; `.forges/<server>.json`),
-  `<forge>:run [type...]` (the tests on it: `python`, `python-direct`,
-  `node`, `bun`, `docker`, `java-maven`, `java-gradle`, `helm`, `ansible`,
-  `app`; all by default), `<forge>:down`
-  (remove it and its data; images stay),
-  `<forge>:test` (up, run, down). To investigate: `up`, `run` as often as
-  needed, `down` at the end. Every forge: `forges:test [type...]` (each in
-  turn, then the big Docker-wide cleanup). GitLab takes a few minutes and,
-  with Nexus and the jobs, about 3.2 GB at peak: one forge at a time.
-- Each type takes 5 to 10 minutes: run it in the background and wait for the
-  notification.
-- `<forge>:up` prints the UI's URL and login; links the forge writes use its
-  Docker name (`http://gitea:3000`): replace with the URL.
+As Molecule's (`mise run e2e:<command> <forge> [type...]`; forge `gitea`,
+`github`, `forgejo`, `gitlab`; types `python`, `python-direct`, `node`, `bun`,
+`docker`, `java-maven`, `java-gradle`, `helm`, `ansible`, `app`, all by
+default):
+
+- `converge`: the forge up when it is not (admin token, runner;
+  `.forges/<server>.json`; prints the URL and login), then each type in turn:
+  prepared when not (registries and target emptied, project, repository,
+  secrets, push; prints the repository), converged (pull request, update,
+  release, publish, deploys; resumes at the first step not done, a step's
+  actions done once: state in `.forges/<forge>-<type>.json`), verified (the
+  release in Nexus, the deploys on their target);
+- `destroy`: with types, forgets them (the next `converge` starts them over);
+  without, the forge and its data too (images stay);
+- `test`: the types started over, `converge`, then `destroy`;
+  `e2e:test all [type...]`: every forge in turn, then the big Docker-wide
+  cleanup and the summary.
+
+To investigate: `converge`, look at the forge, fix the tests, `converge` again
+(a fix to brigade's files: `destroy <forge> <type>` first), `destroy` at the
+end. GitLab takes a few minutes and, with Nexus and the jobs, about 3.2 GB at
+peak: one forge at a time. Each type takes 5 to 10 minutes: run it in the
+background and wait for the notification. Links the forge writes use its Docker
+name (`http://gitea:3000`): replace with the URL.
 
 ## Read the results
 
-Each test writes `.forges/<forge>-<type>.md` (the next run replaces it): the
-steps (result, time, error), the failed jobs' last log lines. For each failure:
+Each type writes `.forges/<forge>-<type>.md` (started over with the type): the
+type's time, its steps (result, time, error), the failed jobs' last log
+lines; the summary adds each type's time and the run's. For each failure:
 
 1. Test or brigade? A wrong assumption in the tests (a registry not reset, a
    timeout, a forge API detail) is fixed in `tests/e2e/`. A generated file, task
@@ -63,21 +75,26 @@ steps (result, time, error), the failed jobs' last log lines. For each failure:
    #302 Releasaurus on Forgejo): `not_on` in `projects.py`, or a comment,
    never a silent skip.
 
-Then report the table forge × type to the user (printed by `forges:test`, and
+Then report the table forge × type to the user (printed by `e2e:test all`, and
 in `.forges/summary.md`).
 
 ## Add a project type
 
+- Its files in `tests/fixtures/projects/<type>/`: the project's minimal code
+  and lockfiles, made once with its ecosystem's tool, and a `mise.toml` with
+  its registry's `[env]` (`http://nexus:8081/repository/<name>/`, the jobs);
+  they pass `mise run lint` (a Helm chart's YAML starts with
+  `# yamllint disable-file`, so no template may render empty: helm refuses
+  a manifest that is only a comment; nor start with `{{-`, which joins its
+  first line to the comment).
 - An entry in `PROJECTS` (`tests/e2e/projects.py`): its tools (copy a ctt
-  variant's), files, commands (run with `mise exec` after `mise install`), the
-  registry env and secrets, the published URL (from this machine) and the text
-  it must hold, `not_on` for the forges brigade refuses it on.
+  variant's), secrets, the published URL (from this machine) and the text it
+  must hold, `not_on` for the forges brigade refuses it on.
 - A registry it needs: a Nexus hosted repository in `up.REPOSITORIES` (emptied
-  before each test by `up.reset_registries`), its URL by service name in `env`
-  (`http://nexus:8081/repository/<name>/`, the jobs) and by `localhost:8099` in
+  by `up.reset_registries` when a type is prepared), read by `localhost:8099` in
   `published` (this machine, anonymous reads); its login from the secrets'
   `{deploy_user}`, `{deploy_password}` or `{npm_token}`.
-- Its test id (`CASES` in `projects.py`, the type's name) in the help of the
-  `<forge>:run` and `<forge>:test` tasks (`mise.toml`, `usage`): mise cannot
-  list choices for a repeatable argument, `up.py` checks the names.
+- Its id (`CASES` in `projects.py`, the type's name) in the help of the
+  `e2e:*` tasks (`mise.toml`, `usage`): mise cannot list choices for a
+  repeatable argument, `phases.py` checks the names.
 - Run it on gitea, then the other forges.

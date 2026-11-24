@@ -1,0 +1,18 @@
+---
+- name: Deploy
+  hosts: all
+  gather_facts: false
+  vars:
+    environment_name: "{{ lookup('env', 'BRIGADE_ENVIRONMENT') }}"
+    commit: "{{ lookup('pipe', 'git rev-parse HEAD') }}"
+  tasks:
+    - name: The environment's folder
+      ansible.builtin.file:
+        path: "/srv/{{ environment_name }}"
+        state: directory
+        mode: "0755"
+    - name: The deployed version
+      ansible.builtin.copy:
+        content: "{{ environment_name }} {{ commit }} {{ secret }}\n"
+        dest: "/srv/{{ environment_name }}/version"
+        mode: "0644"

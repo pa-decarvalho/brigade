@@ -1,0 +1,4 @@
+# The registry the CI publishes to (tests/fixtures/compose.yml's Nexus).
+[env]
+# The host's Docker daemon pushes.
+DOCKER_IMAGE = "localhost:5099/demo"
