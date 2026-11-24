@@ -1,0 +1,15 @@
+// brigade's own Renovate settings, added to its generated config (.brigade/configs/renovate.json,
+// renovate_updates in .brigade/copier/data.yml).
+{
+  // config:recommended skips tests/ and fixtures/ (:ignoreModulesAndTests): brigade's are read.
+  ignorePaths: ['**/node_modules/**'],
+  packageRules: [
+    {
+      // The end-to-end tests' pins (the forges and their services, the test projects): one PR,
+      // no release, an e2e run to review it (ctt does not use them).
+      matchFileNames: ['tests/**', 'mise.toml'],
+      groupName: 'tests',
+      semanticCommitType: 'test',
+    },
+  ],
+}

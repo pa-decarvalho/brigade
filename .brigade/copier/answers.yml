@@ -91,6 +91,7 @@ release_enabled: true
 renovate_automerge: true
 renovate_updates:
 - brigade
+- dependencies
 - template
 test_commands: []
 test_enabled: true

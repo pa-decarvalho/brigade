@@ -10,9 +10,8 @@
     // auto-merge is allowed); a failing check, or Copier's conflict markers in a brigade update,
     // keep the PR open.
     "automerge": true,
-    // Only what renovate_updates lists: your renovate.json can set "enabledManagers": [] (all).
-    "enabledManagers": ["custom.regex", "mise", "github-actions", "gitlabci"],
-    "includePaths": ["template/**", ".brigade/copier/answers.yml"],
+    // Your project's dependencies.
+    "extends": ["config:recommended"],
     // brigade itself: on a new release, its PR runs brigade:update (Renovate's own change to
     // _commit is undone first, since Copier diffs from the current version), in its own PR
     // (Copier needs a clean tree).

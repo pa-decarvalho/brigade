@@ -168,16 +168,17 @@ mise fragment with all its tasks, and stages follow from the tools.
   inside a replay (`ACT`, `GITLAB_CI` set), so the replayed test job does not
   loop.
 - Pin versions (mise, tools, Copier). Renovate keeps them up to date
-  (`.brigade/configs/renovate.json`, from the `template` part of
-  `renovate_updates` in brigade's answers; no config of its own): a new pin
+  (`.brigade/configs/renovate.json`, from the `template` and `dependencies`
+  parts of `renovate_updates` in brigade's answers): a new pin
   outside a standard mise/CI location needs a matching `customManagers` entry
   there, in the template, which applies to brigade after a release and its
   update. Generated projects get new versions
-  through a brigade release and `mise run brigade:update`. Renovate only reads
-  `template/` (`includePaths`), in one `fix:` PR, and brigade's own
-  `.brigade/copier/answers.yml`, whose `ci:` PR runs `brigade:update` on each
-  release: brigade's generated files follow that way, its other pins (Copier and
-  pytest in tests and docs) are updated by hand.
+  through a brigade release and `mise run brigade:update`. Renovate updates
+  `template/` in one `fix:` PR, brigade's own `.brigade/copier/answers.yml`,
+  whose `ci:` PR runs `brigade:update` on each release (brigade's generated
+  files follow that way), and the tests' pins (`tests/`, the root `mise.toml`)
+  in one `test:` PR (`renovate.json5`, brigade's own settings); its other pins
+  (Copier and pytest in `ctt.toml` and docs) are updated by hand.
 - Keep it simple: add a file or an option only when it is needed.
 - Code, comments and help texts in English.
 - PRs are squash-merged with the PR title as commit message, so PR titles follow

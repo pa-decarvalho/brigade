@@ -163,15 +163,20 @@ on a manual run of the Deploy workflow.
 
 Pinned versions are updated by [Renovate](https://docs.renovatebot.com/)
 (`.brigade/configs/renovate.json`, generated with `renovate_updates: [brigade,
-template]` and `renovate_automerge: true` in `.brigade/copier/data.yml`), run
-every day by the generated Operate workflow
-(`mise run operate`, `operate_schedule`) as one PR,
-`fix(deps): update template`, major updates included: it triggers a release.
+dependencies, template]` and `renovate_automerge: true` in
+`.brigade/copier/data.yml`), run every day by the generated Operate workflow
+(`mise run operate`, `operate_schedule`):
 
-Renovate only reads `template/`. brigade's generated files get the new versions
-like any project, through a release and `mise run brigade:update`; its other
-pins (Copier and pytest in `ctt.toml`, `README.md` and `.copier/settings.yml`)
-are updated by hand.
+- `template/`'s pins in one PR, `fix(deps): update template`, major updates
+  included: it triggers a release;
+- the tests' pins (the forges and their services in `tests/fixtures/`, the test
+  projects, the root `mise.toml`) in one PR, `test(deps): update tests`, no
+  release (`renovate.json5`, brigade's own settings): ctt does not use them,
+  run the end-to-end tests on it before merging.
+
+brigade's generated files get the new versions like any project, through a
+release and `mise run brigade:update`; its other pins (Copier and pytest in
+`ctt.toml`, `README.md` and `.copier/settings.yml`) are updated by hand.
 
 It needs a `RENOVATE_TOKEN` secret: a fine-grained token on this repo with
 contents, pull requests, issues, workflows and commit statuses read/write.
