@@ -1,7 +1,7 @@
 {%- set config = ty_config or '.brigade/configs/ty.toml' -%}
 [tools]
 # renovate: datasource=github-releases depName=astral-sh/ty
-ty = "{{ ty_version | default('0.0.107', true) }}"
+ty = "{{ ty_version | default('0.0.108', true) }}"
 
 [tasks."ty:lint"]
 description = "Check Python types with ty"
