@@ -17,6 +17,11 @@
 {%- if dependencies %}
     // Your project's dependencies.
     "extends": ["config:recommended"],
+{%- if template %}
+    // Its Java runtime presets come after this file's rules and would take template/'s JDK pins
+    // out of their group, to a version the java-version datasource does not have.
+    "ignorePresets": ["group:java", "workarounds:javaLTSVersions"],
+{%- endif %}
 {%- else %}
     // Only what renovate_updates lists: your renovate.json can set "enabledManagers": [] (all).
     "enabledManagers": ["custom.regex"{% if template %}, "mise", "github-actions", "gitlabci"{% endif %}],
