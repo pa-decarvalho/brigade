@@ -2,7 +2,7 @@
 {%- set checks = ['releasaurus', 'renovate', 'pages'] | select('in', tools) | list -%}
 [tools]
 # renovate: datasource=gitlab-releases depName=gitlab-org/cli
-glab = "{{ glab_version | default('1.131.0', true) }}"
+glab = "{{ glab_version | default('1.132.0', true) }}"
 
 # Not a stage name: stays out of the pipeline. Needs your login (glab auth login).
 [tasks."glab:check"]
