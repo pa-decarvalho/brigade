@@ -4,7 +4,7 @@
   + ['pages'] | select('in', tools) | list -%}
 [tools]
 # renovate: datasource=github-releases depName=cli/cli
-gh = "{{ gh_version | default('2.105.0', true) }}"
+gh = "{{ gh_version | default('2.106.0', true) }}"
 
 # Not a stage name: stays out of the pipeline. Needs your login (gh auth login).
 [tasks."gh:check"]

@@ -1,7 +1,7 @@
 {%- set config = ansible_lint_config or '.brigade/configs/ansible-lint.yml' -%}
 [tools]
 # renovate: datasource=pypi depName=ansible-lint
-"pipx:ansible-lint" = { version = "{{ ansible_lint_version | default('26.11.0', true) }}", python = "3.14" }
+"pipx:ansible-lint" = { version = "{{ ansible_lint_version | default('26.11.1', true) }}", python = "3.14" }
 
 [tasks."ansible-lint:lint"]
 description = "Check Ansible content with ansible-lint"
